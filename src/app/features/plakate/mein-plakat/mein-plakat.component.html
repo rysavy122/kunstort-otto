@@ -1,0 +1,27 @@
+<div class="wrapper">
+  <div class="file-upload-container">
+    <input
+      type="file"
+      id="svgFileInput"
+      (change)="onFileSelected($event)"
+      accept=".svg"
+      hidden
+    />
+    <canvas id="paperCanvas" hidden></canvas>
+    <label for="svgFileInput" class="file-upload-btn">Upload SVG File</label>
+  </div>
+  <div id="svg-container" [style.height]="svgHeight" [style.width]="svgWidth">
+    <div [innerHTML]="svgContent | safeHtml"></div>
+  </div>
+  <button (click)="rearrangePaths()">Rearrange Paths</button>
+  <button (click)="revertToOriginal()">Revert to Original</button>
+  <ul>
+    <li *ngFor="let path of svgPaths; let i = index">
+      Path {{ i + 1 }}: <code>{{ path }}</code>
+    </li>
+  </ul>
+
+  <div class="plakat-editing-wrapper">
+    <canvas></canvas>
+  </div>
+</div>

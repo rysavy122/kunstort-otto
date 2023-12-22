@@ -1,0 +1,80 @@
+.page-plakate__button {
+  min-width: 8.4rem;
+
+  border: 0.1rem solid var(--black);
+  color: var(--white);
+  background-color: var(--otto-primary);
+  width: 50%;
+  font-size: 1.6rem;
+
+  margin-right: 1.6rem;
+
+  font-style: normal;
+  font-weight: 500;
+  line-height: 3.2rem;
+  padding: 0.8rem 0;
+  border-radius: 0.8rem;
+  text-align: center;
+
+  cursor: pointer;
+  user-select: none;
+  border: 0;
+  border-radius: 0.8rem;
+
+  font-family: var(--font-primary);
+  font-weight: 600;
+  color: var(--white);
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: background 0.3s ease-out, color 0.3s ease-out;
+
+  /* responsive */
+
+  min-width: 10rem;
+  padding: 1.6rem 1.6rem;
+
+  font-size: 1.6rem;
+  line-height: 2.2rem;
+    margin: auto;
+    margin-left: 30px;    
+  }
+  
+  #svg-container {
+    border: 1px solid #ccc;
+    background-color: var(--otto-secondary);
+    position: relative; 
+    overflow: hidden; 
+    margin: auto;
+    margin-top: 20px;
+  }
+
+  .file-upload-container {
+    text-align: center;
+  }
+  
+  .file-upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    background-color: var(--otto-primary);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .file-upload-btn:hover {
+    background-color: var(--otto-secondary);
+
+  }
+  .wrapper{
+    margin-top: 10px;
+    text-align: center;
+  }
+  button{
+    margin:15px;
+    padding:5px;
+    cursor: pointer;
+  }

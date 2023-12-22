@@ -1,0 +1,10 @@
+/* In your CSS file */
+input.ng-invalid.ng-touched {
+    border-color: red;
+  }
+  
+  button:disabled {
+    background-color: grey;
+    cursor: not-allowed;
+  }
+  
