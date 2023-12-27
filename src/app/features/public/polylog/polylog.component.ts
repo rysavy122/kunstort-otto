@@ -1,27 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from '@app/core';
-import { MessageModel } from '@app/core';
+import { ForschungsFrageService } from '@app/core';
+import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model'; // Adjust path as needed
 
 @Component({
   selector: 'app-polylog',
   templateUrl: './polylog.component.html',
 })
 export class PolylogComponent implements OnInit {
-  message = '';
-  errorMessage = 'Fehler beim laden der Forschungsfrage.'
+  message? = '';
+  errorMessage = 'Fehler beim laden der Forschungsfrage.';
 
-  constructor(public messageService: MessageService) {}
+  constructor(private forschungsfrageService: ForschungsFrageService) {}
   ngOnInit(): void {
-    this.messageService.getPublicResource().subscribe((response) => {
+    this.fetchLatestForschungsfrage();
+    this.listenForNewForschungsfrage();
+  }
 
-      const data = response.data as MessageModel;
-      const error = response.error;
-
-      if (data && data.text) {
-        this.message = data.text;
-      } else if (error) {
+  fetchLatestForschungsfrage() {
+    this.forschungsfrageService.getLatestForschungsfrage().subscribe({
+      next: (forschungsfrage: ForschungsfragenModel) => {
+        this.message = forschungsfrage.title;
+      },
+      error: () => {
         this.message = this.errorMessage;
       }
     });
   }
+
+  listenForNewForschungsfrage() {
+    this.forschungsfrageService.forschungsfragen$.subscribe(() => {
+      this.fetchLatestForschungsfrage();
+    });
   }
+  newComment(){
+    console.error("New Comment")
+  }
+}
