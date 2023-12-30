@@ -9,6 +9,8 @@ import { PageLayoutComponent } from "./page-layout.component";
 import { PageLoaderComponent } from "./page-loader.component";
 import { ToastComponent } from "./toast/toast.component";
 import { ConfirmationDialogComponent } from "./dialog/confirm-dialog.component";
+import { CommentDialogComponent } from "./dialog/comment-dialog.component";
+
 
 export const COMPONENTS = [
     ...NAVIGATION_COMPONENTS,
@@ -16,6 +18,7 @@ export const COMPONENTS = [
     Auth0FeaturesComponent,
     ToastComponent,
     ConfirmationDialogComponent,
+    CommentDialogComponent,
     CodeSnippetComponent,
     HomeComponent,
     PageFooterHyperlinkComponent,

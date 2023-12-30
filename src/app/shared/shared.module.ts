@@ -8,6 +8,8 @@ import { LoginButtonComponent } from './components/buttons/login-button.componen
 import { LogoutButtonComponent } from './components/buttons/logout-button.component';
 import { SignupButtonComponent } from './components/buttons/signup-button.component';
 import { NewQuestionInputComponent } from './components/inputs/new-question-input.component';
+import { EditorComponent } from '@tinymce/tinymce-angular';
+
 
 
 @NgModule({
@@ -22,6 +24,7 @@ import { NewQuestionInputComponent } from './components/inputs/new-question-inpu
   ],
   imports: [
     CommonModule,
+    EditorComponent,
     RouterModule,
   ],
   exports: [

@@ -9,10 +9,15 @@ import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model
   <div id="modal-container" *ngIf="isOpen">
   <div class="modal-backdrop">
   <div class="modal">
-    <h2>Confirm Action</h2>
-    <p>Do you really want to submit this question?</p>
+    <h2>Starte eine Neue Diskussion.</h2>
+    <h6>Willst du wirklich eine Neue Diskussion starten ?<br/>
+     Die aktuelle Diskussion, mit allen Kommentaren wird dann gelöscht. 
+    <br/>
+    <br/>
+    <span>Achtung ! Dies kann nicht rückgängig gemacht werden !</span>
+    </h6>
     <button class="submit-button" (click)="handleSubmit()">Bestätigen</button>
-    <button (click)="closeDialog()">Zurück</button>
+    <button class="close-button" (click)="closeDialog()">Zurück</button>
   </div>
 </div>
 
@@ -26,8 +31,8 @@ export class ConfirmationDialogComponent {
   ) {}
 
   forschungsfragen: ForschungsfragenModel[] = [];
-  @Input() isOpen = false;
   @Input() forschungsfrage: string = '';
+  @Input() isOpen = false;
   @Output() close = new EventEmitter<boolean>(); // Emit a boolean
 
   handleSubmit() {

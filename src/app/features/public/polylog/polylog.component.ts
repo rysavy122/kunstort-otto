@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ForschungsFrageService } from '@app/core';
 import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model'; // Adjust path as needed
+import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
 
 @Component({
   selector: 'app-polylog',
   templateUrl: './polylog.component.html',
 })
 export class PolylogComponent implements OnInit {
-  message? = '';
+  forschungsfrage? = '';
   errorMessage = 'Fehler beim laden der Forschungsfrage.';
+  isDialogOpen: boolean = false;
+  @ViewChild('confirmDialog') commentDialog!: CommentDialogComponent;
 
   constructor(private forschungsfrageService: ForschungsFrageService) {}
   ngOnInit(): void {
@@ -19,10 +22,10 @@ export class PolylogComponent implements OnInit {
   fetchLatestForschungsfrage() {
     this.forschungsfrageService.getLatestForschungsfrage().subscribe({
       next: (forschungsfrage: ForschungsfragenModel) => {
-        this.message = forschungsfrage.title;
+        this.forschungsfrage = forschungsfrage.title;
       },
       error: () => {
-        this.message = this.errorMessage;
+        this.forschungsfrage = this.errorMessage;
       }
     });
   }
@@ -32,7 +35,11 @@ export class PolylogComponent implements OnInit {
       this.fetchLatestForschungsfrage();
     });
   }
-  newComment(){
-    console.error("New Comment")
+  openDialog() {
+    this.isDialogOpen = true;
   }
+  closeDialog() {
+    this.isDialogOpen = false;
+  }
+
 }
