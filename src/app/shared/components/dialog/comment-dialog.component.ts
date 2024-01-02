@@ -24,11 +24,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class CommentDialogComponent {
     @Input() isOpen = false;
     @Output() close = new EventEmitter<void>();
+    @Output() commentSubmitted = new EventEmitter<string>();
+    editor: any;
+
 
     constructor(
     ) { }
 
     handleSubmit() {
+        let comment = '';
+        comment = this.editor.getContent();
+        
+        this.commentSubmitted.emit(comment);
+        this.closeDialog();
     }
     closeDialog() {
         this.close.emit();

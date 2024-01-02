@@ -11,7 +11,7 @@ import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model
   <div class="modal">
     <h2>Starte eine Neue Diskussion.</h2>
     <h6>Willst du wirklich eine Neue Diskussion starten ?<br/>
-     Die aktuelle Diskussion, mit allen Kommentaren wird dann gelöscht. 
+     Die aktuelle Diskussion mit allen Kommentaren wird dann gelöscht.
     <br/>
     <br/>
     <span>Achtung ! Dies kann nicht rückgängig gemacht werden !</span>
