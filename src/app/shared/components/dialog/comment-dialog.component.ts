@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { KommentarModel } from 'src/app/core/models/kommentar.model';
-import { KommentarService } from 'src/app/core/services/kommentar-service';
+import { KommentarService } from 'src/app/core/services/kommentar.service';
 
 
 @Component({
@@ -11,8 +11,7 @@ import { KommentarService } from 'src/app/core/services/kommentar-service';
                 <div class="modal">
                     <h2>Teile deine Meinung mit uns.</h2>
                     <h6>Verfasse ein Kommentar und nehme an der Diskussion teil.</h6>
-                    <input type="text" [(ngModel)]="commentTitle" placeholder="Title">
-                    <textarea type="text" [(ngModel)]="commentBody" placeholder="Kommentar"></textarea>
+                    <input type="text" [(ngModel)]="commentTitle" placeholder="Titel">
                     <app-tiny-mce (editorContent)="handleEditorContent($event)"></app-tiny-mce>
                     <button class="submit-button" (click)="handleSubmit()">Bestätigen</button>
                     <button class="close-button" (click)="closeDialog()">Zurück</button>
@@ -28,8 +27,6 @@ export class CommentDialogComponent {
     editor: any;
     editorContent: string = '';
     commentTitle: string = '';
-    commentBody: string = '';
-
 
   constructor(private kommentarService: KommentarService) { }
 

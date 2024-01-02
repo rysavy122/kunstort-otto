@@ -2,11 +2,14 @@
     <button (click)="openDialog()" class="comment-button">Kommentieren</button>
 </div>
 <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>
-<div id="kommentar-container">
-  <div *ngFor="let kommentar of kommentare" 
-       [innerHTML]="getSafeHtml(kommentar.comment)">
-  </div>
-</div>
+    <div *ngFor="let kommentar of kommentare">
+      <div #draggableElement class="commentar" [ngStyle]="kommentar.style">
+        <h4>{{kommentar.title}}</h4>
+        <p [innerHTML]="getSafeHtml(kommentar.comment)"></p>
+        <p>Datum: {{kommentar.createdAt}}</p>
+        <button>Antworten</button>
+      </div>
+    </div>
 <app-comment-dialog #commentDialog 
     [isOpen]="isDialogOpen" 
     (close)="closeDialog()"

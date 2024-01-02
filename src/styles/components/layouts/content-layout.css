@@ -154,6 +154,7 @@ input:focus {
 #page-description {
   display: flex;
   flex-direction: column;
+  width:90vw;
 }
 
 #page-description span {

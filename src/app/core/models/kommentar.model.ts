@@ -5,3 +5,8 @@ export class KommentarModel {
     createdAt?: Date;
 }
 
+  export interface KommentarDisplayModel extends KommentarModel {
+    position?: { x: number; y: number };
+    style?: { [key: string]: string | number };
+  }
+  
