@@ -66,9 +66,9 @@
     border-radius: 0.8rem;
 
   }
-  p{
-    width:150px;
+  .commentar p{
     margin: auto;
+    width: 150px;
   }
   #kommentar-container{
     position: absolute;
