@@ -1,4 +1,5 @@
-<div id="button-div">
+<div id="wrapper">
+  <div id="button-div">
     <button (click)="openDialog()" class="comment-button">Kommentieren</button>
 </div>
 <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>
@@ -15,3 +16,4 @@
     (close)="closeDialog()"
     (commentSubmitted)="onCommentSubmitted($event)">
 </app-comment-dialog>
+</div>

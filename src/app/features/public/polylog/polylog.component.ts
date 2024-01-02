@@ -17,10 +17,7 @@ gsap.registerPlugin(Draggable);
 })
 export class PolylogComponent implements OnInit, AfterViewInit {
   forschungsfrage? = '';
-  private startPosition?: { x: number, y: number };
   kommentare: KommentarDisplayModel[] = [];
-  private isDragging = false;
-  private dragComment?: KommentarDisplayModel;
   private resizeTimeout?: number;
   errorMessage = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
@@ -48,13 +45,13 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       Draggable.create(element.nativeElement, {
         type: "x,y",
         bounds: window,
-        // Other settings...
+        inertia: true,
       });
     });
   }
 
 
-  @HostListener('window:resize', ['$event'])
+/*   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
@@ -64,7 +61,7 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       this.kommentare = this.kommentare.map((kommentar, index) => this.assignRandomPosition(kommentar, index));
     }, 100);
   }
-  
+   */
 
 
 
@@ -95,24 +92,21 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   loadKommentare(): void {
     this.kommentarService.getAllKommentare().subscribe(kommentare => {
       this.kommentare = kommentare.map((k: KommentarModel) => this.assignRandomPosition(k));
-      // Initialize Draggable after comments are loaded and rendered
       setTimeout(() => this.initializeDraggable(), 0);
     });
   }
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
-    const x = Math.floor(Math.random() * window.innerWidth);
-    const y = Math.floor(Math.random() * window.innerHeight);
+    const x = Math.floor(Math.random() * window.innerWidth -250);
+    const y = Math.floor(Math.random() * window.innerHeight -1050);
   
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
-  
-    const transitionDuration = '1s';
+    const transitionDuration = '0.3s';
     const transitionDelay = `${0.8 * index}s`; 
 
   
     return {
       ...comment,
       style: {
-        position: 'absolute',
         transform: transformStyle,
         transition: `transform ${transitionDuration} ease-in-out ${transitionDelay}`
       }
