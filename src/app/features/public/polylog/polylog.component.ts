@@ -95,20 +95,20 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       setTimeout(() => this.initializeDraggable(), 0);
     });
   }
+
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
     const x = Math.floor(Math.random() * window.innerWidth -250);
     const y = Math.floor(Math.random() * window.innerHeight -1050);
   
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
-    const transitionDuration = '0.3s';
-    const transitionDelay = `${0.8 * index}s`; 
 
   
     return {
       ...comment,
       style: {
         transform: transformStyle,
-        transition: `transform ${transitionDuration} ease-in-out ${transitionDelay}`
+        backgroundColor: this.generateRandomColor(), 
+        color: '#000000' 
       }
     };
   }
@@ -123,6 +123,56 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   }
   closeDialog() {
     this.isDialogOpen = false;
+  }
+
+  generateRandomColor(): string {
+    let color = '#';
+    for (let i = 0; i < 3; i++) {
+      const part = Math.floor(Math.random() * 256).toString(16);
+      color += part.padStart(2, '0');
+    }
+
+    if (this.isColorUnacceptable(color)) {
+      return this.generateRandomColor(); // Recursively generate a new color
+    }
+    return color;
+  }
+
+  isColorUnacceptable(color: string): boolean {
+    // Add conditions for unacceptable colors
+    const unacceptableColors = ['#000000', '#ffffff', '#e21c52']; // Black, White, Otto primary
+    const colorDistanceThreshold = 50; // Adjust this threshold as needed
+
+    for (let unacceptable of unacceptableColors) {
+      if (this.getColorDistance(color, unacceptable) < colorDistanceThreshold) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  getColorDistance(color1: string, color2: string): number {
+    // Convert hex color to RGB
+    const rgb1 = this.hexToRgb(color1);
+    const rgb2 = this.hexToRgb(color2);
+
+    if (!rgb1 || !rgb2) return 0;
+
+    // Calculate distance
+    let distance = 0;
+    distance += Math.pow(rgb1.r - rgb2.r, 2);
+    distance += Math.pow(rgb1.g - rgb2.g, 2);
+    distance += Math.pow(rgb1.b - rgb2.b, 2);
+    return Math.sqrt(distance);
+  }
+
+  hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
   }
 
 }
