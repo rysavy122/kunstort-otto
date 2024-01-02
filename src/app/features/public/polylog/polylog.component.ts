@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ForschungsFrageService } from '@app/core';
 import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model'; // Adjust path as needed
+import { KommentarModel } from 'src/app/core/models/kommentar.model';
 import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
 
 @Component({
@@ -9,6 +10,7 @@ import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment
 })
 export class PolylogComponent implements OnInit {
   forschungsfrage? = '';
+  kommentare: KommentarModel[] = [];
   errorMessage = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
   @ViewChild('confirmDialog') commentDialog!: CommentDialogComponent;
