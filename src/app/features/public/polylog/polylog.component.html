@@ -3,7 +3,12 @@
 </div>
 <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>
 <div id="kommentar-container">
-  <div id="kommentar"></div>
-  <div id="kommentar-antwort"></div>
+  <div *ngFor="let kommentar of kommentare" 
+       [innerHTML]="getSafeHtml(kommentar.comment)">
+  </div>
 </div>
-<app-comment-dialog #commentDialog [isOpen]="isDialogOpen" (close)="closeDialog()"></app-comment-dialog>
+<app-comment-dialog #commentDialog 
+    [isOpen]="isDialogOpen" 
+    (close)="closeDialog()"
+    (commentSubmitted)="onCommentSubmitted($event)">
+</app-comment-dialog>

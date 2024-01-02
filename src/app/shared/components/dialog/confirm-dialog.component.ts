@@ -33,7 +33,7 @@ export class ConfirmationDialogComponent {
   forschungsfragen: ForschungsfragenModel[] = [];
   @Input() forschungsfrage: string = '';
   @Input() isOpen = false;
-  @Output() close = new EventEmitter<boolean>(); // Emit a boolean
+  @Output() close = new EventEmitter<boolean>();
 
   handleSubmit() {
     if (!this.forschungsfrage.trim()) {
@@ -44,11 +44,11 @@ export class ConfirmationDialogComponent {
       .subscribe({
         next: (response) => {
           console.log('Forschungsfrage saved:', response);
-          this.closeDialog(true); // Emit true on successful submission
+          this.closeDialog(true);
         },
         error: (error) => {
           console.error('Error saving Forschungsfrage:', error);
-          this.closeDialog(false); // Emit false on error
+          this.closeDialog(false);
         }
       });
   }

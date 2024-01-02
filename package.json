@@ -37,6 +37,7 @@
     "@angular/compiler-cli": "^15.0.0",
     "@types/jasmine": "~4.0.0",
     "@types/snapsvg": "^0.5.8",
+    "@types/tinymce": "^4.6.9",
     "dotenv": "^16.0.1",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",

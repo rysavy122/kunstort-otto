@@ -10,6 +10,7 @@ import { PageLoaderComponent } from "./page-loader.component";
 import { ToastComponent } from "./toast/toast.component";
 import { ConfirmationDialogComponent } from "./dialog/confirm-dialog.component";
 import { CommentDialogComponent } from "./dialog/comment-dialog.component";
+import { TinyMceComponent } from "./editor/tiny-mce.component";
 
 
 export const COMPONENTS = [
@@ -19,6 +20,7 @@ export const COMPONENTS = [
     ToastComponent,
     ConfirmationDialogComponent,
     CommentDialogComponent,
+    TinyMceComponent,
     CodeSnippetComponent,
     HomeComponent,
     PageFooterHyperlinkComponent,

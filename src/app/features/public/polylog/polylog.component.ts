@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ForschungsFrageService } from '@app/core';
-import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model'; // Adjust path as needed
+import { KommentarService } from 'src/app/core/services/kommentar-service';
+import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
 import { KommentarModel } from 'src/app/core/models/kommentar.model';
 import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-polylog',
@@ -15,10 +17,13 @@ export class PolylogComponent implements OnInit {
   isDialogOpen: boolean = false;
   @ViewChild('confirmDialog') commentDialog!: CommentDialogComponent;
 
-  constructor(private forschungsfrageService: ForschungsFrageService) {}
+  constructor(private forschungsfrageService: ForschungsFrageService,
+    private sanitizer: DomSanitizer,
+    private kommentarService: KommentarService) { }
   ngOnInit(): void {
     this.fetchLatestForschungsfrage();
     this.listenForNewForschungsfrage();
+    this.loadKommentare();
   }
 
   fetchLatestForschungsfrage() {
@@ -31,7 +36,19 @@ export class PolylogComponent implements OnInit {
       }
     });
   }
+  getSafeHtml(content: string | undefined): SafeHtml | string {
+    return content ? this.sanitizer.bypassSecurityTrustHtml(content) : '';
+  }
+  onCommentSubmitted(newKommentar: KommentarModel) {
+    this.kommentare.push(newKommentar);
+    this.loadKommentare();
+  }
 
+  loadKommentare() {
+    this.kommentarService.getAllKommentare().subscribe(kommentare => {
+      this.kommentare = kommentare;
+    });
+  }
   listenForNewForschungsfrage() {
     this.forschungsfrageService.forschungsfragen$.subscribe(() => {
       this.fetchLatestForschungsfrage();
