@@ -49,19 +49,38 @@
         Freeze Polylog
       </button>
       </form>
-<!--       <h1>Übersicht Forschungsfragen</h1>
+      <h1>Übersicht Forschungsfragen</h1>
       <p>
         Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
         die in der Datenbank gespeichert sind.
       </p>
+      <svg 
+      (click)="toggleForschungsfragen()"
+      xmlns="http://www.w3.org/2000/svg" 
+      width="16" 
+      height="16" 
+      fill="currentColor" 
+      class="bi bi-chevron-down" 
+      viewBox="0 0 16 16"
+      [class.rotated]="isExpanded">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+    </svg>
+    <div *ngIf="isExpanded">
       <div *ngIf="forschungsfragen.length">
         <ul>
-          <li *ngFor="let frage of forschungsfragen">
+          <li *ngFor="let frage of paginatedForschungsfragen">
             {{ frage.title }}
           </li>
         </ul>
-      </div> -->
+      </div>
     </div>
+    </div>
+    <!-- Pagination Controls -->
+<div class="pagination-controls">
+  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+</div>
   </div>
 
   <app-confirm-dialog #confirmDialog [isOpen]="isDialogOpen" (close)="closeDialog($event)" ></app-confirm-dialog>

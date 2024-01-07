@@ -22,6 +22,11 @@ export class KommentarService {
       })
     );
   }
+  deleteKommentar(id: number): Observable<any> {
+    console.log(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`);
+}
+
 
   getAllKommentare(): Observable<any> {
     return this.http.get<any[]>(this.apiUrl).pipe(

@@ -3,6 +3,9 @@ export class KommentarModel {
     title?: string; 
     comment?: string; 
     createdAt?: Date;
+    parentKommentarId?: number | null;
+    replies?: KommentarModel[];
+
 }
 
   export interface KommentarDisplayModel extends KommentarModel {

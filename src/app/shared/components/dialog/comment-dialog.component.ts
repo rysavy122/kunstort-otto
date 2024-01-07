@@ -24,6 +24,9 @@ export class CommentDialogComponent {
     @Input() isOpen = false;
     @Output() close = new EventEmitter<void>();
     @Output() commentSubmitted = new EventEmitter<KommentarModel>();
+    @Input() parentKommentarId: number | null | undefined;
+
+
     editor: any;
     editorContent: string = '';
     commentTitle: string = '';
@@ -37,6 +40,7 @@ handleSubmit() {
         const newComment: KommentarModel = {
             title: this.commentTitle,
             comment: this.editorContent,
+            parentKommentarId: this.parentKommentarId
         };
 
         this.kommentarService.addKommentar(newComment).subscribe({

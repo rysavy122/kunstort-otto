@@ -8,3 +8,14 @@ input.ng-invalid.ng-touched {
     cursor: not-allowed;
   }
   
+  .rotated {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+  }
+  .bi-chevron-down {
+    transition: transform 0.3s ease;
+  }
+  
+  .rotated {
+    transform: rotate(180deg);
+  }

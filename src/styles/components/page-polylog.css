@@ -54,7 +54,7 @@
     color: var(--otto-primary);
     font-size: 8rem;
     width: fit-content;
-    line-height: 40px;
+    line-height: 70px;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.9);
     z-index: 100;
@@ -66,10 +66,20 @@
     border-radius: 0.8rem;
 
   }
-  .commentar p{
+  .commentar p, .replies p{
     margin: auto;
-    width: 150px;
+    width: fit-content;
+    padding:5px;
+
   }
+  .replies p{
+    height:fit-content;
+    width: fit-content;
+    margin: auto;
+
+  }
+
+
   #kommentar-container{
     position: absolute;
     height:100vh;
@@ -77,7 +87,11 @@
     width:100vw;
     border:1px solid red;
     margin:2px;
-
+  }
+  .icons{
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 50px;
   }
   .commentar {
     border: 2px solid black;
@@ -86,16 +100,91 @@
     width: 250px;
     height:250px;
     border-radius: 50%;
-    background-color: white;
+    z-index: 200;
+    overflow: scroll;
+  }
+  .replies{
+    border: 2px solid var(--otto-primary);
+    color: black;
+    margin: 5px;
+    width: 200px;
+    height:200px;
+    background-color: black;
+    color: white;
+    border-radius: 50%;
+    overflow: scroll;
 
+  }
+  svg{
+    cursor: pointer;
+  }
+  
+  .menu{
+    position: absolute;
+    bottom:35px;
+    border-radius: 8px;
+    right:35px;
+    background-color: #ffffffad;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  .reply-menu{
+      position: relative;
+      bottom:40px;
+      border-radius: 8px;
+      right:15px;
+      background-color: #ffffffad;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      text-align: center;
+  }
+
+  .menu.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .menu.show, .reply-menu.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .menu button, .reply-menu button {
+    display: block;
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .menu button:hover, .reply-menu button:hover {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+  }
+  
+  .menu button:not(:last-child),  .reply-menu button:not(:last-child) {
+    margin-bottom: 5px; /* Reduces space between buttons */
   }
 
   @media only screen and (max-width: 640px) {
     #forschungsfrage {
       color: var(--otto-primary);
-      font-size: 4rem;
+      font-size: 6rem;
       width: fit-content;
-      line-height: 40px;
+      line-height: 50px;
       text-align: center;
     }
 

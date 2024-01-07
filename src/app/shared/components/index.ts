@@ -11,6 +11,7 @@ import { ToastComponent } from "./toast/toast.component";
 import { ConfirmationDialogComponent } from "./dialog/confirm-dialog.component";
 import { CommentDialogComponent } from "./dialog/comment-dialog.component";
 import { TinyMceComponent } from "./editor/tiny-mce.component";
+import { CommentComponent } from "src/app/features/public/polylog/comment/comment.component";
 
 
 export const COMPONENTS = [
@@ -20,6 +21,7 @@ export const COMPONENTS = [
     ToastComponent,
     ConfirmationDialogComponent,
     CommentDialogComponent,
+    CommentComponent,
     TinyMceComponent,
     CodeSnippetComponent,
     HomeComponent,

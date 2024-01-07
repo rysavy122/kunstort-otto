@@ -1,16 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MessageService } from '@app/core';
 import * as paper from 'paper';
 @Component({
   selector: 'app-mein-plakat',
   templateUrl: './mein-plakat.component.html',
 })
-export class MeinPlakatComponent implements OnInit {
+export class MeinPlakatComponent implements OnInit, AfterViewInit {
   svgPaths: string[] = [];
+  stickers: paper.Raster[] = []; 
   svgContent: string = '';
   originalSvgContent: string = '';
   svgHeight: string = '300px';
   svgWidth: string = '300px';
+  @ViewChild('drawingCanvas') drawingCanvas!: ElementRef;
+  private paperScope!: paper.PaperScope;
+  private drawingPath: paper.Path | null = null;
+  private isDrawing = false;
+  strokeSize = 2; 
+  strokeColor = new paper.Color(0, 0, 0); 
+
+
 
 
   constructor(
@@ -20,11 +29,113 @@ export class MeinPlakatComponent implements OnInit {
   
 
   ngOnInit(): void {
-    paper.setup('paperCanvas');
-
+  }
+  ngAfterViewInit(): void {
+    this.paperScope = new paper.PaperScope();
+    this.paperScope.setup(this.drawingCanvas.nativeElement);
+    this.paperScope.view.onMouseDown = (event: paper.MouseEvent) => {
+      this.startDrawing(event);
+    };
+    this.paperScope.view.onMouseDrag = (event: paper.MouseEvent) => {
+      this.draw(event);
+    };
+    this.paperScope.view.onMouseUp = () => {
+      this.stopDrawing();
+    };
   }
 
+  enableDrawing(): void {
+    if (this.drawingPath) {
+      this.drawingPath.remove();
+    }
 
+    this.drawingPath = new this.paperScope.Path({
+      strokeColor: 'black',
+      strokeWidth: 2,
+    });
+
+    this.paperScope.view.onMouseDrag = (event: paper.MouseEvent) => {
+      if (this.drawingPath) {
+        this.drawingPath.add(event.point);
+      }
+    };
+  }
+
+ startDrawing(event: paper.MouseEvent): void {
+  this.isDrawing = true;
+
+  this.drawingPath = new this.paperScope.Path({
+    strokeColor: this.strokeColor, 
+    strokeWidth: this.strokeSize,   
+  });
+
+  this.drawingPath.add(event.point);
+}
+
+draw(event: paper.MouseEvent): void {
+  if (this.isDrawing && this.drawingPath) {
+    this.drawingPath.add(event.point);
+    this.paperScope.view.requestUpdate(); // Update the canvas rendering
+  }
+}
+stopDrawing(): void {
+  this.isDrawing = false;
+}
+
+addImageSticker(): void {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+
+  fileInput.onchange = (event: any) => {
+    const file: File = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const stickerImage = new this.paperScope.Raster(e.target.result);
+        stickerImage.size = new this.paperScope.Size(10, 10); // Set sticker size
+        stickerImage.onMouseDown = (mouseEvent: paper.MouseEvent) => {
+          this.dragSticker(stickerImage, mouseEvent);
+        };
+        this.stickers.push(stickerImage);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  fileInput.click();
+}
+dragSticker(stickerImage: paper.Raster, event: paper.MouseEvent): void {
+  const originalPosition = stickerImage.position;
+  const offset = originalPosition.subtract(event.point);
+
+  stickerImage.onMouseDrag = (mouseEvent: paper.MouseEvent) => {
+    stickerImage.position = mouseEvent.point.add(offset);
+  };
+
+  stickerImage.onMouseUp = () => {
+    stickerImage.onMouseDrag = null;
+  };
+}
+
+  
+  enableEraser(): void {
+    if (this.drawingPath) {
+      this.drawingPath.remove();
+    }
+    this.drawingPath = null;
+    this.isDrawing = false;
+  }
+
+  clearCanvas(): void {
+    if (this.drawingPath) {
+      this.drawingPath.remove();
+    }
+    this.paperScope.project.clear();
+  }
+  initializeDrawing(): void {
+    this.enableDrawing();
+  }
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
@@ -94,4 +205,9 @@ export class MeinPlakatComponent implements OnInit {
       [array[i], array[j]] = [array[j], array[i]];
     }
   }  
+    changeStrokeColor(): void {
+      if (this.drawingPath) {
+        this.drawingPath.strokeColor = this.strokeColor;
+      }
+    }
 }

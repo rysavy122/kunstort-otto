@@ -20,8 +20,23 @@
       Path {{ i + 1 }}: <code>{{ path }}</code>
     </li>
   </ul>
-
-  <div class="plakat-editing-wrapper">
-    <canvas></canvas>
+</div>
+<h3>Sticker</h3>
+<div class="canvas-wrapper">
+  <canvas  #drawingCanvas height="600px" width="500px" class="custom-cursor"></canvas>
+  <h2>Controlls</h2>
+  <div id="controlls">
+    <div id="stroke">
+      <label for="strokeSize">Stroke Size:</label><br/>
+      <input type="number" id="strokeSize" [(ngModel)]="strokeSize" />
+    </div>
+    <div id="color">
+      <label for="strokeColor">Stroke Color:</label><br/>
+      <br/>
+      <input type="color" id="stroke-color" [(ngModel)]="strokeColor"/>
+    </div>
   </div>
+  <button (click)="addImageSticker()">Add Image Sticker</button>
+  <button (click)="clearCanvas()">Clear Canvas</button>
+  <button (click)="enableEraser()">Undo Last</button>
 </div>

@@ -17,12 +17,15 @@ gsap.registerPlugin(Draggable);
 })
 export class PolylogComponent implements OnInit, AfterViewInit {
   forschungsfrage? = '';
+  isMenuOpen = false;
+  activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
   private resizeTimeout?: number;
   errorMessage = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
-  @ViewChild('confirmDialog') commentDialog!: CommentDialogComponent;
+  @ViewChild('commentDialog') commentDialog!: CommentDialogComponent;
   @ViewChildren('draggableElement') draggableElements!: QueryList<ElementRef>;
+
 
 
 
@@ -30,6 +33,8 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
     private kommentarService: KommentarService) { }
 
+
+  // Initialize things
 
   ngOnInit(): void {
     this.fetchLatestForschungsfrage();
@@ -49,27 +54,29 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       });
     });
   }
-
-
-/*   @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
-
-    this.resizeTimeout = window.setTimeout(() => {
-      this.kommentare = this.kommentare.map((kommentar, index) => this.assignRandomPosition(kommentar, index));
-    }, 100);
+  editKommentar(commentId: number): void {
+    // Logic to handle editing a comment
   }
-   */
 
-
-
-  updateCommentPositions(): void {
-    this.kommentare = this.kommentare.map((kommentar) =>
-      this.assignRandomPosition(kommentar)
-    );
+  openDialog(parentId: number | null = null) {
+    this.isDialogOpen = true;
+    this.commentDialog.parentKommentarId = parentId;
   }
+  openReplyDialog(parentId: number) {
+    this.openDialog(parentId);
+    this.isMenuOpen =false;
+
+  }
+  closeDialog() {
+    this.isDialogOpen = false;
+  }
+  toggleMenu(commentId: number): void {
+    this.isMenuOpen = this.activeCommentId !== commentId || !this.isMenuOpen;
+    this.activeCommentId = commentId;
+  }
+
+// Handle Forschungsfrage
+
   fetchLatestForschungsfrage() {
     this.forschungsfrageService.getLatestForschungsfrage().subscribe({
       next: (forschungsfrage: ForschungsfragenModel) => {
@@ -80,20 +87,111 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
+
+  listenForNewForschungsfrage() {
+    this.forschungsfrageService.forschungsfragen$.subscribe(() => {
+      this.fetchLatestForschungsfrage();
+    });
+  }
+
+
+  // Handle Kommentare
+
   getSafeHtml(content: string | undefined): SafeHtml | string {
     return content ? this.sanitizer.bypassSecurityTrustHtml(content) : '';
   }
-  onCommentSubmitted(newKommentar: KommentarModel): void {
+  /* onCommentSubmitted(newKommentar: KommentarModel): void {
+    if (!newKommentar) return;
+  
     const kommentarWithPosition = this.assignRandomPosition(newKommentar);
-    this.kommentare.push(kommentarWithPosition);
+  
+    if (newKommentar.parentKommentarId == null) {
+      // Adding a top-level comment
+      this.kommentare.push(this.assignRandomPosition(newKommentar));
+    } else {
+      // Adding a reply, possibly nested
+      this.addReplyToKommentar(this.kommentare, newKommentar);
+    }
+  
+    this.loadKommentare();
+  } */
+  onCommentSubmitted(newKommentar: KommentarModel): void {
+    if (!newKommentar) return; // Ensure newKommentar is not undefined
+  
+    const kommentarWithPosition = this.assignRandomPosition(newKommentar);
+  
+    if (newKommentar.parentKommentarId == null) {
+      this.kommentare.push(kommentarWithPosition);
+    } else {
+      // Find the parent comment index
+      const parentIndex = this.kommentare.findIndex(k => k.id === newKommentar.parentKommentarId);
+  
+      if (parentIndex !== -1) {
+        // Make sure the parent comment exists at the found index
+        const parentKommentar = this.kommentare[parentIndex];
+  
+        if (parentKommentar) {
+          // Initialize replies array if it doesn't exist
+          if (!parentKommentar.replies) {
+            parentKommentar.replies = [];
+          }
+  
+          // Add the new comment to the replies array
+          parentKommentar.replies.push(kommentarWithPosition);
+        }
+      }
+    }
+  
     this.loadKommentare();
   }
-
+  addReplyToKommentar(kommentare: KommentarDisplayModel[], reply: KommentarModel) {
+    for (let kommentar of kommentare) {
+      if (kommentar.id === reply.parentKommentarId) {
+        if (!kommentar.replies) kommentar.replies = [];
+        kommentar.replies.push(this.assignRandomPosition(reply));
+        return;
+      } else if (kommentar.replies && kommentar.replies.length) {
+        this.addReplyToKommentar(kommentar.replies, reply);
+      }
+    }
+  }
+  
   loadKommentare(): void {
     this.kommentarService.getAllKommentare().subscribe(kommentare => {
       this.kommentare = kommentare.map((k: KommentarModel) => this.assignRandomPosition(k));
       setTimeout(() => this.initializeDraggable(), 0);
     });
+  }
+
+  deleteKommentar(id: number): void {
+    this.kommentarService.deleteKommentar(id).subscribe(() => {
+      this.removeCommentById(this.kommentare, id);
+    });
+  }
+  removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {
+    for (let i = 0; i < kommentare.length; i++) {
+      if (kommentare[i].id === id) {
+        kommentare.splice(i, 1);
+        return;
+      } else if (kommentare[i].replies) {
+        this.removeCommentById(kommentare[i].replies!, id);
+      }
+    }
+  }
+  
+  trackById(index: number, item: KommentarModel): number {
+    return item.id!; // assuming `id` is a unique identifier for each comment
+  }
+  
+  
+
+  // Positioning the Comments
+
+  updateCommentPositions(): void {
+    this.kommentare = this.kommentare.map((kommentar) =>
+      this.assignRandomPosition(kommentar)
+    );
   }
 
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
@@ -113,18 +211,28 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     };
   }
 
-  listenForNewForschungsfrage() {
-    this.forschungsfrageService.forschungsfragen$.subscribe(() => {
-      this.fetchLatestForschungsfrage();
-    });
-  }
-  openDialog() {
-    this.isDialogOpen = true;
-  }
-  closeDialog() {
-    this.isDialogOpen = false;
-  }
+    /*
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
 
+    this.resizeTimeout = window.setTimeout(() => {
+      this.kommentare = this.kommentare.map((kommentar, index) => this.assignRandomPosition(kommentar, index));
+    }, 100);
+  }
+   */
+
+
+
+
+
+
+
+
+
+  //Random Colours
   generateRandomColor(): string {
     let color = '#';
     for (let i = 0; i < 3; i++) {
@@ -133,15 +241,13 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     }
 
     if (this.isColorUnacceptable(color)) {
-      return this.generateRandomColor(); // Recursively generate a new color
+      return this.generateRandomColor(); 
     }
     return color;
   }
-
   isColorUnacceptable(color: string): boolean {
-    // Add conditions for unacceptable colors
-    const unacceptableColors = ['#000000', '#ffffff', '#e21c52']; // Black, White, Otto primary
-    const colorDistanceThreshold = 50; // Adjust this threshold as needed
+    const unacceptableColors = ['#000000', '#ffffff', '#e21c52']; 
+    const colorDistanceThreshold = 150; 
 
     for (let unacceptable of unacceptableColors) {
       if (this.getColorDistance(color, unacceptable) < colorDistanceThreshold) {
@@ -150,15 +256,12 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     }
     return false;
   }
-
   getColorDistance(color1: string, color2: string): number {
-    // Convert hex color to RGB
     const rgb1 = this.hexToRgb(color1);
     const rgb2 = this.hexToRgb(color2);
 
     if (!rgb1 || !rgb2) return 0;
 
-    // Calculate distance
     let distance = 0;
     distance += Math.pow(rgb1.r - rgb2.r, 2);
     distance += Math.pow(rgb1.g - rgb2.g, 2);
@@ -174,5 +277,4 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       b: parseInt(result[3], 16)
     } : null;
   }
-
 }
