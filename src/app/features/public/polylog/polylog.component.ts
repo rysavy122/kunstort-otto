@@ -190,8 +190,8 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   }
 
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
-    const x = Math.floor(Math.random() * window.innerWidth );
-    const y = Math.floor(Math.random() * window.innerHeight );
+    const x = Math.floor(Math.random() * window.innerWidth -250);
+    const y = Math.floor(Math.random() * window.innerHeight -1050);
   
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
 
