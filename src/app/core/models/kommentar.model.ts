@@ -3,7 +3,7 @@ export class KommentarModel {
     title?: string; 
     comment?: string; 
     createdAt?: Date;
-    parentKommentarId?: number | null;
+    parentKommentarId?: number;
     replies?: KommentarModel[];
 
 }

@@ -5,10 +5,18 @@
     (mobileNavBarTabClick)="onMobileNavBarTabClick($event)"
   ></app-mobile-nav-bar-tab>
   <app-mobile-nav-bar-tab
-    path="/public"
-    label="Polylog"
+  target ="_blank" path="/public" label="Polylog"
     (mobileNavBarTabClick)="onMobileNavBarTabClick($event)"
   ></app-mobile-nav-bar-tab>
+  <app-mobile-nav-bar-tab
+  target="_blank" path="/plakate" label="Plakate"
+  (mobileNavBarTabClick)="onMobileNavBarTabClick($event)"
+></app-mobile-nav-bar-tab>
+<app-mobile-nav-bar-tab
+path="/public"
+label="Polylog"
+(mobileNavBarTabClick)="onMobileNavBarTabClick($event)"
+></app-mobile-nav-bar-tab>
   <ng-container *ngIf="isAuthenticated$ | async">
     <app-mobile-nav-bar-tab
       path="/protected"

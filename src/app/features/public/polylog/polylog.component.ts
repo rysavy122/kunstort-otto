@@ -16,12 +16,12 @@ gsap.registerPlugin(Draggable);
   templateUrl: './polylog.component.html',
 })
 export class PolylogComponent implements OnInit, AfterViewInit {
-  forschungsfrage? = '';
-  isMenuOpen = false;
+  forschungsfrage?: string = '';
+  isMenuOpen: boolean = false;
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
   private resizeTimeout?: number;
-  errorMessage = 'Fehler beim laden der Forschungsfrage.';
+  errorMessage: string = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
   @ViewChild('commentDialog') commentDialog!: CommentDialogComponent;
   @ViewChildren('draggableElement') draggableElements!: QueryList<ElementRef>;
@@ -58,7 +58,7 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     // Logic to handle editing a comment
   }
 
-  openDialog(parentId: number | null = null) {
+  openDialog(parentId?: number) {
     this.isDialogOpen = true;
     this.commentDialog.parentKommentarId = parentId;
   }
@@ -117,28 +117,23 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     this.loadKommentare();
   } */
   onCommentSubmitted(newKommentar: KommentarModel): void {
-    if (!newKommentar) return; // Ensure newKommentar is not undefined
+    if (!newKommentar) return;
   
     const kommentarWithPosition = this.assignRandomPosition(newKommentar);
   
     if (newKommentar.parentKommentarId == null) {
       this.kommentare.push(kommentarWithPosition);
     } else {
-      // Find the parent comment index
       const parentIndex = this.kommentare.findIndex(k => k.id === newKommentar.parentKommentarId);
   
       if (parentIndex !== -1) {
-        // Make sure the parent comment exists at the found index
         const parentKommentar = this.kommentare[parentIndex];
   
         if (parentKommentar) {
-          // Initialize replies array if it doesn't exist
           if (!parentKommentar.replies) {
             parentKommentar.replies = [];
           }
-  
-          // Add the new comment to the replies array
-          parentKommentar.replies.push(kommentarWithPosition);
+            parentKommentar.replies.push(kommentarWithPosition);
         }
       }
     }
@@ -195,8 +190,8 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   }
 
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
-    const x = Math.floor(Math.random() * window.innerWidth -250);
-    const y = Math.floor(Math.random() * window.innerHeight -1050);
+    const x = Math.floor(Math.random() * window.innerWidth );
+    const y = Math.floor(Math.random() * window.innerHeight );
   
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
 

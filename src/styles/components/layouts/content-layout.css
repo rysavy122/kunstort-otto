@@ -96,15 +96,14 @@ input:focus {
   line-height: 1.2rem;
 }
 .comment-button{
-  background-color: white;
-  color: white;
-  border: 1px solid var(--otto-primary);
+  background-color: var(--otto-primary);
   border-radius: 0.8rem;
-
   font-family: var(--font-primary);
   font-weight: 600;
-  color: var(--otto-primary);
+  color: var(--white);
   margin-top: 25px;
+  border-left: none;
+  border-top:none;
 
 
   cursor: pointer;
@@ -148,6 +147,7 @@ input:focus {
 #button-div{
   width:fit-content;
   margin: auto;
+  z-index:1;
 
 }
 

@@ -17,7 +17,8 @@
   --aqua: #3ec6eb;
   --emerald: #1bc99f;
 
-  --otto-primary: #e21c52;
+  /*--otto-primary: #e21c52;*/
+  --otto-primary: #e51a4f;
   --otto-secondary: #f63378;
 
 
@@ -70,6 +71,7 @@
   );
 
   --font-primary: "Inter", sans-serif;
+  --font-primary: 'Barlow', sans-serif;
   --font-secondary: "Space Grotesk", sans-serif;
   --font-mono: "Fira Code", monospace;
 }

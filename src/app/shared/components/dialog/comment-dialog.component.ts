@@ -11,7 +11,7 @@ import { KommentarService } from 'src/app/core/services/kommentar.service';
                 <div class="modal">
                     <h2>Teile deine Meinung mit uns.</h2>
                     <h6>Verfasse ein Kommentar und nehme an der Diskussion teil.</h6>
-                    <input type="text" [(ngModel)]="commentTitle" placeholder="Titel">
+                    <!--<input type="text" [(ngModel)]="commentTitle" placeholder="Titel">-->
                     <app-tiny-mce (editorContent)="handleEditorContent($event)"></app-tiny-mce>
                     <button class="submit-button" (click)="handleSubmit()">Bestätigen</button>
                     <button class="close-button" (click)="closeDialog()">Zurück</button>
@@ -24,18 +24,17 @@ export class CommentDialogComponent {
     @Input() isOpen = false;
     @Output() close = new EventEmitter<void>();
     @Output() commentSubmitted = new EventEmitter<KommentarModel>();
-    @Input() parentKommentarId: number | null | undefined;
-
+    @Input() parentKommentarId?: number;
 
     editor: any;
     editorContent: string = '';
-    commentTitle: string = '';
+    commentTitle?: string;
 
   constructor(private kommentarService: KommentarService) { }
 
 
 handleSubmit() {
-        if (!this.editorContent.trim() || !this.commentTitle.trim()) return;
+        if (!this.editorContent.trim() || this.commentTitle?.trim()) return;
 
         const newComment: KommentarModel = {
             title: this.commentTitle,

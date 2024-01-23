@@ -13,7 +13,7 @@ import { Auth0ResourceModel } from '@app/core';
               <app-page-footer-hyperlink path="https://auth0.com/"
                 >Denis Rysavy in Zusammenarbeit mit Kunsort Ottersberg .eV.</app-page-footer-hyperlink
               >
-              <p>&copy;2023 rysavy Alle Rechte vorbehalten.
+              <p>&copy; 2023 rysavy Alle Rechte vorbehalten.
             </p>
             <p class="page-footer-message__description">
               <app-page-footer-hyperlink
@@ -70,7 +70,7 @@ export class PageFooterComponent {
   resourceList: Auth0ResourceModel[] = [
     {
       path: 'https://auth0.com/why-auth0/',
-      label: 'Warum lohnt es sich Mitglied zu werden ?',
+      label: 'Warum Mitglied werden ?',
     },
     {
       path: 'https://auth0.com/docs/get-started',
@@ -78,11 +78,11 @@ export class PageFooterComponent {
     },
     {
       path: 'https://auth0.com/blog/developers/',
-      label: 'Kunstort Ottersberg Webseite',
+      label: 'Wer wir sind.',
     },
     {
       path: 'https://auth0.com/contact-us',
-      label: 'Kontaktiere uns für Fragen und Anliegen',
+      label: 'Kontaktiere uns für Fragen und Anliegen.',
     },
   ];
 }

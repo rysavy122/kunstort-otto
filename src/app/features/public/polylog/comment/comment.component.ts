@@ -124,7 +124,7 @@ export class CommentComponent implements OnInit, AfterViewInit {
         // Logic to handle editing a comment
     }
 
-    openDialog(parentId: number | null = null) {
+    openDialog(parentId?: number) {
         this.isDialogOpen = true;
         this.commentDialog.parentKommentarId = parentId;
     }

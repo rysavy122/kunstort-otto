@@ -6,9 +6,9 @@ import { Component } from '@angular/core';
     <div class="nav-bar__brand">
       <a routerLink="/">
         <img
-          style="height:60px;"
+          style="height:50px; margin-left: 50px;"
           class="nav-bar__logo"
-          src="https://drive.google.com/uc?export=view&id=17P35oLhnZWECY1bM__w_6gxmAcpOMYh5"
+          src="https://dl.dropboxusercontent.com/scl/fi/okeb3hyqtdymzz3il2w5m/Kunstort-Otto_Logo.png?rlkey=hctodkeapapu5rds4kma4b0rv&raw=1"
           alt="Otto logo"
         />
       </a>

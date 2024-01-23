@@ -5,12 +5,9 @@
   justify-content: center;
   flex-shrink: 0;
   width: 100%;
-
-  box-shadow: rgb(90 95 102) 0-1.5px 0 inset;
-
+  height:100px;
+  margin-bottom: 400px;
   z-index: 300;
-
-  background-color: var(--black);
 }
 
 .mobile-nav-bar {
@@ -29,15 +26,11 @@
 }
 
 .mobile-nav-bar__brand {
-  flex: 1;
-  display: flex;
   align-items: center;
-
   height: 100%;
-
-  /* responsive */
-
-  margin-right: 1.6rem;
+  position: absolute;
+  top:0.6rem;
+  left:3.6rem;
 }
 
 .mobile-nav-bar__link {
@@ -53,12 +46,9 @@
 .mobile-nav-bar__menu {
   width: 100%;
   height: calc(10% - 6.4rem);
-  background-color: aliceblue;
   position: fixed;
-  left: 0;
+  right: 0;
   top: 6.4rem;
-  background-color: var(--black);
-
   z-index: 300;
 }
 
@@ -66,14 +56,14 @@
   margin-left: 2.4rem;
   font-size: 3.6rem;
   cursor: pointer;
-  color: white;
+  color: var(--otto-primary);
 }
 
 .mobile-nav-bar__tabs {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   flex-direction: column;
   width: 100%;
 }
@@ -81,17 +71,15 @@
 .mobile-nav-bar__tab {
   display: flex;
   flex-direction: row;
-  /*justify-content: center;*/
-
   font-weight: 500;
   font-size: 2rem;
   line-height: 16px;
+  float: right;
 
   padding: 3.2rem 2.4rem;
-  background-color: var(--black);
   color: var(--white);
-  width: 100%;
-  box-shadow: rgb(90 95 102) 0-1.5px 0 inset;
+  width: 260px;
+  background-color: var(--otto-primary);
 }
 
 .mobile-nav-bar__tab:last-child {
@@ -111,6 +99,7 @@
 
 .mobile-nav-bar__tab:hover {
   color: var(--white);
+  color:rgb(200, 199, 199);
 }
 
 .mobile-nav-bar__icon {
@@ -119,27 +108,34 @@
 
 .mobile-nav-bar__buttons {
   display: flex;
+  float: right;
+
   justify-content: center;
-  padding: 3.2rem;
-  background-color: var(--black);
+  background-color: var(--otto-primary);
+  width: 260px;
+
 }
 
-@media only screen and (max-width: 640px) and (hover: none) {
   .mobile-nav-bar__tab:hover {
     color: var(--white);
+    color:rgb(200, 199, 199);
+
   }
 
   .mobile-nav-bar__tab--active:hover {
     color: var(--white);
-  }
-}
+    color:rgb(200, 199, 199);
 
-@media only screen and (max-width: 640px) {
+  }
+
+
   .mobile-nav-bar__container {
     display: flex;
+    justify-content: right;
+
   }
 
   .mobile-nav-bar__menu--closed {
     display: none;
   }
-}
+

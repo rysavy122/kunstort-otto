@@ -89,7 +89,7 @@
   canvas{
     border:1px solid black;
     margin: auto;
-    border:5px solid rgb(173, 173, 234);
+    border:20px double rgb(173, 173, 234);
   }
   h3{
     margin-left: 25px;

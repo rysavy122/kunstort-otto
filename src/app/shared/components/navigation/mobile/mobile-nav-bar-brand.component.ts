@@ -7,8 +7,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
       <a (click)="onMobileNavBarBrandClick()" routerLink="/">
         <img
           class="mobile-nav-bar__logo"
-          style="height:42px;"
-          src="https://drive.google.com/uc?export=view&id=17P35oLhnZWECY1bM__w_6gxmAcpOMYh5"
+          style="height:62px; margin-top:25px;"
+          src="https://dl.dropboxusercontent.com/scl/fi/okeb3hyqtdymzz3il2w5m/Kunstort-Otto_Logo.png?rlkey=hctodkeapapu5rds4kma4b0rv&raw=1"
           alt="Otto logo"
         />
       </a>

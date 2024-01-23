@@ -20,9 +20,15 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, numquam. <st
       >
         Hier geht es direkt zum Blog →
       </a>
+      <div id="pictures">
     </div>
+    </div>
+
+
   `,
 })
 export class HomeComponent {
-  logo = 'https://drive.google.com/uc?export=view&id=17P35oLhnZWECY1bM__w_6gxmAcpOMYh5';
+  logo = 'https://dl.dropboxusercontent.com//scl/fi/g4zg9v3pgvbf81ntednx7/tmp_1703246253646.jpg?rlkey=slw2g5imv8lyrf7g1hesnqu08&raw=1';
+  background = ''
+
 }
