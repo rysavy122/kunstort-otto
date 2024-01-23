@@ -70,8 +70,8 @@
     var(--yellow) 102.78%
   );
 
-  --font-primary: "Inter", sans-serif;
+  --font-secondary: "Inter", sans-serif;
   --font-primary: 'Barlow', sans-serif;
   --font-secondary: "Space Grotesk", sans-serif;
-  --font-mono: "Fira Code", monospace;
+  --font-secondary: "Barlow", sans-serif;
 }

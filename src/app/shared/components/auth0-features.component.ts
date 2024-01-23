@@ -10,19 +10,19 @@ import { Component } from '@angular/core';
           title="Als Gast/Besucherin"
           description="Als Gast/Besucherin kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
           resourceUrl="https://auth0.com/docs/multifactor-authentication"
-          icon="https://dl.dropboxusercontent.com/scl/fi/v93g0q8insoksb0345cbs/artist.jpeg?rlkey=hmv3iy013ew9vx9sj4atj4i4h&raw=1"
+          icon="https://dl.dropboxusercontent.com/scl/fi/nbjz7suztfbv34rnpujpe/image00040.jpeg?rlkey=4qg2ku5cvt08yvb8p77komu2t&raw=1"
         ></app-auth0-feature>
         <app-auth0-feature
           title="Als Institution"
           description="Als Institution kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
           resourceUrl="https://auth0.com/docs/attack-protection"
-          icon="https://dl.dropboxusercontent.com/scl/fi/v93g0q8insoksb0345cbs/artist.jpeg?rlkey=hmv3iy013ew9vx9sj4atj4i4h&raw=1"
+          icon="https://dl.dropboxusercontent.com/scl/fi/v1buuugwiiwta5i0nsyfg/institution.jpeg?rlkey=9v4h67zex83zlbdxndyqbn7qu&raw=1"
         ></app-auth0-feature>
         <app-auth0-feature
           title="Als Team"
           description="Als Team kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
           resourceUrl="https://auth0.com/docs/actions"
-          icon="https://dl.dropboxusercontent.com/scl/fi/v93g0q8insoksb0345cbs/artist.jpeg?rlkey=hmv3iy013ew9vx9sj4atj4i4h&raw=1"
+          icon="https://dl.dropboxusercontent.com/scl/fi/bouv1lbq18h2gfpy3d4bq/team.jpeg?rlkey=qow5p5fwwgwi7469e0fwd7lc9&raw=1"
         ></app-auth0-feature>
         <app-auth0-feature
           title="Als Künstler*in"

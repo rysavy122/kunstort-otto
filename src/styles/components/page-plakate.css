@@ -120,3 +120,23 @@
   #controlls input{
     border: none;
   }
+
+  .bubble {
+    width: 200px;
+    height: 150px;
+    background-color: #ff0055;
+    position: relative;
+    margin: 50px;
+  }
+
+  .bubble::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: #ff0055;
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    clip-path: polygon(0 0, 100% 0%, 50% 100%);
+    transform: translateY(100%);
+  }
