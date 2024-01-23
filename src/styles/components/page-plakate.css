@@ -4,7 +4,7 @@
   border: 0.1rem solid var(--black);
   color: var(--white);
   background-color: var(--otto-primary);
-  width: 50%;
+  width: fit-content;
   font-size: 1.6rem;
 
   margin-right: 1.6rem;
@@ -29,16 +29,14 @@
   user-select: none;
 
   transition: background 0.3s ease-out, color 0.3s ease-out;
-
-  /* responsive */
-
+  
   min-width: 10rem;
   padding: 1.6rem 1.6rem;
 
   font-size: 1.6rem;
-  line-height: 2.2rem;
-    margin: auto;
-    margin-left: 30px;    
+  line-height: 2rem;
+  margin: auto;
+  margin-left: -10px;  
   }
   
   #svg-container {
