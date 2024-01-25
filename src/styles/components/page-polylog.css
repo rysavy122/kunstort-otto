@@ -6,37 +6,37 @@
     background-color: var(--otto-primary);
     width: fit-content;
     font-size: 1.6rem;
-  
+
     margin-right: 1.6rem;
-  
+
     font-style: normal;
     font-weight: 500;
     line-height: 3.2rem;
     padding: 0.8rem 0;
     border-radius: 0.8rem;
     text-align: center;
-  
+
     cursor: pointer;
     user-select: none;
     border: 0;
     border-radius: 0.8rem;
-  
+
     font-family: var(--font-primary);
     font-weight: 600;
     color: var(--white);
-  
+
     cursor: pointer;
     user-select: none;
-  
+
     transition: background 0.3s ease-out, color 0.3s ease-out;
-    
+
     min-width: 10rem;
     padding: 1.6rem 1.6rem;
-  
+
     font-size: 1.6rem;
     line-height: 2rem;
     margin: auto;
-    margin-left: -10px; 
+    margin-left: -10px;
 
   }
   #button-div{
@@ -48,7 +48,7 @@
     text-align: center;
     margin:50px 25px 10px 25px;
     font-weight: bold;
-    
+
   }
   #forschungsfrage {
     color: var(--otto-primary);
@@ -95,7 +95,6 @@
   }
   .commentar {
     color: black;
-    border:5px solid black;
     margin: 5px;
     width: 250px;
     height:230px;
@@ -104,21 +103,19 @@
     overflow: scroll;
   }
   .replies{
-    border: 2px solid var(--otto-primary);
-    color: black;
+    clip-path: polygon( 100% 10.00%, 95.00% 78.40%, 99.60% 100%, 78.60% 79.20%, 13.00% 76.80%, 11.00% 11.60% );
+    background-color: #ff0055;
+    color: white;
     margin: 5px;
     width: 200px;
     height:200px;
-    background-color: black;
-    color: white;
-    border-radius: 50%;
     overflow: scroll;
 
   }
   svg{
     cursor: pointer;
   }
-  
+
   .menu{
     position: absolute;
     bottom:35px;
@@ -141,11 +138,12 @@
       position: relative;
       bottom:40px;
       border-radius: 8px;
+      clip-path: polygon( 100% 10.00%, 95.00% 78.40%, 99.60% 100%, 78.60% 79.20%, 13.00% 76.80%, 11.00% 11.60% );
       right:15px;
       background-color: #ffffffad;
       border: 1px solid #ddd;
-      border-radius: 8px;
       padding: 10px;
+      height:110px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       opacity: 0;
       transform: scale(0.95);
@@ -157,7 +155,7 @@
     opacity: 1;
     transform: scale(1);
   }
-  
+
   .menu.show, .reply-menu.show {
     opacity: 1;
     transform: scale(1);
@@ -171,11 +169,11 @@
     width: 100%;
     margin: 0 auto;
   }
-  
+
   .menu button:hover, .reply-menu button:hover {
     color: rgba(0, 0, 0, 0.649);
   }
-  
+
   .menu button:not(:last-child),  .reply-menu button:not(:last-child) {
     margin-bottom: 3px; /* Reduces space between buttons */
   }

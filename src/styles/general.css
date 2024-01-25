@@ -146,6 +146,29 @@ code {
   height: 100%;
   width: 100%;
 }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Style for the loader/spinner */
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);  /* Light grey border */
+  border-top: 4px solid var(--otto-primary);  /* Blue color for the top border */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+/* Center the spinner */
+.loading-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -20px; /* Half the width */
+  margin-top: -20px; /* Half the height */
+}
 
 @media only screen and (max-width: 640px) {
   .mobile-scroll-lock {

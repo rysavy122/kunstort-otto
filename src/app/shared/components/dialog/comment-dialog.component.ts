@@ -12,12 +12,12 @@ import { KommentarService } from 'src/app/core/services/kommentar.service';
                     <h2>Teile deine Meinung mit uns.</h2>
                     <h6>Verfasse ein Kommentar und nehme an der Diskussion teil.</h6>
                     <!--<input type="text" [(ngModel)]="commentTitle" placeholder="Titel">-->
-                    <app-tiny-mce (editorContent)="handleEditorContent($event)"></app-tiny-mce>
+                  <app-tiny-mce (editorContent)="handleEditorContent($event)"></app-tiny-mce>
                     <button class="submit-button" (click)="handleSubmit()">Bestätigen</button>
                     <button class="close-button" (click)="closeDialog()">Zurück</button>
                 </div>
             </div>
-        </div> 
+        </div>
     `,
 })
 export class CommentDialogComponent {
@@ -30,10 +30,10 @@ export class CommentDialogComponent {
     editorContent: string = '';
     commentTitle?: string;
 
-  constructor(private kommentarService: KommentarService) { }
+    constructor(private kommentarService: KommentarService) { }
 
 
-handleSubmit() {
+    handleSubmit() {
         if (!this.editorContent.trim() || this.commentTitle?.trim()) return;
 
         const newComment: KommentarModel = {
@@ -54,12 +54,12 @@ handleSubmit() {
         console.log("Test")
     }
 
-  
-  handleEditorContent(content: string) {
-    this.editorContent = content;
-}
+
+    handleEditorContent(content: string) {
+        this.editorContent = content;
+    }
     closeDialog() {
         this.close.emit();
-      }
+    }
 
 }
