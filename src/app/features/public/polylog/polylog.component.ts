@@ -7,6 +7,7 @@ import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
+import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 
 gsap.registerPlugin(Draggable);
 
@@ -17,6 +18,7 @@ gsap.registerPlugin(Draggable);
 })
 export class PolylogComponent implements OnInit, AfterViewInit {
   forschungsfrage?: string = '';
+  freezePolylog: boolean = false;
   isMenuOpen: boolean = false;
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
@@ -29,7 +31,9 @@ export class PolylogComponent implements OnInit, AfterViewInit {
 
 
 
-  constructor(private forschungsfrageService: ForschungsFrageService,
+  constructor(
+    private forschungsfrageService: ForschungsFrageService,
+    private freezePolylogService: FreezePolylogService,
     private sanitizer: DomSanitizer,
     private kommentarService: KommentarService) { }
 
@@ -40,6 +44,9 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     this.fetchLatestForschungsfrage();
     this.listenForNewForschungsfrage();
     this.loadKommentare();
+    this.freezePolylogService.getFreezeState().subscribe((state)=>{
+      this.freezePolylog = state;
+    })
   }
 
   ngAfterViewInit(): void {
@@ -103,9 +110,9 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   }
   /* onCommentSubmitted(newKommentar: KommentarModel): void {
     if (!newKommentar) return;
-  
+
     const kommentarWithPosition = this.assignRandomPosition(newKommentar);
-  
+
     if (newKommentar.parentKommentarId == null) {
       // Adding a top-level comment
       this.kommentare.push(this.assignRandomPosition(newKommentar));
@@ -113,22 +120,22 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       // Adding a reply, possibly nested
       this.addReplyToKommentar(this.kommentare, newKommentar);
     }
-  
+
     this.loadKommentare();
   } */
   onCommentSubmitted(newKommentar: KommentarModel): void {
     if (!newKommentar) return;
-  
+
     const kommentarWithPosition = this.assignRandomPosition(newKommentar);
-  
+
     if (newKommentar.parentKommentarId == null) {
       this.kommentare.push(kommentarWithPosition);
     } else {
       const parentIndex = this.kommentare.findIndex(k => k.id === newKommentar.parentKommentarId);
-  
+
       if (parentIndex !== -1) {
         const parentKommentar = this.kommentare[parentIndex];
-  
+
         if (parentKommentar) {
           if (!parentKommentar.replies) {
             parentKommentar.replies = [];
@@ -137,7 +144,7 @@ export class PolylogComponent implements OnInit, AfterViewInit {
         }
       }
     }
-  
+
     this.loadKommentare();
   }
   addReplyToKommentar(kommentare: KommentarDisplayModel[], reply: KommentarModel) {
@@ -151,7 +158,7 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  
+
   loadKommentare(): void {
     this.kommentarService.getAllKommentare().subscribe(kommentare => {
       this.kommentare = kommentare.map((k: KommentarModel) => this.assignRandomPosition(k));
@@ -174,12 +181,12 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  
+
   trackById(index: number, item: KommentarModel): number {
     return item.id!; // assuming `id` is a unique identifier for each comment
   }
-  
-  
+
+
 
   // Positioning the Comments
 
@@ -192,16 +199,16 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
     const x = Math.floor(Math.random() * window.innerWidth -250);
     const y = Math.floor(Math.random() * window.innerHeight -1050);
-  
+
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
 
-  
+
     return {
       ...comment,
       style: {
         transform: transformStyle,
-        backgroundColor: this.generateRandomColor(), 
-        color: '#000000' 
+        backgroundColor: this.generateRandomColor(),
+        color: '#000000'
       }
     };
   }
@@ -219,14 +226,6 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   }
    */
 
-
-
-
-
-
-
-
-
   //Random Colours
   generateRandomColor(): string {
     let color = '#';
@@ -236,13 +235,13 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     }
 
     if (this.isColorUnacceptable(color)) {
-      return this.generateRandomColor(); 
+      return this.generateRandomColor();
     }
     return color;
   }
   isColorUnacceptable(color: string): boolean {
-    const unacceptableColors = ['#000000', '#ffffff', '#e21c52']; 
-    const colorDistanceThreshold = 150; 
+    const unacceptableColors = ['#000000', '#ffffff', '#e21c52'];
+    const colorDistanceThreshold = 150;
 
     for (let unacceptable of unacceptableColors) {
       if (this.getColorDistance(color, unacceptable) < colorDistanceThreshold) {

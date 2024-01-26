@@ -1,9 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, Output, Input } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ForschungsFrageService } from '@app/core';
 import { map } from 'rxjs/operators';
 import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/dialog/confirm-dialog.component';
+import { ConfirmationFreezeDialogComponent } from 'src/app/shared/components/dialog/confirm-freeze-dialog.component';
+import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,24 +18,33 @@ export class ProfileComponent {
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
   isDialogOpen: boolean = false;
+  isFreezeDialogOpen: boolean = false;
+  freezePolylog: boolean = false;
+
+
     // Pagination properties
     currentPage: number = 1;
     itemsPerPage: number = 15;
     totalItems: number = 0;
-  
+
     // Expanded/Collapsed state
     isExpanded: boolean = false;
   @ViewChild('confirmDialog') confirmDialog!: ConfirmationDialogComponent;
+  @ViewChild('confirmFreezeDialog') confirmFreezeDialog!: ConfirmationFreezeDialogComponent;
+
 
   constructor(
     private auth: AuthService,
     private forschungsfrageService: ForschungsFrageService,
+    private freezePolylogService: FreezePolylogService
   ) {}
 
   ngOnInit() {
     this.subscribeToForschungsfragen();
     this.fetchAllForschungsfragen();
-
+    this.freezePolylogService.getFreezeState().subscribe((state) => {
+      this.freezePolylog = state;
+    });
   }
   toggleForschungsfragen() {
     this.isExpanded = !this.isExpanded;
@@ -80,17 +91,27 @@ export class ProfileComponent {
       });
   }
 
-  handleFreeze() {
-    // Implementation of handleFreeze
-  }
-
   openDialog() {
     this.confirmDialog.forschungsfrage = this.forschungsfrage;
     this.isDialogOpen = true;
   }
+  openFreezeDialog() {
+    this.isFreezeDialogOpen = true;
+  }
+
+  unfreezePolylog() {
+    this.freezePolylogService.setFreezeState(false);
+    if(this.freezePolylog){
+      this.openFreezeDialog();
+    }
+    else {
+      this.openFreezeDialog();
+    }
+  }
 
   closeDialog(success: boolean) {
     this.isDialogOpen = false;
+    this.isFreezeDialogOpen = false;
     if (success) {
       this.forschungsfrage = ''; // Clear the input field on successful submission
     }

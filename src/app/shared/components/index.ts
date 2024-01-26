@@ -9,6 +9,7 @@ import { PageLayoutComponent } from "./page-layout.component";
 import { PageLoaderComponent } from "./page-loader.component";
 import { ToastComponent } from "./toast/toast.component";
 import { ConfirmationDialogComponent } from "./dialog/confirm-dialog.component";
+import { ConfirmationFreezeDialogComponent } from "./dialog/confirm-freeze-dialog.component";
 import { CommentDialogComponent } from "./dialog/comment-dialog.component";
 import { TinyMceComponent } from "./editor/tiny-mce.component";
 import { CommentComponent } from "src/app/features/public/polylog/comment/comment.component";
@@ -20,6 +21,7 @@ export const COMPONENTS = [
     Auth0FeaturesComponent,
     ToastComponent,
     ConfirmationDialogComponent,
+    ConfirmationFreezeDialogComponent,
     CommentDialogComponent,
     CommentComponent,
     TinyMceComponent,

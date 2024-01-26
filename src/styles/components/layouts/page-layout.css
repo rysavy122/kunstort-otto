@@ -4,6 +4,8 @@
   align-items: center;
   width: 100%;
   color: black;
+  overflow-x: hidden;
+
 }
 
 .page-layout__content {
@@ -72,8 +74,8 @@
 }
 
 .slide4 {
-  background-image: url('../../../assets/img/photo4.jpg');
-  animation: initial-slide 2s infinite 6s;
+/*   background-image: url('../../../assets/img/photo4.jpg');
+ */  animation: initial-slide 2s infinite 6s;
 }
 
 .controls {

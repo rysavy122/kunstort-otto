@@ -126,8 +126,28 @@
     height: 330px;
     background-color: #ff0055;
     clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
-    position: relative;
-    margin: 50px;
+    clip-path: polygon( 77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20% );
+    position: absolute;
+    right: 45px;
+    bottom:50px;
+    h1{
+      margin: 55px;
+      margin-top: 65px;
+      margin-bottom: 20px;
+    }
+    p{
+      color: white;
+      margin: 55px;
+      margin-right:10px;
+      margin-top: -10px;
+      font-size: 1.4rem;
+      width: 250px;
+      position: absolute;
+      left:0px;
+      height: fit-content;
+      padding:10px;
+      line-height: 1.8rem;
+    }
   }
 
   .bubble::after {

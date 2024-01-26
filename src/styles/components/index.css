@@ -2,7 +2,7 @@
 @import "button.css";
 @import "code-snippet.css";
 @import "page-footer.css";
-@import "page-plakate.css";
+@import "page-plakate.scss";
 @import "page-polylog.css";
 @import "home.css";
 @import "page-loader.css";

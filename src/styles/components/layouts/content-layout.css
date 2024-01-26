@@ -6,6 +6,8 @@
 
   width: 100%;
   min-height: 640px;
+  overflow-x: hidden;
+
 
   /* responsive */
 

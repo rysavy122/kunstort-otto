@@ -45,8 +45,6 @@
   justify-content: center;
   align-items: center;
   margin-top: 20%;
-  width: 100%;
-
 
   /* responsive */
 
@@ -90,24 +88,19 @@
   line-height: 3.2rem;
 }
 
-@media only screen and (max-width: 570px) {
+@media only screen and (max-width: 670px) {
   .hero-banner {
-    padding: 3.2rem 3.6rem;
-    margin:0px;
-    margin-top: 20px;
-    width:100%;
-    margin: 50px auto;
-    margin-top: 10px;
+    width:105%;
     padding: 3.2rem 6.4rem;
+    margin-top: -10px;
     overflow-x: hidden;
-
   }
 
   .hero-banner__logo {
     width: 9.6rem;
     height: 9.6rem;
     margin:20px 0px;
-    margin-top: 40%;
+    margin-top: 200px;
 
   }
 
@@ -115,6 +108,7 @@
     width: 25.2rem;
     height: 15.2rem;
     margin-right: -100%;
+
   }
 
   .hero-banner__image--small {
@@ -130,7 +124,9 @@
     font-size: 1.6rem;
     line-height: 2.4rem;
   }
+
 }
+
 
 #pictures img{
   margin: 0;

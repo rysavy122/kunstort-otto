@@ -1,6 +1,6 @@
 <!-- polylog.component.html -->
 <div id="wrapper">
-  <div id="button-div">
+  <div id="button-div" *ngIf="!freezePolylog" >
     <button (click)="openDialog()" class="comment-button">Kommentieren</button>
   </div>
   <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>

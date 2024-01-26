@@ -43,10 +43,10 @@
         [disabled]="!frageForm.valid"
         class="submit-button"
       >
-        Neue Diskussion starten
+        Neue Forschungsfrage stellen
       </button>
-      <button (click)="handleFreeze()" class="submit-button">
-        Freeze Polylog
+      <button (click)="openFreezeDialog()" class="submit-button">
+        {{ freezePolylog ? 'Polylog auftauen' : 'Polylog einfrieren' }}
       </button>
       </form>
       <h1>Übersicht Forschungsfragen</h1>
@@ -54,13 +54,13 @@
         Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
         die in der Datenbank gespeichert sind.
       </p>
-      <svg 
+      <svg
       (click)="toggleForschungsfragen()"
-      xmlns="http://www.w3.org/2000/svg" 
-      width="16" 
-      height="16" 
-      fill="currentColor" 
-      class="bi bi-chevron-down" 
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      class="bi bi-chevron-down"
       viewBox="0 0 16 16"
       [class.rotated]="isExpanded">
         <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
@@ -77,11 +77,13 @@
     </div>
     <!-- Pagination Controls -->
 <div class="pagination-controls">
-  <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+  <button class="controlls-button" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Zurück</button>
   <span>Page {{ currentPage }} of {{ totalPages }}</span>
-  <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+  <button class="controlls-button" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
 </div>
   </div>
 
-  <app-confirm-dialog #confirmDialog [isOpen]="isDialogOpen" (close)="closeDialog($event)" ></app-confirm-dialog>
+  <app-confirm-dialog #confirmDialog [isOpen]="isDialogOpen" (close)="closeDialog($event)"  ></app-confirm-dialog>
+  <app-confirm-freeze-dialog #confirmFreezeDialog [isOpen]="isFreezeDialogOpen" (close)="closeDialog($event)" ></app-confirm-freeze-dialog>
+
 </app-page-layout>

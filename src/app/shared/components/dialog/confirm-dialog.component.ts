@@ -6,15 +6,14 @@ import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model
 @Component({
   selector: 'app-confirm-dialog',
   template: `
-  <div id="modal-container" *ngIf="isOpen">
+  <div class="modal-container" *ngIf="isOpen">
   <div class="modal-backdrop">
   <div class="modal">
-    <h2>Starte eine Neue Diskussion.</h2>
-    <h6>Willst du wirklich eine Neue Diskussion starten ?<br/>
-     Die aktuelle Diskussion mit allen Kommentaren wird dann gelöscht.
+    <h2>Stelle eine neue Forschungsfrage.</h2>
+     <h6>Die aktuelle Diskussion mit allen Kommentaren wird dann gelöscht.<br/>
     <br/>
-    <br/>
-    <span>Achtung ! Dies kann nicht rückgängig gemacht werden !</span>
+    <span>Achtung ! Diese Aktion kann nicht rückgängig gemacht werden !</span><br/><br/>
+    Neue Forschungsfrage stellen ?
     </h6>
     <button class="submit-button" (click)="handleSubmit()">Bestätigen</button>
     <button class="close-button" (click)="closeDialog()">Zurück</button>
@@ -39,7 +38,7 @@ export class ConfirmationDialogComponent {
     if (!this.forschungsfrage.trim()) {
       return;
     }
-  
+
     this.forschungsfrageService.createForschungsfrage(this.forschungsfrage)
       .subscribe({
         next: (response) => {
