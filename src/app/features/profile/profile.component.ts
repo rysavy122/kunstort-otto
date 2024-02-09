@@ -14,12 +14,13 @@ import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.servi
 export class ProfileComponent {
   forschungsfrage: string = '';
   forschungsfragen: ForschungsfragenModel[] = [];
+  selectedFile: File | null = null;
   title = 'Decoded ID Token';
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
   isDialogOpen: boolean = false;
   isFreezeDialogOpen: boolean = false;
-  freezePolylog: boolean = false;
+  VKb2xiYiQ2: boolean = false;
 
 
     // Pagination properties
@@ -43,7 +44,7 @@ export class ProfileComponent {
     this.subscribeToForschungsfragen();
     this.fetchAllForschungsfragen();
     this.freezePolylogService.getFreezeState().subscribe((state) => {
-      this.freezePolylog = state;
+      this.VKb2xiYiQ2 = state;
     });
   }
   toggleForschungsfragen() {
@@ -53,12 +54,26 @@ export class ProfileComponent {
     return Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
+  fetchAllForschungsfragen() {
+    this.forschungsfrageService.getAllForschungsfragen().subscribe();
+  }
+
   changePage(page: number) {
     this.currentPage = page;
   }
   get paginatedForschungsfragen() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.forschungsfragen.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.match('image.*')) {
+        alert('Please select an image file.');
+        return;
+      }
+      this.selectedFile = file;
+    }
   }
 
   subscribeToForschungsfragen() {
@@ -71,18 +86,18 @@ export class ProfileComponent {
     );
   }
 
-  fetchAllForschungsfragen() {
-    this.forschungsfrageService.getAllForschungsfragen().subscribe();
-  }
 
   handleSubmit() {
     if (!this.forschungsfrage.trim()) return;
 
-    this.forschungsfrageService.createForschungsfrage(this.forschungsfrage)
+    // Assuming 'selectedFile' is the state holding the selected image file
+    this.forschungsfrageService.createForschungsfrage(this.forschungsfrage, this.selectedFile)
       .subscribe({
         next: (response) => {
           console.log('Forschungsfrage saved:', response);
           this.closeDialog(true); // Emit true on successful submission
+          // Optionally reset the selected file
+          this.selectedFile = null;
         },
         error: (error) => {
           console.error('Error saving Forschungsfrage:', error);
@@ -91,24 +106,18 @@ export class ProfileComponent {
       });
   }
 
-  openDialog() {
-    this.confirmDialog.forschungsfrage = this.forschungsfrage;
-    this.isDialogOpen = true;
-  }
-  openFreezeDialog() {
-    this.isFreezeDialogOpen = true;
-  }
-
-  unfreezePolylog() {
-    this.freezePolylogService.setFreezeState(false);
-    if(this.freezePolylog){
-      this.openFreezeDialog();
-    }
-    else {
-      this.openFreezeDialog();
+  openConfirmDialog() {
+    if (this.selectedFile) {
+      this.confirmDialog.imageFile = this.selectedFile;
+      this.confirmDialog.forschungsfrage = this.forschungsfrage;
+      this.confirmDialog.isOpen = true;
+    } else {
+      // Handle the case where no file is selected
+      // You may want to alert the user or handle this scenario differently
+      console.log("No File Selected")
+      alert("Kein Logo ausgewählt")
     }
   }
-
   closeDialog(success: boolean) {
     this.isDialogOpen = false;
     this.isFreezeDialogOpen = false;
@@ -116,4 +125,22 @@ export class ProfileComponent {
       this.forschungsfrage = ''; // Clear the input field on successful submission
     }
   }
+
+
+
+  openFreezeDialog() {
+    this.isFreezeDialogOpen = true;
+  }
+
+  unfreezePolylog() {
+    this.freezePolylogService.setFreezeState(false);
+    if(this.VKb2xiYiQ2){
+      this.openFreezeDialog();
+    }
+    else {
+      this.openFreezeDialog();
+    }
+  }
+
+
 }

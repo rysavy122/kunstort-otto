@@ -40,3 +40,8 @@ input.ng-invalid.ng-touched {
   line-height: 1.4rem;
 
 }
+h3 span{
+  color: var(--otto-primary);
+  font-weight: 200;
+
+}

@@ -13,13 +13,19 @@ export class ForschungsFrageService {
 
   constructor(private http: HttpClient) {}
 
-  createForschungsfrage(forschungsfrage: string): Observable<any> {
-    return this.http.post(this.apiUrl, { title: forschungsfrage }).pipe(
+  createForschungsfrage(forschungsfrage: string, imageFile: File | null): Observable<any> {
+    const formData = new FormData();
+    formData.append('title', forschungsfrage);
+    if (imageFile) {
+        formData.append('image', imageFile, imageFile.name);
+    }
+
+    return this.http.post<any>(this.apiUrl, formData).pipe(
       tap((newFrage) => {
         this.forschungsfragenSource.next([...this.forschungsfragenSource.value, newFrage]);
       })
     );
-  }
+}
 
   getAllForschungsfragen(): Observable<any> {
     return this.http.get<any[]>(this.apiUrl).pipe(

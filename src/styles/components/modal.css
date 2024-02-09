@@ -21,3 +21,10 @@
     margin: 2%;
     max-width:600px;
   }
+  h6{
+    line-height: 1.8rem;
+  }
+  h6 span{
+    font-size: 2.2rem;
+    margin-top: 10px;
+  }

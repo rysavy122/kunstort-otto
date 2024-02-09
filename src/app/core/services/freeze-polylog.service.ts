@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class FreezePolylogService {
-  private readonly freezeKey = 'freezePolylog';
+  private readonly freezeKey = 'VKb2xiYiQ2';
   private freezeState = new BehaviorSubject<boolean>(this.getInitialState());
 
   constructor() {}

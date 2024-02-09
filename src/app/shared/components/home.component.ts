@@ -4,10 +4,8 @@ import { Component } from '@angular/core';
   selector: 'app-hero-banner',
   template: `
     <div class="hero-banner hero-banner--aqua-emerald">
-      <div class="hero-banner__logo">
-        <img class="hero-banner__image" [src]="logo" alt="Angular logo" />
-      </div>
-      <h1 class="hero-banner__headline">Kunstort Otto - Gemeinsam forschen</h1>
+      <div class="hero-banner__logo"></div>
+      <h1 class="hero-banner__headline">Gemeinsam forschen</h1>
       <p class="hero-banner__description">
 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, numquam. <strong>Otto</strong>.
       </p>
@@ -20,8 +18,7 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, numquam. <st
       >
         Hier geht es direkt zum Blog →
       </a>
-      <div id="pictures">
-    </div>
+      <div id="pictures"></div>
     </div>
 
 

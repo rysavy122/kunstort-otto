@@ -59,6 +59,8 @@
     background-color: var(--otto-primary);
     border: none;
     border-radius: 5px;
+    width:fit-content;
+    height:fit-content;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }

@@ -38,17 +38,22 @@
           #forschungsfrageInput="ngModel"
         /><br />
 
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+        <br/>
+
         <button
-        (click)="openDialog()"
+        (click)="openConfirmDialog()"
         [disabled]="!frageForm.valid"
         class="submit-button"
       >
         Neue Forschungsfrage stellen
       </button>
       <button (click)="openFreezeDialog()" class="submit-button">
-        {{ freezePolylog ? 'Polylog auftauen' : 'Polylog einfrieren' }}
+        {{ VKb2xiYiQ2 ? 'Polylog auftauen' : 'Polylog einfrieren' }}
       </button>
+      <br/>
       </form>
+      <h3>Polylog Status: <span>{{ VKb2xiYiQ2 ? 'Inaktiv' : 'Aktiv' }}</span></h3>
       <h1>Übersicht Forschungsfragen</h1>
       <p>
         Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
