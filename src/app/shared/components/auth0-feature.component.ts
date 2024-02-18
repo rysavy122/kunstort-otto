@@ -15,8 +15,8 @@ import { Component, Input } from '@angular/core';
           [src]="icon"
           alt="external link icon"
         />
-        {{ title }}
       </h3>
+      <h2>{{ title }}</h2>
       <p class="auth0-feature__description">{{ description }}</p>
     </a>
   `,

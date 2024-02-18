@@ -16,7 +16,7 @@
             </div>
           </div>
         </ng-container>
-        <br/>
+        <br />
         <span>
           Mit dem <strong>ID Token</strong> kann man sich Benutzer spezifische
           Informationen von Authentifizierten Benutzern holen.
@@ -38,57 +38,92 @@
           #forschungsfrageInput="ngModel"
         /><br />
 
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
-        <br/>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" #fileInput />
+        <br />
 
         <button
-        (click)="openConfirmDialog()"
-        [disabled]="!frageForm.valid"
-        class="submit-button"
-      >
-        Neue Forschungsfrage stellen
-      </button>
-      <button (click)="openFreezeDialog()" class="submit-button">
-        {{ VKb2xiYiQ2 ? 'Polylog auftauen' : 'Polylog einfrieren' }}
-      </button>
-      <br/>
+          (click)="openConfirmDialog()"
+          [disabled]="!frageForm.valid"
+          class="submit-button"
+        >
+          Neue Forschungsfrage stellen
+        </button>
+        <button (click)="openFreezeDialog()" class="submit-button">
+          {{ VKb2xiYiQ2 ? "Polylog auftauen" : "Polylog einfrieren" }}
+        </button>
+        <br />
       </form>
-      <h3>Polylog Status: <span>{{ VKb2xiYiQ2 ? 'Inaktiv' : 'Aktiv' }}</span></h3>
+      <h3>
+        Polylog Status: <span>{{ VKb2xiYiQ2 ? "Inaktiv" : "Aktiv" }}</span>
+      </h3>
       <h1>Übersicht Forschungsfragen</h1>
       <p>
         Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
         die in der Datenbank gespeichert sind.
       </p>
       <svg
-      (click)="toggleForschungsfragen()"
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="currentColor"
-      class="bi bi-chevron-down"
-      viewBox="0 0 16 16"
-      [class.rotated]="isExpanded">
-        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
-    </svg>
-    <div *ngIf="isExpanded">
-      <div *ngIf="forschungsfragen.length">
-        <ul>
-          <li *ngFor="let frage of paginatedForschungsfragen">
-            {{ frage.title }}
-          </li>
-        </ul>
+        (click)="toggleForschungsfragen()"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        class="bi bi-chevron-down"
+        viewBox="0 0 16 16"
+        [class.rotated]="isExpanded"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+        />
+      </svg>
+      <div *ngIf="isExpanded">
+        <div *ngIf="forschungsfragen.length">
+          <ul>
+            <li *ngFor="let frage of paginatedForschungsfragen">
+              {{ frage.title }}
+              <p>
+                Logo: <span *ngIf="!frage.imagePath">Kein Logo ausgewählt.</span>
+                <img
+                  *ngIf="frage.imagePath"
+                  style="height: 50px;"
+                  [src]="frage.imagePath"
+                  alt="Uploaded Image"
+                />
+              </p>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
-    </div>
     <!-- Pagination Controls -->
-<div class="pagination-controls">
-  <button class="controlls-button" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Zurück</button>
-  <span>Page {{ currentPage }} of {{ totalPages }}</span>
-  <button class="controlls-button" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
-</div>
+    <div class="pagination-controls">
+      <button
+        class="controlls-button"
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        Zurück
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        class="controlls-button"
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+      >
+        Next
+      </button>
+    </div>
   </div>
 
-  <app-confirm-dialog #confirmDialog [isOpen]="isDialogOpen" (close)="closeDialog($event)"  ></app-confirm-dialog>
-  <app-confirm-freeze-dialog #confirmFreezeDialog [isOpen]="isFreezeDialogOpen" (close)="closeDialog($event)" ></app-confirm-freeze-dialog>
-
+  <app-confirm-dialog
+    #confirmDialog
+    [isOpen]="isDialogOpen"
+    (close)="closeDialog($event)"
+    (onSuccessfulUpload)="clearFileInput()"
+  ></app-confirm-dialog>
+  <app-confirm-freeze-dialog
+    #confirmFreezeDialog
+    [isOpen]="isFreezeDialogOpen"
+    (close)="closeDialog($event)"
+  ></app-confirm-freeze-dialog>
 </app-page-layout>

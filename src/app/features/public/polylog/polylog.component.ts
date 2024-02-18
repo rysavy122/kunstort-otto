@@ -18,6 +18,7 @@ gsap.registerPlugin(Draggable);
 })
 export class PolylogComponent implements OnInit, AfterViewInit {
   forschungsfrage?: string = '';
+  imagePath?: string;
   freezePolylog: boolean = false;
   isMenuOpen: boolean = false;
   activeCommentId: number | null = null;
@@ -88,6 +89,8 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     this.forschungsfrageService.getLatestForschungsfrage().subscribe({
       next: (forschungsfrage: ForschungsfragenModel) => {
         this.forschungsfrage = forschungsfrage.title;
+        this.imagePath = forschungsfrage.imagePath; // Add this line
+        this.clearKommentare();
       },
       error: () => {
         this.forschungsfrage = this.errorMessage;
@@ -108,21 +111,9 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   getSafeHtml(content: string | undefined): SafeHtml | string {
     return content ? this.sanitizer.bypassSecurityTrustHtml(content) : '';
   }
-  /* onCommentSubmitted(newKommentar: KommentarModel): void {
-    if (!newKommentar) return;
-
-    const kommentarWithPosition = this.assignRandomPosition(newKommentar);
-
-    if (newKommentar.parentKommentarId == null) {
-      // Adding a top-level comment
-      this.kommentare.push(this.assignRandomPosition(newKommentar));
-    } else {
-      // Adding a reply, possibly nested
-      this.addReplyToKommentar(this.kommentare, newKommentar);
-    }
-
-    this.loadKommentare();
-  } */
+  clearKommentare() {
+    this.kommentare = [];
+  }
   onCommentSubmitted(newKommentar: KommentarModel): void {
     if (!newKommentar) return;
 
@@ -212,19 +203,6 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       }
     };
   }
-
-    /*
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
-
-    this.resizeTimeout = window.setTimeout(() => {
-      this.kommentare = this.kommentare.map((kommentar, index) => this.assignRandomPosition(kommentar, index));
-    }, 100);
-  }
-   */
 
   //Random Colours
   generateRandomColor(): string {

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class ConfirmationFreezeDialogComponent implements OnInit {
 
   constructor(
     private freezePolylogService: FreezePolylogService,
+    private toastr: ToastrService
   ) {}
 
   @Input() isOpen = false;
@@ -43,6 +45,8 @@ export class ConfirmationFreezeDialogComponent implements OnInit {
 
   handleSubmit() {
       this.freezePolylogService.setFreezeState(!this.VKb2xiYiQ2);
+      this.VKb2xiYiQ2? this.toastr.success('Polylog erfolgreich eingefroren!', 'Success') : this.toastr.success('Polylog erfolgreich aufgetaut!', 'Success');
+
       this.closeDialog();
     }
 

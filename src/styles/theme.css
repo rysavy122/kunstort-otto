@@ -1,7 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
 
 /* Theme */
-
+@font-face {
+  font-family: 'Besom-Handwritten';
+  src: url('../assets/fonts/Besom-extended.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Besom-Handwritten';
+  src: url('../assets/fonts/Besom-extended.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Besom';
+  src:
+       url('../assets//fonts/Besom/Besom-free-font.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
 :root {
   --orange: #ff4f40;
   --indigo: #635dff;
@@ -71,7 +89,7 @@
   );
 
   --font-secondary: "Inter", sans-serif;
-  --font-primary: 'Barlow', sans-serif;
+  --font-primary: 'Besom-Handwritten';
   --font-secondary: "Space Grotesk", sans-serif;
   --font-secondary: "Barlow", sans-serif;
 }

@@ -5,9 +5,9 @@ import { Component } from '@angular/core';
   template: `
     <div class="hero-banner hero-banner--aqua-emerald">
       <div class="hero-banner__logo"></div>
-      <h1 class="hero-banner__headline">Gemeinsam forschen</h1>
+      <h1 class="hero-banner__headline">Gemeinsam forschen!</h1>
       <p class="hero-banner__description">
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, numquam. <strong>Otto</strong>.
+          Willkommen auf der interaktiven WebSeite vom <strong style="color: #f2d91a; font-weight: bold;">Kunstort Ottersberg eV</strong>.
       </p>
       <a
         id="code-sample-link"
