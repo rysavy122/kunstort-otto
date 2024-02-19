@@ -14,12 +14,8 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-
-  /* responsive */
-
   height: 80px;
   max-width: 1200px;
-
   padding: 0 24px;
   margin: 0;
 }
@@ -27,20 +23,14 @@
 .nav-bar__brand {
   display: flex;
   align-items: center;
-
   height: 100%;
-
-  /* responsive */
-
   margin-right: 64px;
 }
 
 .nav-bar__link {
   display: flex;
   align-items: center;
-
   height: 100%;
-
 }
 
 .nav-bar__logo {
@@ -59,9 +49,7 @@
   flex-direction: row;
   justify-content: center;
   color: black;
-
   margin-right: 24px;
-
   font-weight: 500;
   font-size: 16px;
   line-height: 16px;
@@ -75,9 +63,6 @@
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-decoration-color: var(--otto-primary);
-
-  /* responsive */
-
   text-decoration-thickness: 4px;
   text-underline-offset: 8px;
 }
@@ -121,7 +106,6 @@
   .nav-bar__brand {
     display: flex;
     align-items: center;
-
     margin-right: 1.6rem;
   }
 

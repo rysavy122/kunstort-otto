@@ -1,11 +1,14 @@
 <div id="wrapper">
   <div id="button-div" *ngIf="!freezePolylog">
     <button (click)="openDialog()" class="comment-button">Kommentieren</button>
+    <button (click)="uploadMedia()" class="comment-button">Upload Media</button>
+    <input style="width: fit-content;" type="file" (change)="onMediaSelected($event)" accept="image/*,video/*,audio/*" />
   </div>
+
   <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>
   <img
   *ngIf="imagePath"
-  style="height: 50px"
+  class="forschungsfrage-logo"
   [src]="imagePath"
   alt="Uploaded Image"
 />
@@ -14,6 +17,24 @@
       *ngTemplateOutlet="commentTemplate; context: { $implicit: kommentar }"
     ></ng-container>
   </ng-container>
+
+<!-- Displaying Uploaded Media -->
+<div *ngFor="let mediaUrl of mediaUrls">
+  <!-- Display image -->
+  <img *ngIf="isImage(mediaUrl)" [src]="mediaUrl" alt="Uploaded Image" />
+
+  <!-- Display video -->
+  <video *ngIf="isVideo(mediaUrl)" controls>
+    <source [src]="mediaUrl" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Display audio -->
+  <audio *ngIf="isAudio(mediaUrl)" controls>
+    <source [src]="mediaUrl" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</div>
 
   <app-comment-dialog
     #commentDialog

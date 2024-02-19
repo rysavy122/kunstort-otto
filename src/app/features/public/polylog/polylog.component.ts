@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ForschungsFrageService } from '@app/core';
 import { KommentarService } from 'src/app/core/services/kommentar.service';
+import { MediaService } from 'src/app/core/services/media.service';
 import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
 import { KommentarModel, KommentarDisplayModel } from 'src/app/core/models/kommentar.model';
 import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
@@ -8,6 +9,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
+import { ToastrService } from 'ngx-toastr';
+
 
 gsap.registerPlugin(Draggable);
 
@@ -18,11 +21,26 @@ gsap.registerPlugin(Draggable);
 })
 export class PolylogComponent implements OnInit, AfterViewInit {
   forschungsfrage?: string = '';
+  selectedMedia: File | null = null;
   imagePath?: string;
   freezePolylog: boolean = false;
   isMenuOpen: boolean = false;
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
+  mediaUrls: string[] = []; // Array to store media URLs
+
+  isImage(url: string): boolean {
+    return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+  }
+
+  isVideo(url: string): boolean {
+    return url.match(/\.(mp4|webm)$/) != null;
+  }
+
+  isAudio(url: string): boolean {
+    return url.match(/\.(mp3|wav)$/) != null;
+  }
+
   private resizeTimeout?: number;
   errorMessage: string = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
@@ -35,7 +53,9 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   constructor(
     private forschungsfrageService: ForschungsFrageService,
     private freezePolylogService: FreezePolylogService,
+    private toastr: ToastrService,
     private sanitizer: DomSanitizer,
+    private mediaService: MediaService,
     private kommentarService: KommentarService) { }
 
 
@@ -65,6 +85,28 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   editKommentar(commentId: number): void {
     // Logic to handle editing a comment
   }
+
+  onMediaSelected(event: any) {
+    this.selectedMedia = event.target.files[0];
+  }
+  uploadMedia() {
+    if (!this.selectedMedia) {
+      this.toastr.warning('Please select a file to upload.');
+      return;
+    }
+
+    this.mediaService.uploadMedia(this.selectedMedia).subscribe({
+      next: (response) => {
+        this.toastr.success('Media uploaded successfully!');
+        this.mediaUrls.push(response.url);  // Assuming 'url' is the key in the response
+      },
+      error: (error) => {
+        this.toastr.error('Error uploading media.');
+        console.error('Error uploading media:', error);
+      }
+    });
+  }
+
 
   openDialog(parentId?: number) {
     this.isDialogOpen = true;

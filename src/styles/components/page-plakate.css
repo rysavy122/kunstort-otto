@@ -1,39 +1,25 @@
 .page-plakate__button {
   min-width: 8.4rem;
-
   border: 0.1rem solid var(--black);
-  color: var(--white);
   background-color: var(--otto-primary);
   width: fit-content;
   font-size: 1.6rem;
-
   margin-right: 1.6rem;
-
   font-style: normal;
-  font-weight: 500;
-  line-height: 3.2rem;
   padding: 0.8rem 0;
   border-radius: 0.8rem;
   text-align: center;
-
-  cursor: pointer;
   user-select: none;
   border: 0;
   border-radius: 0.8rem;
-
   font-family: var(--font-secondary);
   font-weight: 600;
   color: var(--white);
-
   cursor: pointer;
   user-select: none;
-
   transition: background 0.3s ease-out, color 0.3s ease-out;
-
   min-width: 10rem;
   padding: 1.6rem 1.6rem;
-
-  font-size: 1.6rem;
   line-height: 2rem;
   margin: auto;
   margin-left: -10px;
@@ -138,11 +124,9 @@
     margin: 55px;
     margin-top: 65px;
     margin-bottom: 20px;
-
   }
 
   .bubble p {
-
     color: white;
     margin: 55px;
     margin-right:10px;
@@ -154,7 +138,6 @@
     height: fit-content;
     padding:10px;
     line-height: 1.8rem;
-
   }
 
   .bubble::after {

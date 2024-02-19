@@ -53,6 +53,7 @@
   #forschungsfrage {
     color: var(--otto-primary);
     font-size: 8rem;
+    font-family: var(--font-secondary);
     width: fit-content;
     line-height: 70px;
     text-align: center;
@@ -208,4 +209,12 @@
     right: 20px;
     clip-path: polygon(0 0, 100% 0%, 50% 100%);
     transform: translateY(100%);
+  }
+
+  .forschungsfrage-logo{
+    height:100px;
+    width:100px;
+    position: absolute;
+    top:25vh;
+    right:25vw;
   }
