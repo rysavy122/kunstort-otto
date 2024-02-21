@@ -1,8 +1,14 @@
 <div id="wrapper">
   <div id="button-div" *ngIf="!freezePolylog">
     <button (click)="openDialog()" class="comment-button">Kommentieren</button>
-    <button (click)="uploadMedia()" class="comment-button">Upload Media</button>
-    <input style="width: fit-content;" type="file" (change)="onMediaSelected($event)" accept="image/*,video/*,audio/*" />
+    <input style="display: none;" type="file" (change)="onMediaSelected($event)" accept="image/*,video/*,audio/*" #fileInput>
+
+    <button *ngIf="!selectedMedia" class="comment-button" (click)="fileInput.click()">
+      <i class="fa fa-cloud-upload"></i> Custom Upload
+    </button>
+
+    <button *ngIf="selectedMedia" (click)="uploadMedia()" class="comment-button">Upload: {{ selectedMedia?.name }}</button>
+    <button *ngIf="selectedMedia" (click)="cancelUpload()" class="comment-button">Cancel</button>
   </div>
 
   <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>

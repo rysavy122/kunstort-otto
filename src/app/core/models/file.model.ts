@@ -5,4 +5,7 @@ export interface FileModel {
   fileSize: number;
   uploadDate?: Date;
   blobStorageUri?: string;
+  forschungsfrageId?: number;
+  isDeleted?: boolean;
+
 }

@@ -1,220 +1,253 @@
 .page-polylog__button {
-    min-width: 8.4rem;
+  min-width: 8.4rem;
+  border: 0.1rem solid var(--black);
+  color: var(--white);
+  background-color: var(--otto-primary);
+  width: fit-content;
+  font-size: 1.6rem;
+  margin-right: 1.6rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 3.2rem;
+  padding: 0.8rem 0;
+  border-radius: 0.8rem;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  border: 0;
+  border-radius: 0.8rem;
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  color: var(--white);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease-out, color 0.3s ease-out;
+  min-width: 10rem;
+  padding: 1.6rem 1.6rem;
+  font-size: 1.6rem;
+  line-height: 2rem;
+  margin: auto;
+  margin-left: -10px;
+}
+#button-div {
+  position: fixed;
+  z-index: 9000;
+}
+h4 {
+  color: var(--otto-primary);
+  text-align: center;
+  margin: 50px 25px 10px 25px;
+  font-weight: bold;
+}
+#forschungsfrage {
+  color: var(--otto-primary);
+  font-size: 8rem;
+  font-family: var(--font-secondary);
+  width: fit-content;
+  line-height: 70px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 100;
+  position: fixed;
+  left: 50%;
+  top: 40vh;
+  transform: translateX(-50%);
+  padding: 18px 8px;
+  border-radius: 0.8rem;
+}
+.commentar p,
+.replies p {
+  margin: auto;
+  width: fit-content;
+  padding: 5px;
+}
+.replies p {
+  height: fit-content;
+  width: fit-content;
+  margin: auto;
+}
+input[type="file"] {
+  display: none;
+}
 
-    border: 0.1rem solid var(--black);
-    color: var(--white);
-    background-color: var(--otto-primary);
-    width: fit-content;
-    font-size: 1.6rem;
 
-    margin-right: 1.6rem;
+#kommentar-container {
+  position: absolute;
+  height: 100vh;
+  top: 0;
+  width: 100vw;
+  border: 1px solid red;
+  margin: 2px;
+}
+.icons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 50px;
+}
+.commentar {
+  color: black;
+  margin: 5px;
+  width: 250px;
+  height: 230px;
+  clip-path: polygon(
+    16.4% 0%,
+    84.8% 4%,
+    100% 5.4%,
+    97.2% 80.4%,
+    30.6% 79.6%,
+    10% 100%,
+    17.4% 76.2%,
+    20% 66.2%
+  );
+  z-index: 200;
+  overflow: scroll;
+}
+.replies {
+  clip-path: polygon(
+    100% 10%,
+    95% 78.4%,
+    99.6% 100%,
+    78.6% 79.2%,
+    13% 76.8%,
+    11% 11.6%
+  );
+  background-color: #ff0055;
+  color: white;
+  margin: 5px;
+  width: 200px;
+  height: 200px;
+  overflow: scroll;
+}
+svg {
+  cursor: pointer;
+}
 
-    font-style: normal;
-    font-weight: 500;
-    line-height: 3.2rem;
-    padding: 0.8rem 0;
-    border-radius: 0.8rem;
-    text-align: center;
+.menu {
+  position: absolute;
+  bottom: 35px;
+  border-radius: 8px;
+  right: 35px;
+  background-color: #ffffffad;
+  border: 1px solid #ddd;
+  clip-path: polygon(
+    16.4% 0%,
+    84.8% 4%,
+    100% 5.4%,
+    97.2% 80.4%,
+    30.6% 79.6%,
+    10% 100%,
+    17.4% 76.2%,
+    20% 66.2%
+  );
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  text-align: center;
+  margin-bottom: 70px;
+  height: 110px;
+}
+.reply-menu {
+  position: relative;
+  bottom: 40px;
+  border-radius: 8px;
+  clip-path: polygon(
+    100% 10%,
+    95% 78.4%,
+    99.6% 100%,
+    78.6% 79.2%,
+    13% 76.8%,
+    11% 11.6%
+  );
+  right: 15px;
+  background-color: #ffffffad;
+  border: 1px solid #ddd;
+  padding: 10px;
+  height: 110px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  text-align: center;
+}
 
-    cursor: pointer;
-    user-select: none;
-    border: 0;
-    border-radius: 0.8rem;
+.menu.show {
+  opacity: 1;
+  transform: scale(1);
+}
 
-    font-family: var(--font-secondary);
-    font-weight: 600;
-    color: var(--white);
+.menu.show,
+.reply-menu.show {
+  opacity: 1;
+  transform: scale(1);
+}
+.menu button,
+.reply-menu button {
+  display: block;
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+}
 
-    cursor: pointer;
-    user-select: none;
+.menu button:hover,
+.reply-menu button:hover {
+  color: rgba(0, 0, 0, 0.649);
+}
 
-    transition: background 0.3s ease-out, color 0.3s ease-out;
+.menu button:not(:last-child),
+.reply-menu button:not(:last-child) {
+  margin-bottom: 3px; /* Reduces space between buttons */
+}
 
-    min-width: 10rem;
-    padding: 1.6rem 1.6rem;
-
-    font-size: 1.6rem;
-    line-height: 2rem;
-    margin: auto;
-    margin-left: -10px;
-
-  }
-  #button-div{
-    position: fixed;
-    z-index: 9000;
-  }
-  h4 {
-    color: var(--otto-primary);
-    text-align: center;
-    margin:50px 25px 10px 25px;
-    font-weight: bold;
-
-  }
+@media only screen and (max-width: 640px) {
   #forschungsfrage {
     color: var(--otto-primary);
-    font-size: 8rem;
-    font-family: var(--font-secondary);
+    font-size: 6rem;
     width: fit-content;
-    line-height: 70px;
+    line-height: 50px;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.9);
-    z-index: 100;
-    position: fixed;
-    left: 50%;
-    top:40vh;
-    transform: translateX(-50%);
-    padding: 18px 8px;
-    border-radius: 0.8rem;
+  }
+}
 
-  }
-  .commentar p, .replies p{
-    margin: auto;
-    width: fit-content;
-    padding:5px;
+.comment-wrapper {
+  width: 350px;
+  height: 330px;
+  background-color: #ff0055;
+  clip-path: polygon(
+    16.4% 0%,
+    84.8% 4%,
+    100% 5.4%,
+    97.2% 80.4%,
+    30.6% 79.6%,
+    10% 100%,
+    17.4% 76.2%,
+    20% 66.2%
+  );
+  position: relative;
+  margin: 50px;
+}
 
-  }
-  .replies p{
-    height:fit-content;
-    width: fit-content;
-    margin: auto;
+.comment-wrapper::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: #ff0055;
+  position: absolute;
+  bottom: 0;
+  right: 20px;
+  clip-path: polygon(0 0, 100% 0%, 50% 100%);
+  transform: translateY(100%);
+}
 
-  }
-
-
-  #kommentar-container{
-    position: absolute;
-    height:100vh;
-    top:0;
-    width:100vw;
-    border:1px solid red;
-    margin:2px;
-  }
-  .icons{
-    display: flex;
-    justify-content: space-evenly;
-    margin-bottom: 50px;
-  }
-  .commentar {
-    color: black;
-    margin: 5px;
-    width: 250px;
-    height:230px;
-    clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
-    z-index: 200;
-    overflow: scroll;
-  }
-  .replies{
-    clip-path: polygon( 100% 10.00%, 95.00% 78.40%, 99.60% 100%, 78.60% 79.20%, 13.00% 76.80%, 11.00% 11.60% );
-    background-color: #ff0055;
-    color: white;
-    margin: 5px;
-    width: 200px;
-    height:200px;
-    overflow: scroll;
-
-  }
-  svg{
-    cursor: pointer;
-  }
-
-  .menu{
-    position: absolute;
-    bottom:35px;
-    border-radius: 8px;
-    right:35px;
-    background-color: #ffffffad;
-    border: 1px solid #ddd;
-    clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    text-align: center;
-    margin-bottom: 70px;
-    height:110px;
-  }
-  .reply-menu{
-      position: relative;
-      bottom:40px;
-      border-radius: 8px;
-      clip-path: polygon( 100% 10.00%, 95.00% 78.40%, 99.60% 100%, 78.60% 79.20%, 13.00% 76.80%, 11.00% 11.60% );
-      right:15px;
-      background-color: #ffffffad;
-      border: 1px solid #ddd;
-      padding: 10px;
-      height:110px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      text-align: center;
-  }
-
-  .menu.show {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .menu.show, .reply-menu.show {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .menu button, .reply-menu button {
-    display: block;
-    background: none;
-    border: none;
-    padding: 5px 10px;
-    text-align: center;
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  .menu button:hover, .reply-menu button:hover {
-    color: rgba(0, 0, 0, 0.649);
-  }
-
-  .menu button:not(:last-child),  .reply-menu button:not(:last-child) {
-    margin-bottom: 3px; /* Reduces space between buttons */
-  }
-
-  @media only screen and (max-width: 640px) {
-    #forschungsfrage {
-      color: var(--otto-primary);
-      font-size: 6rem;
-      width: fit-content;
-      line-height: 50px;
-      text-align: center;
-    }
-
-  }
-
-  .comment-wrapper {
-    width: 350px;
-    height: 330px;
-    background-color: #ff0055;
-    clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
-    position: relative;
-    margin: 50px;
-  }
-
-  .comment-wrapper::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background-color: #ff0055;
-    position: absolute;
-    bottom: 0;
-    right: 20px;
-    clip-path: polygon(0 0, 100% 0%, 50% 100%);
-    transform: translateY(100%);
-  }
-
-  .forschungsfrage-logo{
-    height:100px;
-    width:100px;
-    position: absolute;
-    top:25vh;
-    right:25vw;
-  }
+.forschungsfrage-logo {
+  height: 100px;
+  width: 100px;
+  position: absolute;
+  top: 25vh;
+  right: 25vw;
+}

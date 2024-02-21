@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ForschungsFrageService } from '@app/core';
 import { KommentarService } from 'src/app/core/services/kommentar.service';
 import { MediaService } from 'src/app/core/services/media.service';
@@ -10,6 +10,8 @@ import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+
 
 
 gsap.registerPlugin(Draggable);
@@ -19,8 +21,10 @@ gsap.registerPlugin(Draggable);
   selector: 'app-polylog',
   templateUrl: './polylog.component.html',
 })
-export class PolylogComponent implements OnInit, AfterViewInit {
+export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   forschungsfrage?: string = '';
+  currentForschungsfrageId?: number;
+  selectedMediaName: string = '';
   selectedMedia: File | null = null;
   imagePath?: string;
   freezePolylog: boolean = false;
@@ -28,6 +32,8 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
   mediaUrls: string[] = []; // Array to store media URLs
+  private forschungsfragenSubscription?: Subscription;
+
 
   isImage(url: string): boolean {
     return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
@@ -46,6 +52,8 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   isDialogOpen: boolean = false;
   @ViewChild('commentDialog') commentDialog!: CommentDialogComponent;
   @ViewChildren('draggableElement') draggableElements!: QueryList<ElementRef>;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
 
 
 
@@ -69,6 +77,10 @@ export class PolylogComponent implements OnInit, AfterViewInit {
       this.freezePolylog = state;
     })
   }
+  ngOnDestroy(): void {
+    this.forschungsfragenSubscription?.unsubscribe();
+  }
+
 
   ngAfterViewInit(): void {
     this.initializeDraggable();
@@ -88,14 +100,24 @@ export class PolylogComponent implements OnInit, AfterViewInit {
 
   onMediaSelected(event: any) {
     this.selectedMedia = event.target.files[0];
+    if (this.selectedMedia) {
+      this.selectedMediaName = this.selectedMedia.name;
+    }
+    // Add any additional logic if needed when a file is selected
+  }
+  cancelUpload() {
+    this.selectedMedia = null;
+    this.selectedMediaName = '';
+    this.fileInput.nativeElement.value = '';
+    // Add any additional logic if needed when upload is canceled
   }
   uploadMedia() {
-    if (!this.selectedMedia) {
+    if (!this.selectedMedia || this.currentForschungsfrageId === null) {
       this.toastr.warning('Please select a file to upload.');
       return;
-    }
+  }
 
-    this.mediaService.uploadMedia(this.selectedMedia).subscribe({
+  this.mediaService.uploadMedia(this.selectedMedia, this.currentForschungsfrageId!).subscribe({
       next: (response) => {
         this.toastr.success('Media uploaded successfully!');
         this.mediaUrls.push(response.url);  // Assuming 'url' is the key in the response
@@ -108,6 +130,50 @@ export class PolylogComponent implements OnInit, AfterViewInit {
   }
 
 
+
+
+// Handle Forschungsfrage
+
+fetchLatestForschungsfrage() {
+  this.forschungsfrageService.getLatestForschungsfrage().subscribe({
+    next: (forschungsfrage: ForschungsfragenModel) => {
+      this.forschungsfrage = forschungsfrage.title;
+      this.imagePath = forschungsfrage.imagePath;
+      this.currentForschungsfrageId = forschungsfrage.id;
+      console.log('Forschungsfrage updated. ID:', this.currentForschungsfrageId); // Log the ID
+      this.clearKommentare();
+    },
+    error: () => {
+      this.forschungsfrage = this.errorMessage;
+    }
+  });
+}
+
+
+
+fetchMediaUrls(): void {
+  this.mediaService.getAllMedia(this.currentForschungsfrageId!).subscribe({
+    next: (urls) => {
+      this.mediaUrls = urls;
+    },
+    error: (error) => {
+      console.error('Error fetching media:', error);
+      this.toastr.error('Error fetching media.');
+    },
+    complete: () => {
+       console.log('Media fetching completed');
+     }
+  });
+}
+
+listenForNewForschungsfrage(): void {
+  this.forschungsfragenSubscription = this.forschungsfrageService.forschungsfragen$.subscribe(() => {
+    // Call fetchLatestForschungsfrage only if there's a new Forschungsfrage
+    if (this.currentForschungsfrageId) {
+      this.fetchLatestForschungsfrage();
+    }
+  });
+}
   openDialog(parentId?: number) {
     this.isDialogOpen = true;
     this.commentDialog.parentKommentarId = parentId;
@@ -124,29 +190,6 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     this.isMenuOpen = this.activeCommentId !== commentId || !this.isMenuOpen;
     this.activeCommentId = commentId;
   }
-
-// Handle Forschungsfrage
-
-  fetchLatestForschungsfrage() {
-    this.forschungsfrageService.getLatestForschungsfrage().subscribe({
-      next: (forschungsfrage: ForschungsfragenModel) => {
-        this.forschungsfrage = forschungsfrage.title;
-        this.imagePath = forschungsfrage.imagePath; // Add this line
-        this.clearKommentare();
-      },
-      error: () => {
-        this.forschungsfrage = this.errorMessage;
-      }
-    });
-  }
-
-
-  listenForNewForschungsfrage() {
-    this.forschungsfrageService.forschungsfragen$.subscribe(() => {
-      this.fetchLatestForschungsfrage();
-    });
-  }
-
 
   // Handle Kommentare
 
@@ -203,6 +246,19 @@ export class PolylogComponent implements OnInit, AfterViewInit {
     this.kommentarService.deleteKommentar(id).subscribe(() => {
       this.removeCommentById(this.kommentare, id);
     });
+  }
+
+  deleteMedia(fileName: string): void {
+    this.mediaService.deleteMedia(fileName).subscribe(
+      () => {
+        this.toastr.success('Media deleted successfully!');
+        this.mediaUrls = this.mediaUrls.filter(url => !url.endsWith(fileName));
+      },
+      error => {
+        console.error('Error deleting media:', error);
+        this.toastr.error('Error deleting media.');
+      }
+    );
   }
   removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {
     for (let i = 0; i < kommentare.length; i++) {
