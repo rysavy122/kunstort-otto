@@ -4,7 +4,7 @@ import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model
 
 
 @Component({
-  selector: 'app-confirm-dialog',
+  selector: 'app-delete-dialog',
   template: `
   <div id="modal-container" *ngIf="isOpen">
   <div class="modal-backdrop">
@@ -20,11 +20,10 @@ import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model
     <button class="close-button" (click)="closeDialog()">Zurück</button>
   </div>
 </div>
-
   </div>
   `,
 })
-export class ConfirmationDialogComponent {
+export class DeleteDialogComponent {
 
   constructor(
     private forschungsfrageService: ForschungsFrageService,
@@ -32,6 +31,7 @@ export class ConfirmationDialogComponent {
 
   forschungsfragen: ForschungsfragenModel[] = [];
   @Input() forschungsfrage: string = '';
+  @Input() imageFile!: File;
   @Input() isOpen = false;
   @Output() close = new EventEmitter<boolean>();
 
@@ -39,8 +39,8 @@ export class ConfirmationDialogComponent {
     if (!this.forschungsfrage.trim()) {
       return;
     }
-  
-    this.forschungsfrageService.createForschungsfrage(this.forschungsfrage)
+
+    this.forschungsfrageService.createForschungsfrage(this.forschungsfrage, this.imageFile )
       .subscribe({
         next: (response) => {
           console.log('Forschungsfrage saved:', response);

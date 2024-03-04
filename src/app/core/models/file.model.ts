@@ -9,3 +9,7 @@ export interface FileModel {
   isDeleted?: boolean;
 
 }
+export interface MediaDisplayModel {
+  url: string;
+  style: any;
+}

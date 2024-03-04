@@ -4,6 +4,8 @@
       Profile Page / Polylog Control Panel
     </h1>
     <div class="content__body">
+      <div id="page1" style="height:90vh;">
+
       <p id="page-description">
         <ng-container *ngIf="user$ | async as user">
           <div class="profile-grid">
@@ -30,6 +32,7 @@
       <form #frageForm="ngForm">
         <input
           id="input-forschungsfrage"
+          style="margin-bottom: 50px; width:350px;"
           type="text"
           [(ngModel)]="forschungsfrage"
           name="forschungsfrage"
@@ -37,8 +40,13 @@
           placeholder="Neue Forschungsfrage..."
           #forschungsfrageInput="ngModel"
         /><br />
-
-        <input style="display: block;" type="file" (change)="onFileSelected($event)" accept="image/*" #fileInput />
+        <input
+          style="display: block; margin-bottom: 0px; border: none;"
+          type="file"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          #fileInput
+        />
 
         <br />
 
@@ -53,10 +61,11 @@
           {{ VKb2xiYiQ2 ? "Polylog auftauen" : "Polylog einfrieren" }}
         </button>
         <br />
+        <h3>
+          Polylog Status: <span>{{ VKb2xiYiQ2 ? "Inaktiv" : "Aktiv" }}</span>
+        </h3>
       </form>
-      <h3>
-        Polylog Status: <span>{{ VKb2xiYiQ2 ? "Inaktiv" : "Aktiv" }}</span>
-      </h3>
+    </div>
       <h1>Übersicht Forschungsfragen</h1>
       <p>
         Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
@@ -83,10 +92,11 @@
             <li *ngFor="let frage of paginatedForschungsfragen">
               {{ frage.title }}
               <p>
-                Logo: <span *ngIf="!frage.imagePath">Kein Logo ausgewählt.</span>
+                Logo:
+                <span *ngIf="!frage.imagePath">Kein Logo ausgewählt.</span>
                 <img
                   *ngIf="frage.imagePath"
-                  style="height: 50px;"
+                  style="height: 50px"
                   [src]="frage.imagePath"
                   alt="Uploaded Image"
                 />

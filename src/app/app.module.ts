@@ -7,6 +7,8 @@ import { environment as env } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,6 +24,7 @@ import { SharedModule } from './shared';
         allowedList: [`${env.api.serverUrl}/api/messages/admin`, `${env.api.serverUrl}/api/messages/protected`],
       },
     }),
+    FontAwesomeModule,
   ],
   providers: [
     {

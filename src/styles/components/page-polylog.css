@@ -47,6 +47,8 @@ h4 {
   line-height: 70px;
   text-align: center;
   background-color: rgba(255, 255, 255, 0.9);
+  background-color: #ff9abcb4;
+
   z-index: 100;
   position: fixed;
   left: 50%;
@@ -58,8 +60,9 @@ h4 {
 .commentar p,
 .replies p {
   margin: auto;
-  width: fit-content;
+  width: 90%;
   padding: 5px;
+
 }
 .replies p {
   height: fit-content;
@@ -69,7 +72,6 @@ h4 {
 input[type="file"] {
   display: none;
 }
-
 
 #kommentar-container {
   position: absolute;
@@ -87,20 +89,31 @@ input[type="file"] {
 .commentar {
   color: black;
   margin: 5px;
-  width: 250px;
-  height: 230px;
+  width: fit-content;
+  height: fit-content;
+  overflow: hidden; /* Changed from scroll to hide overflow outside the clip-path */
   clip-path: polygon(
-    16.4% 0%,
-    84.8% 4%,
-    100% 5.4%,
-    97.2% 80.4%,
-    30.6% 79.6%,
-    10% 100%,
-    17.4% 76.2%,
-    20% 66.2%
+    77% 13.2%,
+    90% 0%,
+    86.2% 28.8%,
+    86.2% 100%,
+    0% 93.8%,
+    5% 13.2%
   );
+
   z-index: 200;
-  overflow: scroll;
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-align: center; /* Ensure text within is centered */
+  overflow-y: auto;
+}
+
+/* Ensure the container div fills the .commentar but doesn't exceed its clipping */
+.commentar-content {
+  width: 90%;
+  height: 100%;
+  overflow: auto; /* Allows internal scrolling if needed */
 }
 .replies {
   clip-path: polygon(
@@ -114,20 +127,20 @@ input[type="file"] {
   background-color: #ff0055;
   color: white;
   margin: 5px;
-  width: 200px;
-  height: 200px;
-  overflow: scroll;
+  width: fit-content;
+  height: fit-content;
+  overflow: auto;
+  padding: 0px 10px 0px 50px;
 }
 svg {
   cursor: pointer;
 }
 
 .menu {
-  position: absolute;
-  bottom: 35px;
+  position: fixed;
+  justify-content: center;
   border-radius: 8px;
-  right: 35px;
-  background-color: #ffffffad;
+  background-color: #ffffffd5;
   border: 1px solid #ddd;
   clip-path: polygon(
     16.4% 0%,
@@ -146,8 +159,15 @@ svg {
   transform: scale(0.95);
   transition: opacity 0.3s ease, transform 0.3s ease;
   text-align: center;
-  margin-bottom: 70px;
   height: 110px;
+  margin-top:15px;
+  margin: auto;
+  z-index:300;
+  width:60px;
+  margin-top:-100px;
+  margin-right:-60px;
+
+
 }
 .reply-menu {
   position: relative;
@@ -161,6 +181,8 @@ svg {
     13% 76.8%,
     11% 11.6%
   );
+
+
   right: 15px;
   background-color: #ffffffad;
   border: 1px solid #ddd;
@@ -204,10 +226,23 @@ svg {
   margin-bottom: 3px; /* Reduces space between buttons */
 }
 
+.media-wrapper {
+  border: 1px solid black;
+}
+
 @media only screen and (max-width: 640px) {
   #forschungsfrage {
     color: var(--otto-primary);
     font-size: 6rem;
+    width: fit-content;
+    line-height: 50px;
+    text-align: center;
+  }
+}
+@media only screen and (max-width: 440px) {
+  #forschungsfrage {
+    color: var(--otto-primary);
+    font-size: 4rem;
     width: fit-content;
     line-height: 50px;
     text-align: center;
@@ -231,7 +266,73 @@ svg {
   position: relative;
   margin: 50px;
 }
+audio::-webkit-media-controls-panel {
+  background-color: #ff0055;
+  margin-top: -10px;
+  padding: 20px;
+}
+audio::-webkit-media-controls-enclosure {
+  border: none;
+  border-radius: 0px;
+}
+audio::-webkit-media-controls-overlay-enclosure {
+  display: none;
+}
+audio {
+  padding: 0px 0px 20px 60px;
+  width: 390px;
+  height: 105px;
+  width: 370px;
+  background-color: #ff0055;
+}
+video {
+  padding: 0px 80px 20px 20px;
+}
 
+.image-div img {
+  width: 400px;
+  height: 400px;
+
+}
+.image-div {
+  width: 400px;
+  height: 400px;
+  background-color: black;
+  clip-path: polygon(
+    77% 13.2%,
+    90% 0%,
+    86.2% 28.8%,
+    86.2% 100%,
+    0% 93.8%,
+    5% 13.2%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.audio-div {
+  clip-path: polygon(
+    16.4% 0%,
+    84.8% 4%,
+    100% 5.4%,
+    97.2% 80.4%,
+    30.6% 79.6%,
+    10% 100%,
+    17.4% 76.2%,
+    20% 66.2%
+  );
+  width: fit-content;
+}
+.video-div {
+  clip-path: polygon(
+    77% 13.2%,
+    90% 0%,
+    86.2% 28.8%,
+    86.2% 100%,
+    0% 93.8%,
+    5% 13.2%
+  );
+}
 .comment-wrapper::after {
   content: "";
   width: 20px;
@@ -250,4 +351,21 @@ svg {
   position: absolute;
   top: 25vh;
   right: 25vw;
+}
+
+#media-forschungsfrage img {
+  height: 500px;
+  width: 500px;
+  position: absolute;
+  top: 10vh;
+  left: 5vw;
+}
+input[type="file"] {
+  display: none;
+}
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
 }

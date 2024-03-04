@@ -18,7 +18,13 @@ import { Component } from '@angular/core';
       >
         Hier geht es direkt zum Blog →
       </a>
-      <div id="pictures"></div>
+      <div id="otto-colors">
+        <img>
+        <img>
+        <img>
+        <img>
+        <img>
+      </div>
     </div>
 
 
@@ -27,5 +33,4 @@ import { Component } from '@angular/core';
 export class HomeComponent {
   logo = 'https://dl.dropboxusercontent.com//scl/fi/g4zg9v3pgvbf81ntednx7/tmp_1703246253646.jpg?rlkey=slw2g5imv8lyrf7g1hesnqu08&raw=1';
   background = ''
-
 }

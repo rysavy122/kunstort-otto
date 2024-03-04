@@ -12,7 +12,7 @@ import { Component } from '@angular/core';
   <input type="radio" name="slider" id="slide2">
   <input type="radio" name="slider" id="slide3">
   <input type="radio" name="slider" id="slide4">
-  
+
   <div class="slides">
     <div class="slide slide1">
     </div>
@@ -23,7 +23,7 @@ import { Component } from '@angular/core';
     <div class="slide slide4">
     </div>
   </div>
-  
+
   <div class="controls">
     <label for="slide1"></label>
     <label for="slide2"></label>
@@ -32,7 +32,7 @@ import { Component } from '@angular/core';
   </div>
 </div>
 
-    
+
       <app-toast></app-toast>
         <ng-content></ng-content>
       </div>

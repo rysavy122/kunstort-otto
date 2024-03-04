@@ -13,6 +13,7 @@ import { ConfirmationFreezeDialogComponent } from "./dialog/confirm-freeze-dialo
 import { CommentDialogComponent } from "./dialog/comment-dialog.component";
 import { TinyMceComponent } from "./editor/tiny-mce.component";
 import { CommentComponent } from "src/app/features/public/polylog/comment/comment.component";
+import { DeleteDialogComponent } from "./dialog/delete-dialog.component";
 
 
 export const COMPONENTS = [
@@ -20,6 +21,7 @@ export const COMPONENTS = [
     Auth0FeatureComponent,
     Auth0FeaturesComponent,
     ToastComponent,
+    DeleteDialogComponent,
     ConfirmationDialogComponent,
     ConfirmationFreezeDialogComponent,
     CommentDialogComponent,

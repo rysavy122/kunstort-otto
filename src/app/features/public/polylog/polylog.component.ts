@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ForschungsFrageService } from '@app/core';
 import { KommentarService } from 'src/app/core/services/kommentar.service';
 import { MediaService } from 'src/app/core/services/media.service';
@@ -6,11 +6,12 @@ import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model
 import { KommentarModel, KommentarDisplayModel } from 'src/app/core/models/kommentar.model';
 import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { gsap } from 'gsap';
-import Draggable from 'gsap/Draggable';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
+import { gsap } from 'gsap';
+import Draggable from 'gsap/Draggable';
 
 
 
@@ -22,17 +23,43 @@ gsap.registerPlugin(Draggable);
   templateUrl: './polylog.component.html',
 })
 export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
+  faCloudUploadAlt = faCloudUploadAlt;
   forschungsfrage?: string = '';
   currentForschungsfrageId?: number;
   selectedMediaName: string = '';
   selectedMedia: File | null = null;
+  isUploaded: boolean = false;
   imagePath?: string;
   freezePolylog: boolean = false;
+  icon: string = 'upload';
   isMenuOpen: boolean = false;
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
   mediaUrls: string[] = []; // Array to store media URLs
+
+  videoPositions: { [index: number]: any } = {};
+  imagePositions: { [index: number]: any } = {};
+  audioPositions: { [index: number]: any } = {};
+
+
+
+
+  mediaisLoading: boolean = false;
+
   private forschungsfragenSubscription?: Subscription;
+
+  get imageUrls(): string[] {
+    return this.mediaUrls.filter(url => this.isImage(url));
+  }
+
+  get videoUrls(): string[] {
+    return this.mediaUrls.filter(url => this.isVideo(url));
+  }
+
+  get audioUrls(): string[] {
+    return this.mediaUrls.filter(url => this.isAudio(url));
+  }
+
 
 
   isImage(url: string): boolean {
@@ -85,15 +112,7 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initializeDraggable();
   }
-  initializeDraggable(): void {
-    this.draggableElements.forEach((element) => {
-      Draggable.create(element.nativeElement, {
-        type: "x,y",
-        bounds: window,
-        inertia: true,
-      });
-    });
-  }
+
   editKommentar(commentId: number): void {
     // Logic to handle editing a comment
   }
@@ -116,59 +135,47 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
       this.toastr.warning('Please select a file to upload.');
       return;
   }
+  this.mediaisLoading = true;
 
   this.mediaService.uploadMedia(this.selectedMedia, this.currentForschungsfrageId!).subscribe({
       next: (response) => {
         this.toastr.success('Media uploaded successfully!');
-        this.mediaUrls.push(response.url);  // Assuming 'url' is the key in the response
+        this.mediaUrls.push(response.url);
+        this.mediaisLoading = false;
+        this.selectedMedia = null;
+        this.preCalculateMediaPositions();
+        setTimeout(() => this.initializeDraggable(), 0);
       },
       error: (error) => {
         this.toastr.error('Error uploading media.');
         console.error('Error uploading media:', error);
       }
     });
+    setTimeout(() => this.initializeDraggable(), 0);
   }
 
 
 
 
 // Handle Forschungsfrage
-
 fetchLatestForschungsfrage() {
   this.forschungsfrageService.getLatestForschungsfrage().subscribe({
     next: (forschungsfrage: ForschungsfragenModel) => {
       this.forschungsfrage = forschungsfrage.title;
       this.imagePath = forschungsfrage.imagePath;
       this.currentForschungsfrageId = forschungsfrage.id;
-      console.log('Forschungsfrage updated. ID:', this.currentForschungsfrageId); // Log the ID
       this.clearKommentare();
+      this.fetchMediaUrls(); // Fetch the media URLs
+      console.log('Forschungsfrage updated. ID:', this.currentForschungsfrageId); // Log the ID
+
     },
     error: () => {
       this.forschungsfrage = this.errorMessage;
     }
   });
 }
-
-
-
-fetchMediaUrls(): void {
-  this.mediaService.getAllMedia(this.currentForschungsfrageId!).subscribe({
-    next: (urls) => {
-      this.mediaUrls = urls;
-    },
-    error: (error) => {
-      console.error('Error fetching media:', error);
-      this.toastr.error('Error fetching media.');
-    },
-    complete: () => {
-       console.log('Media fetching completed');
-     }
-  });
-}
-
 listenForNewForschungsfrage(): void {
   this.forschungsfragenSubscription = this.forschungsfrageService.forschungsfragen$.subscribe(() => {
-    // Call fetchLatestForschungsfrage only if there's a new Forschungsfrage
     if (this.currentForschungsfrageId) {
       this.fetchLatestForschungsfrage();
     }
@@ -192,7 +199,6 @@ listenForNewForschungsfrage(): void {
   }
 
   // Handle Kommentare
-
   getSafeHtml(content: string | undefined): SafeHtml | string {
     return content ? this.sanitizer.bypassSecurityTrustHtml(content) : '';
   }
@@ -234,6 +240,46 @@ listenForNewForschungsfrage(): void {
       }
     }
   }
+
+  fetchMediaUrls(): void {
+  this.mediaService.getAllMedia(this.currentForschungsfrageId!).subscribe({
+    next: (urls) => {
+      this.mediaUrls = urls;
+      this.preCalculateMediaPositions();
+      setTimeout(() => this.initializeDraggable(), 0);
+    },
+    error: (error) => {
+      console.error('Error fetching media:', error);
+      this.toastr.error('Error fetching media.');
+    },
+    complete: () => {
+       console.log('Media fetching completed');
+     }
+    });
+    console.log(this.videoUrls)
+    setTimeout(() => this.initializeDraggable(), 0);
+
+
+}
+
+preCalculateMediaPositions(): void {
+
+  this.videoUrls.forEach((_, index) => {
+    const x = Math.floor(Math.random() * window.innerWidth - 250);
+    const y = Math.floor(Math.random() * window.innerHeight - 850);
+    this.videoPositions[index] = { transform: `translateX(${x}px) translateY(${y}px)` };
+  });
+  this.imageUrls.forEach((_, index) => {
+    const x = Math.floor(Math.random() * window.innerWidth - 250);
+    const y = Math.floor(Math.random() * window.innerHeight - 850);
+    this.imagePositions[index] = { transform: `translateX(${x}px) translateY(${y}px)` };
+  });
+  this.audioUrls.forEach((_, index) => {
+    const x = Math.floor(Math.random() * window.innerWidth - 250);
+    const y = Math.floor(Math.random() * window.innerHeight - 850);
+    this.audioPositions[index] = { transform: `translateX(${x}px) translateY(${y}px)` };
+  });
+}
 
   loadKommentare(): void {
     this.kommentarService.getAllKommentare().subscribe(kommentare => {
@@ -302,6 +348,9 @@ listenForNewForschungsfrage(): void {
     };
   }
 
+
+
+
   //Random Colours
   generateRandomColor(): string {
     let color = '#';
@@ -346,5 +395,16 @@ listenForNewForschungsfrage(): void {
       g: parseInt(result[2], 16),
       b: parseInt(result[3], 16)
     } : null;
+  }
+
+
+  initializeDraggable(): void {
+    this.draggableElements.forEach((element) => {
+      Draggable.create(element.nativeElement, {
+        type: "x,y",
+        bounds: window,
+        inertia: true,
+      });
+    });
   }
 }

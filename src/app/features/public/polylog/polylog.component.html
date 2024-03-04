@@ -1,46 +1,114 @@
-<div id="wrapper">
+<div id="wrapper" style="background-color: #ff9abc;overflow-x: hidden;height: 100%;">
   <div id="button-div" *ngIf="!freezePolylog">
-    <button (click)="openDialog()" class="comment-button">Kommentieren</button>
-    <input style="display: none;" type="file" (change)="onMediaSelected($event)" accept="image/*,video/*,audio/*" #fileInput>
+    <button (click)="openDialog()" class="comment-button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-right-text-fill" viewBox="0 0 16 16">
+        <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM3.5 3h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1"/>
+      </svg><span style="margin: 0px 0px 10px 10px;">Kommentieren</span></button>
+    <div *ngIf="this.mediaisLoading" class="loading-indicator" style="z-index:1000;">
+      Datei wird hochgeladen  <span class="loading-dots"></span>
+    </div>
+    <input
+      style="display: none"
+      type="file"
+      (change)="onMediaSelected($event)"
+      accept="image/*,video/*,audio/*"
+      #fileInput
+    />
 
-    <button *ngIf="!selectedMedia" class="comment-button" (click)="fileInput.click()">
-      <i class="fa fa-cloud-upload"></i> Custom Upload
+    <button
+      *ngIf="!selectedMedia"
+      class="comment-button"
+      (click)="fileInput.click()"
+    >
+    <svg style="margin-bottom: -5px;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
+      <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>
+    </svg><span style="margin: -10px 0px 10px 10px;">Datei hochladen</span>
+
+
     </button>
+    <button
+      *ngIf="selectedMedia"
+      (click)="uploadMedia()"
+      class="comment-button"
+    >
+    <svg style="margin-bottom: -5px;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
+      <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>
+    </svg>
+    <span style="margin: -10px 0px 10px 10px;">
+      {{ selectedMedia.name }}
+    </span>
 
-    <button *ngIf="selectedMedia" (click)="uploadMedia()" class="comment-button">Upload: {{ selectedMedia?.name }}</button>
-    <button *ngIf="selectedMedia" (click)="cancelUpload()" class="comment-button">Cancel</button>
+    </button>
+    <button
+      *ngIf="selectedMedia"
+      (click)="cancelUpload()"
+      class="comment-button"
+    >
+      Abbrechen
+    </button>
   </div>
 
-  <h1 id="forschungsfrage">{{ forschungsfrage }}</h1>
+  <h1 *ngIf="!this.mediaisLoading" id="forschungsfrage">{{ forschungsfrage }}</h1>
   <img
-  *ngIf="imagePath"
-  class="forschungsfrage-logo"
-  [src]="imagePath"
-  alt="Uploaded Image"
-/>
+    *ngIf="imagePath"
+    class="forschungsfrage-logo"
+    [src]="imagePath"
+    alt="Uploaded Image"
+    title="Das ist das Logo der Forschungsfrage"
+  />
   <ng-container *ngFor="let kommentar of kommentare; trackBy: trackById">
     <ng-container
       *ngTemplateOutlet="commentTemplate; context: { $implicit: kommentar }"
     ></ng-container>
   </ng-container>
 
-<!-- Displaying Uploaded Media -->
-<div *ngFor="let mediaUrl of mediaUrls">
-  <!-- Display image -->
-  <img *ngIf="isImage(mediaUrl)" [src]="mediaUrl" alt="Uploaded Image" />
+  <!-- Displaying Uploaded Media -->
+  <div
+    #draggableElement
+    *ngFor="let mediaUrl of imageUrls; let i = index"
+    [ngStyle]="imagePositions[i]"
+    class="image-div"
+  >
+    <img
+      *ngIf="isImage(mediaUrl)"
+      [src]="mediaUrl"
+      alt="Uploaded Image"
+    />
+  </div>
 
-  <!-- Display video -->
-  <video *ngIf="isVideo(mediaUrl)" controls>
-    <source [src]="mediaUrl" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <!-- Displaying Uploaded Videos -->
+  <div
+    #draggableElement
+    *ngFor="let mediaUrl of videoUrls; let i = index"
+    [ngStyle]="videoPositions[i]"
+    class="video-div"
 
-  <!-- Display audio -->
-  <audio *ngIf="isAudio(mediaUrl)" controls>
-    <source [src]="mediaUrl" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-</div>
+    style="width: fit-content; height: 300px; background-color: none;"
+  >
+    <video
+      *ngIf="isVideo(mediaUrl)"
+      controls
+      style="height: 300px; width: fit-content; margin:10px;
+      "
+    >
+      <source [src]="mediaUrl" type="video/mp4" />
+    </video>
+  </div>
+
+  <!-- Displaying Uploaded Audio -->
+  <div
+    #draggableElement
+    *ngFor="let mediaUrl of audioUrls; let i = index"
+    [ngStyle]="audioPositions[i]"
+    class="audio-div"
+  >
+    <audio
+      *ngIf="isAudio(mediaUrl)"
+      controls
+    >
+      <source [src]="mediaUrl" type="audio/mpeg" />
+    </audio>
+  </div>
 
   <app-comment-dialog
     #commentDialog
@@ -58,6 +126,7 @@
       [class.commentar]="!isReply"
       [class.replies]="isReply"
     >
+    <div class="commentar-content">
       <h4>{{ comment.title }}</h4>
       <p [innerHTML]="getSafeHtml(comment.comment)"></p>
       <p>Datum: {{ comment.createdAt | date }}</p>
@@ -88,6 +157,20 @@
           <button (click)="deleteKommentar(comment.id)">Delete</button>
         </div>
       </div>
+    </div>
+    <svg
+    (click)="toggleMenu(comment.id!)"
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    class="bi bi-three-dots"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"
+    />
+  </svg>
     </div>
     <div *ngIf="comment.replies && comment.replies.length">
       <ng-container
