@@ -32,34 +32,35 @@
     <span style="color:blueviolet; font-size:2rem;">oder</span>
 
   </div>
-  <button (click)="addImageSticker()">Upload Sticker</button>
-  <button>
-    <a style="color: black;" href="https://rysavyotto.blob.core.windows.net/sticker/otto-sticker-collection.zip?sp=r&st=2024-03-04T21:03:33Z&se=2024-03-05T05:03:33Z&spr=https&sv=2022-11-02&sr=b&sig=XhZW0fWUHp1mXcTZjCXnWR5%2FN7joVevU2ki8RsnMh4Y%3D"> Downlaod Sticker</a></button>
+  <button class="page-plakate__button" style="min-width: 180px; margin:10px; background-color: royalblue;" (click)="addImageSticker()">Sticker hochladen</button>
+  <button class="page-plakate__button" style="min-width: 180px; margin:10px; background-color: royalblue;">
+    <a style="" href="https://rysavyotto.blob.core.windows.net/sticker/otto-sticker-collection.zip?sp=r&st=2024-03-04T21:03:33Z&se=2024-03-05T05:03:33Z&spr=https&sv=2022-11-02&sr=b&sig=XhZW0fWUHp1mXcTZjCXnWR5%2FN7joVevU2ki8RsnMh4Y%3D">Sticker herunterladen</a></button>
 
 </div>
 
 <div id="otto-plakat" style=" width: 33.3%">
-  <input type="text" placeholder="Dein Plakat Titel ..." style="border: none; color: black;">
+  <input [(ngModel)]="drawingTitle" type="text" placeholder="Dein Plakat Titel ..." style="border: none; color: black; margin: auto; width: 567px;">
 
-  <div id="otto-border" class="canvas-wrapper" style="background-image: url('https://dl.dropbox.com/scl/fi/7lfzhewc2tps7p7imoauo/OttoRahmen_freigestellt_page-0001.jpg?rlkey=smh7hr7cojggudx8eptxm3p8t&dl=0'); background-size: cover; width:567px;">
+  <div id="otto-border" class="canvas-wrapper" style="width:567px; height:800px;">
     <canvas #drawingCanvas height="800px" width="567px" class="custom-cursor">
     </canvas>
   </div>
+
 </div>
 
   <div id="controlls" style=" width: 33%; margin-left: 25px;">
     <h2>Einstellungen</h2>
     <div id="stroke">
       <p style="color: black; text-align: start; font-size: 2rem; margin-bottom: -20px;">Pinsel Grösse:</p><br/>
-      <input type="number" id="strokeSize" [(ngModel)]="strokeSize" style="width:100px; float: left;" /><br/><br/><br/><br/><br/><br/>
+      <input type="number" id="strokeSize" [(ngModel)]="strokeSize" style="width:100px; color: royalblue; float: left;" /><br/><br/><br/><br/><br/><br/>
       <p style="color: black; text-align: start; font-size: 2rem; margin-bottom: 0px;">Pinsel Farbe:</p><br/>
       <input style="width:fit-content; float: left;" placeholder="Farbe" type="color" id="stroke-color" [(ngModel)]="strokeColor"/>
     </div>
     <div style="float:left; margin-top: 50px; margin-left: -80px;" id="buttons">
-      <button style="min-width: 100px;" (click)="clearCanvas()">Neues Plakat</button>
-      <button style="min-width: 100px;" (click)="saveDrawing()">Plakat speichern</button><br/>
-      <button style="min-width: 100px;" (click)="enableEraser()">Undo Aktion</button>
-      <button style="min-width: 100px;" (click)="clearCanvas()">Plakat exportieren</button>
+      <button class="page-plakate__button" style="min-width: 180px; margin:10px; background-color: royalblue;" (click)="clearCanvas()">Neues Plakat</button>
+      <button class="page-plakate__button" style="min-width: 180px; margin:10px; background-color: royalblue;" (click)="saveDrawing()">Plakat speichern</button><br/>
+      <button class="page-plakate__button" style="min-width: 180px; margin:10px; background-color: royalblue;" (click)="enableEraser()">Undo Aktion</button>
+      <button class="page-plakate__button" style="min-width: 180px; margin:10px; background-color: royalblue;" (click)="exportCanvasAsImage()">Plakat exportieren</button>
 
     </div>
   </div>

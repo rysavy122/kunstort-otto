@@ -9,6 +9,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
+import { FileModel } from 'src/app/core/models/file.model';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
@@ -149,13 +150,11 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (error) => {
         this.toastr.error('Error uploading media.');
         console.error('Error uploading media:', error);
+        this.mediaisLoading = false;
       }
     });
     setTimeout(() => this.initializeDraggable(), 0);
   }
-
-
-
 
 // Handle Forschungsfrage
 fetchLatestForschungsfrage() {

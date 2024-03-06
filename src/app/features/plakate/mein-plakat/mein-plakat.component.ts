@@ -8,6 +8,7 @@ import * as paper from 'paper';
   templateUrl: './mein-plakat.component.html',
 })
 export class MeinPlakatComponent implements OnInit, AfterViewInit {
+  public drawingTitle: string = '';
   svgPaths: string[] = [];
   stickers: paper.Raster[] = [];
   svgContent: string = '';
@@ -32,10 +33,18 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit(): void {
+    const savedTitle = localStorage.getItem('drawingTitle');
+    {
+      if(savedTitle){
+        this.drawingTitle = savedTitle;
+      }
+    }
   }
   ngAfterViewInit(): void {
     this.paperScope = new paper.PaperScope();
     this.paperScope.setup(this.drawingCanvas.nativeElement);
+    this.initializeBorderImage();
+
 
     const savedDrawing = localStorage.getItem('userDrawing');
     if (savedDrawing) {
@@ -49,6 +58,20 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     };
     this.paperScope.view.onMouseUp = () => {
       this.stopDrawing();
+    };
+  }
+  initializeBorderImage(): void {
+    const borderLayer = new this.paperScope.Layer();
+    const borderImage = new this.paperScope.Raster({
+      source: '../../../../assets/img/OttoRahmen_freigestellt_page-0001.jpg',
+      position: this.paperScope.view.center
+    });
+
+    borderImage.onLoad = () => {
+      borderImage.size = new this.paperScope.Size(this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height);
+      borderLayer.sendToBack();
+
+      this.paperScope.project.activeLayer.activate();
     };
   }
 
@@ -103,9 +126,31 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   saveDrawing(): void {
     const drawingJSON = this.paperScope.project.exportJSON({ asString: true });
     localStorage.setItem('userDrawing', drawingJSON);
+    localStorage.setItem('drawingTitle', this.drawingTitle);
     this.toastr.success('Dein Plakat wurde gespeichert!');
     console.log("Plakat gespeichert:")
   }
+
+  exportCanvasAsImage(): void {
+    this.paperScope.view.update();
+
+    setTimeout(() => {
+      const canvas = this.drawingCanvas.nativeElement;
+      const imageURL = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+
+      let filename = this.drawingTitle.trim() !== '' ? this.drawingTitle : 'Unbenannt';
+      filename = filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '') + '.png';
+
+      downloadLink.href = imageURL;
+      downloadLink.download = filename; // Set the title as the download name
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+    }, 100);
+  }
+
 
   addImageSticker(): void {
     const fileInput = document.createElement('input');
@@ -118,7 +163,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         const reader = new FileReader();
         reader.onload = (e: any) => {
           const stickerImage = new this.paperScope.Raster(e.target.result);
-          stickerImage.size = new this.paperScope.Size(10, 10); // Set sticker size
+          stickerImage.size = new this.paperScope.Size(10, 10);
           stickerImage.onMouseDown = (mouseEvent: paper.MouseEvent) => {
             this.dragSticker(stickerImage, mouseEvent);
           };
@@ -155,10 +200,16 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   clearCanvas(): void {
     if (this.drawingPath) {
       this.drawingPath.remove();
-      localStorage.removeItem('userDrawing');
+      this.drawingPath = null;
     }
+
     this.paperScope.project.clear();
     localStorage.removeItem('userDrawing');
+    localStorage.removeItem('drawingTitle');
+    this.drawingTitle = '';
+    this.initializeBorderImage();
+
+    this.toastr.success('Neues Plakat bereit!');
 
   }
   initializeDrawing(): void {
