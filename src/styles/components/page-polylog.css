@@ -294,7 +294,6 @@ video {
   height: 400px;
 
 
-
 }
 .image-div {
   width: 450px;
@@ -330,7 +329,18 @@ video {
   position: absolute;
   top:65px;
   left:25px;
+}
+.image-div:nth-child(odd) svg:hover{
 
+  position: absolute;
+  top:65px;
+  left:25px;
+}
+.image-div:nth-child(odd) svg{
+
+  position: absolute;
+  top:65px;
+  left:25px;
 }
 
 .image-div:nth-child(even) {

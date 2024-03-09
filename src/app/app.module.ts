@@ -10,6 +10,7 @@ import { SharedModule } from './shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
+
 @NgModule({
   declarations: [AppComponent],
   imports: [

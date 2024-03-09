@@ -25,6 +25,9 @@ export class MediaService {
     return this.http.get<string[]>(this.apiUrl + 'media/' + forschungsfrageId);
   }
   deleteMedia(fileName: string): Observable<any> {
-    return this.http.delete(this.apiUrl + 'media/' + fileName);
+    const decodedFileName = decodeURIComponent(fileName);
+    const encodedFileName = encodeURIComponent(decodedFileName);
+    return this.http.delete(`${this.apiUrl}DeleteMedia/${encodedFileName}`);
   }
+
 }

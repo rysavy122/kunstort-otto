@@ -9,7 +9,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import { FileModel } from 'src/app/core/models/file.model';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
@@ -293,17 +292,39 @@ preCalculateMediaPositions(): void {
     });
   }
 
-  deleteMedia(fileName: string): void {
-    this.mediaService.deleteMedia(fileName).subscribe(
-      () => {
-        this.toastr.success('Media deleted successfully!');
-        this.mediaUrls = this.mediaUrls.filter(url => !url.endsWith(fileName));
+/*   deleteMedia(mediaUrl: string): void {
+    // Extract the filename from the mediaUrl
+    const urlParts = mediaUrl.split('/');
+    const fileName = urlParts[urlParts.length - 1]; // Assuming the filename is the last part of the URL
+
+    // Use the service to delete the media by filename
+    this.mediaService.deleteMedia(fileName).subscribe({
+      next: (response) => {
+        this.toastr.success('Media successfully deleted.');
+        console.log(fileName)
+
+        // Update the mediaUrls array by removing the deleted media
+        this.mediaUrls = this.mediaUrls.filter(url => url !== mediaUrl);
+
+        // Additional logic if needed for reinitializing components or recalculating positions
       },
-      error => {
+      error: (error) => {
         console.error('Error deleting media:', error);
         this.toastr.error('Error deleting media.');
       }
-    );
+    });
+  }  */
+
+  deleteMedia(mediaUrl: string): void {
+    const urlParts = mediaUrl.split('/');
+    const fileName = urlParts[urlParts.length - 1]; // Assuming the filename is the last part of the URL
+
+    this.mediaService.deleteMedia(fileName).subscribe(() => {
+      this.mediaUrls = this.mediaUrls.filter(url => url !== mediaUrl);
+      this.toastr.success('Media successfully deleted.');
+      console.log(fileName)
+    });
+
   }
   removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {
     for (let i = 0; i < kommentare.length; i++) {
