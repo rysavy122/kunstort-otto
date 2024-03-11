@@ -58,26 +58,27 @@
       >
     </button>
     <br>
-    <div class="sticker-container" cdkDropList >
-      <div
-      cdkDropList
-      #todoList="cdkDropList"
-      [cdkDropListData]="todo"
-      [cdkDropListConnectedTo]="[doneList]"
-      class="example-list"
-      class="sticker-container"
-      (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of todo" cdkDrag>
-        <img [src]="item" alt="Sticker" style="width:100px;" >
+    <div class="sticker-container" cdkDropList style="display: flex;">
+      <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="currentImages" [cdkDropListConnectedTo]="[doneList]" class="example-list" (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let item of currentImages" cdkDrag>
+          <img [src]="item" alt="Sticker" style="width:100px;">
+        </div>
       </div>
     </div>
-    </div>
 
-<!--     <div class="pagination-controls">
-      <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
-      <span>Page {{currentPage}} of {{totalPages}}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
-    </div> -->
+    <div class="pagination-controls">
+      <button (click)="previousPage()" >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+        </svg>
+    </button>
+      <span style="font-size: 1.5rem;">{{currentPage}} / {{totalPages}}</span>
+      <button (click)="nextPage()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <div id="otto-plakat" style="width: 33.3%; margin: 15px;">
@@ -96,7 +97,6 @@
     #doneList="cdkDropList"
     [cdkDropListData]="done"
     [cdkDropListConnectedTo]="[todoList]"
-    class="example-list"
     (cdkDropListDropped)="drop($event)"
     (mouseup)="onCanvasMouseUp($event)">
     <div class="example-box" *ngFor="let item of done" cdkDrag>

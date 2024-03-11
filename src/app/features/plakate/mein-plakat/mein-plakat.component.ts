@@ -16,31 +16,15 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   public drawingTitle: string = '';
   lastDropPoint: paper.Point = new paper.Point(0, 0);
-
-
   svgPaths: string[] = [];
   stickers: paper.Raster[] = [];
-
-/*   todo = [
-    'https://rysavyotto.blob.core.windows.net/sticker/fc8d9a4e-6d63-4f7a-bfb5-c45e7229729f.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/f02555a2-0a14-46a8-85ab-9ceccc7bde3d.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/e4ef5951-5596-43ad-91ed-3478b84ec627.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/df02839d-a49c-4402-b58e-87121d0b1870.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/de644bf0-d71b-4a0d-90e8-038019057b0d.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/d29b2cf8-898c-4e7a-a7a5-7e5af257b181.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/cc8107b5-a9fc-4adf-883a-0aff1aab232d.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/b77edec1-9d69-49f1-a6ee-8f00282a1657.webp',
-  ]; */
-
-    todo = [
-
-
+  todo: string[] = [
     '/assets/img/1db9bbe7-6fa7-4b50-a64d-d6c0994eeeb4.webp',
     '/assets/img/3e173ed2-662d-4f6f-82b2-db4f53c06927.webp',
     '/assets/img/3eb8c855-79df-4c19-bd0c-c89a00c128b3.webp',
     '/assets/img/5e92da4d-0c5c-4de9-b4ed-6a7c4b44ff89.webp',
     '/assets/img/6b5b8295-643e-4d5d-8ccc-4316ed102247.webp',
-    'assets/img/7fd7dd8c-814f-4fbd-89ba-c7e52fc03ae8.webp',
+    '/assets/img/7fd7dd8c-814f-4fbd-89ba-c7e52fc03ae8.webp',
     '/assets/img/8afce092-ad0c-4920-b1d7-208aeb7c3f29.webp',
     '/assets/img/043c1d46-3368-4f13-9c25-4864e8a97475.webp',
     '/assets/img/69c43ac3-04cb-4054-9a48-11a7c05e0d6d.webp',
@@ -59,41 +43,16 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     '/assets/img/e4ef5951-5596-43ad-91ed-3478b84ec627.webp',
     '/assets/img/f02555a2-0a14-46a8-85ab-9ceccc7bde3d.webp',
     '/assets/img/fc8d9a4e-6d63-4f7a-bfb5-c45e7229729f.webp',
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ];
-
 
   done = [
     '',
-
   ];
 
   svgContent: string = '';
   originalSvgContent: string = '';
   svgHeight: string = '300px';
   svgWidth: string = '300px';
-
-
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
   private isDrawing = false;
@@ -111,10 +70,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     'https://rysavyotto.blob.core.windows.net/sticker/cc8107b5-a9fc-4adf-883a-0aff1aab232d.webp',
     'https://rysavyotto.blob.core.windows.net/sticker/b77edec1-9d69-49f1-a6ee-8f00282a1657.webp',
   ];
-  imagesPerPage = 20;
+  imagesPerPage = 8;
   currentPage = 1;
-
-
+  totalPages: number = 3;
 
 
   constructor(
@@ -136,8 +94,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.paperScope = new paper.PaperScope();
     this.paperScope.setup(this.drawingCanvas.nativeElement);
     this.initializeBorderImage();
-
-
 
     const savedDrawing = localStorage.getItem('userDrawing');
     if (savedDrawing) {
@@ -203,27 +159,24 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
 
-/*   get images(): string[] {
-    const startIndex = (this.currentPage - 1) * this.imagesPerPage;
-    return this.allImages.slice(startIndex, startIndex + this.imagesPerPage);
+   get currentImages(): string[] {
+    const start = (this.currentPage - 1) * this.imagesPerPage;
+    const end = start + this.imagesPerPage;
+    return this.todo.slice(start, end);
   }
 
-  nextPage(): void {
+  nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }
   }
 
-  previousPage(): void {
+  previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
-  } */
-/*
-  get totalPages(): number {
-    return Math.ceil(this.allImages.length / this.imagesPerPage);
   }
- */
+
   initializeBorderImage(): void {
     const borderLayer = new this.paperScope.Layer();
     const borderImage = new this.paperScope.Raster({

@@ -90,9 +90,15 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    border:1px solid black;
+    border:2px solid royalblue;
+    background-color: rgb(129, 155, 236);
+    border-radius: 8px;
+    margin: auto;
+    padding:15px;
     color: black;
-    height:300px;
+    height:fit-content;
+    width:fit-content;
+    margin-top: 50px
   }
   .sticker img {
     width: 100px; /* Adjust as needed */
@@ -105,9 +111,12 @@
     justify-content: center;
     align-items: center;
     margin-top: 20px;
+    color: black;
   }
   .pagination-controls button {
     margin: 0 10px;
+    background-color: white;
+    border:none;
   }
   #stroke-color::-webkit-color-swatch-wrapper {
     padding: 0;
@@ -178,23 +187,15 @@
   }
 
   .example-list {
+    width: 400px;
     margin: auto;
-
-  }
-
-  .example-box {
-    padding: 20px 10px;
-    border-bottom: solid 1px #ccc;
-    color: rgba(0, 0, 0, 0.87);
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
-    cursor: move;
-    font-size: 14px;
-    width:fit-content;
+    max-height: fit-content;
+    flex-wrap: wrap;
+
   }
+
+
 
   .cdk-drag-preview {
     box-sizing: border-box;
