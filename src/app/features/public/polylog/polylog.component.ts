@@ -37,6 +37,7 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   kommentare: KommentarDisplayModel[] = [];
   mediaUrls: string[] = []; // Array to store media URLs
 
+
   videoPositions: { [index: number]: any } = {};
   imagePositions: { [index: number]: any } = {};
   audioPositions: { [index: number]: any } = {};
@@ -324,6 +325,7 @@ preCalculateMediaPositions(): void {
       this.toastr.success('Media successfully deleted.');
       console.log(fileName)
     });
+    this.toastr.success('Media successfully deleted.');
 
   }
   removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {

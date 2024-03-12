@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment as env } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class ForschungsFrageService {
-  private apiUrl = 'http://localhost:6060/api/forschungsfragen';
+  private apiUrl = `${env.api.serverUrl}/api/forschungsfragen/`;
+
   private forschungsfragenSource = new BehaviorSubject<any[]>([]);
+
   forschungsfragen$ = this.forschungsfragenSource.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -28,7 +31,6 @@ export class ForschungsFrageService {
         catchError(this.handleError)
     );
 }
-
 
   getAllForschungsfragen(): Observable<any> {
     return this.http.get<any[]>(this.apiUrl).pipe(

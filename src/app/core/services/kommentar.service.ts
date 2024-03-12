@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { KommentarModel } from '../models/kommentar.model';
+import { environment as env } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class KommentarService {
-  private apiUrl = 'http://localhost:6060/api/kommentare';
+  private apiUrl = `${env.api.serverUrl}/api/kommentare/`;
 
   private kommentareSource = new BehaviorSubject<any[]>([]);
   kommentare$ = this.kommentareSource.asObservable();

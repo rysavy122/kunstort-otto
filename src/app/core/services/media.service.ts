@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment as env } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class MediaService {
-  private apiUrl = 'http://localhost:6060/api/kommentare/';
+  private apiUrl = `${env.api.serverUrl}/api/kommentare/`;
+
 
   constructor(private http: HttpClient) {}
 
@@ -17,7 +20,7 @@ export class MediaService {
     // Include ForschungsfrageId if required by your API
     formData.append('forschungsfrageId', forschungsfrageId.toString());
 
-    const endpoint = 'http://localhost:6060/api/kommentare/uploadmedia'; // Adjust if necessary
+    const endpoint = '`${environment.api.serverUrl}/api/kommentare/uploadmedia`';
     return this.http.post(endpoint, formData);
 }
 
@@ -27,7 +30,7 @@ export class MediaService {
   deleteMedia(fileName: string): Observable<any> {
     const decodedFileName = decodeURIComponent(fileName);
     const encodedFileName = encodeURIComponent(decodedFileName);
-    return this.http.delete(`${this.apiUrl}DeleteMedia/${encodedFileName}`);
+    return this.http.delete(`${this.apiUrl}deleteMedia/${encodedFileName}`);
   }
 
 }

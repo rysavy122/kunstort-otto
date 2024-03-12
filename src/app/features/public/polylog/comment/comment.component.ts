@@ -42,16 +42,16 @@ export class CommentComponent implements OnInit, AfterViewInit {
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
     const x = Math.floor(Math.random() * window.innerWidth -250);
     const y = Math.floor(Math.random() * window.innerHeight -1050);
-  
+
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
 
-  
+
     return {
       ...comment,
       style: {
         transform: transformStyle,
-        backgroundColor: this.generateRandomColor(), 
-        color: '#000000' 
+        backgroundColor: this.generateRandomColor(),
+        color: '#000000'
       }
     };
   }
@@ -66,8 +66,8 @@ export class CommentComponent implements OnInit, AfterViewInit {
     });
   }
   isColorUnacceptable(color: string): boolean {
-    const unacceptableColors = ['#000000', '#ffffff', '#e21c52']; 
-    const colorDistanceThreshold = 150; 
+    const unacceptableColors = ['#000000', '#ffffff', '#e21c52'];
+    const colorDistanceThreshold = 150;
 
     for (let unacceptable of unacceptableColors) {
       if (this.getColorDistance(color, unacceptable) < colorDistanceThreshold) {
@@ -96,7 +96,7 @@ export class CommentComponent implements OnInit, AfterViewInit {
       b: parseInt(result[3], 16)
     } : null;
   }
-  
+
   generateRandomColor(): string {
     let color = '#';
     for (let i = 0; i < 3; i++) {
@@ -105,7 +105,7 @@ export class CommentComponent implements OnInit, AfterViewInit {
     }
 
     if (this.isColorUnacceptable(color)) {
-      return this.generateRandomColor(); 
+      return this.generateRandomColor();
     }
     return color;
   }
