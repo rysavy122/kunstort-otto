@@ -5,7 +5,7 @@ export const environment = {
     clientId: 'h0vagAbseMlO1yUe9w0FePm2Fh0wAYGw',
     authorizationParams: {
       audience: 'https://dev-z3z23qam2lr3gsku.us.auth0.com/api/v2/',
-      redirect_uri: 'http://localhost:4040/callback',
+      redirect_uri: 'https://otto-interactive-test.azurewebsites.net/callback',
     },
     errorPath: '/callback',
   },
