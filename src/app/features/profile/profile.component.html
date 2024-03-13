@@ -57,6 +57,7 @@
         >
           Neue Forschungsfrage stellen
         </button>
+
         <button (click)="openFreezeDialog()" class="submit-button">
           {{ VKb2xiYiQ2 ? "Polylog auftauen" : "Polylog einfrieren" }}
         </button>
@@ -104,27 +105,36 @@
             </li>
           </ul>
         </div>
-      </div>
-    </div>
-    <!-- Pagination Controls -->
+         <!-- Pagination Controls -->
     <div class="pagination-controls">
       <button
         class="controlls-button"
         (click)="changePage(currentPage - 1)"
-        [disabled]="currentPage === 1"
       >
-        Zurück
-      </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <span>
+
+      </span>
+      <svg color="black" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+      </svg>
+    </button>
+    <span>
+      <span style="font-size: 1.5rem;">{{currentPage}} / {{totalPages}}</span>
+    </span>
       <button
         class="controlls-button"
         (click)="changePage(currentPage + 1)"
-        [disabled]="currentPage === totalPages"
       >
-        Next
+      <svg color="black" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+      </svg>
       </button>
     </div>
   </div>
+      </div>
+
+    </div>
+
 
   <app-confirm-dialog
     #confirmDialog

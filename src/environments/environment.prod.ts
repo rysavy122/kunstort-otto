@@ -4,12 +4,12 @@ export const environment = {
     domain: 'dev-z3z23qam2lr3gsku.us.auth0.com',
     clientId: 'h0vagAbseMlO1yUe9w0FePm2Fh0wAYGw',
     authorizationParams: {
-      audience: 'https://hello-world.example.com',
-      redirect_uri: 'https://ottoapi.azurewebsites.net/callback',
+      audience: 'https://dev-z3z23qam2lr3gsku.us.auth0.com/api/v2/',
+      redirect_uri: 'http://localhost:4040/callback',
     },
     errorPath: '/callback',
   },
   api: {
-    serverUrl: 'https://ottoapi.azurewebsites.net/',
+    serverUrl: 'https://ottoapi.azurewebsites.net',
   },
 };

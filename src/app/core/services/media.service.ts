@@ -20,7 +20,7 @@ export class MediaService {
     // Include ForschungsfrageId if required by your API
     formData.append('forschungsfrageId', forschungsfrageId.toString());
 
-    const endpoint = '`${environment.api.serverUrl}/api/kommentare/uploadmedia`';
+    const endpoint = `${env.api.serverUrl}/api/kommentare/uploadmedia`;
     return this.http.post(endpoint, formData);
 }
 

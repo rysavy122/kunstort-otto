@@ -9,7 +9,7 @@ import { environment as env } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class ForschungsFrageService {
-  private apiUrl = `${env.api.serverUrl}/api/forschungsfragen/`;
+  private apiUrl = `${env.api.serverUrl}/api/forschungsfragen`;
 
   private forschungsfragenSource = new BehaviorSubject<any[]>([]);
 
