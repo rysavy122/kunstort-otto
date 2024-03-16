@@ -4,8 +4,11 @@
   "scripts": {
     "ng": "ng",
     "env": "ts-node set-env.ts",
-    "start": "npm run env && ng serve",
-    "build": "npm run env && ng build",
+    "start": "NODE_ENV=development npm run env && ng serve",
+    "build:development": "NODE_ENV=development npm run env && ng build --configuration development",
+    "build:staging": "NODE_ENV=staging npm run env && ng build --configuration production && npm run copy:webconfig",
+    "build:production": "NODE_ENV=production npm run env && ng build --configuration production && npm run copy:webconfig",
+    "copy:webconfig": "copyfiles -u 1 src/web.config dist/spa_angular_typescript_hello-world/",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
@@ -45,6 +48,7 @@
     "@types/jasmine": "~4.0.0",
     "@types/snapsvg": "^0.5.8",
     "@types/tinymce": "^4.6.9",
+    "copyfiles": "^2.4.1",
     "dotenv": "^16.0.1",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",

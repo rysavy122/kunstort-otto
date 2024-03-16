@@ -1,5 +1,7 @@
 import { Component, AfterViewInit, OnDestroy, EventEmitter, Output, OnInit } from '@angular/core';
 import { Editor } from 'tinymce';
+import { environment as env } from '../../../../environments/environment';
+
 
 declare var tinymce: any;
 
@@ -18,6 +20,8 @@ export class TinyMceComponent implements AfterViewInit, OnDestroy {
     isLoading = true; // Initial loading state
     showSpinner = false; // Controls spinner visibility
     private spinnerTimeout: any;
+    private apiKey = `${env.api.serverUrl}/api/kommentare/`;
+
 
     ngAfterViewInit() {
         // Delay for showing the spinner
@@ -37,7 +41,8 @@ export class TinyMceComponent implements AfterViewInit, OnDestroy {
                 this.isLoading = false;
                 this.showSpinner = false;
                 clearTimeout(this.spinnerTimeout); // Clear the timeout if editor loads before the delay
-            }
+            },
+            apikey: 'YOUR_API_KEY_HERE'
 
         });
     }

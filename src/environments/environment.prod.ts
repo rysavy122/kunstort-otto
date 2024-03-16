@@ -9,6 +9,9 @@ export const environment = {
     },
     errorPath: '/callback',
   },
+  tinyMCE: {
+    apiKey: 'umt68mpo8gend1vb2nfktubq4s8ihhg6p36si032mybvqbkn'
+  },
   api: {
     serverUrl: 'https://ottoapi.azurewebsites.net',
   },
