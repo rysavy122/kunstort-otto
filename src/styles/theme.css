@@ -2,21 +2,20 @@
 
 /* Theme */
 @font-face {
-  font-family: 'Besom-Handwritten';
-  src: url('../assets/fonts/Besom-extended.otf') format('opentype');
+  font-family: "Besom-Handwritten";
+  src: url("../assets/fonts/Besom-extended.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Besom-Handwritten';
-  src: url('../assets/fonts/Besom-extended.otf') format('opentype');
+  font-family: "Besom-Handwritten";
+  src: url("../assets/fonts/Besom-extended.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Besom';
-  src:
-       url('../assets/fonts/Besom/Besom-free-font.otf') format('opentype');
+  font-family: "Besom";
+  src: url("../assets/fonts/Besom/Besom-free-font.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
@@ -38,7 +37,6 @@
   /*--otto-primary: #e21c52;*/
   --otto-primary: #e51a4f;
   --otto-secondary: #f63378;
-
 
   --yellow-mandarine-gradient: linear-gradient(
     153.07deg,
@@ -89,7 +87,7 @@
   );
 
   --font-secondary: "Inter", sans-serif;
-  --font-primary: 'Besom-Handwritten';
+  --font-primary: "Besom-Handwritten";
   --font-secondary: "Space Grotesk", sans-serif;
   --font-secondary: "Barlow", sans-serif;
 }
