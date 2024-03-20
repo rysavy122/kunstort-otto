@@ -3,13 +3,7 @@
 /* Theme */
 @font-face {
   font-family: "Besom-Handwritten";
-  src: url("../assets/fonts/Besom-extended.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Besom-Handwritten";
-  src: url("../assets/fonts/Besom-extended.otf") format("opentype");
+  src: url("../assets/fonts/Besom/Besom-extended.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
@@ -19,6 +13,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 :root {
   --orange: #ff4f40;
   --indigo: #635dff;
