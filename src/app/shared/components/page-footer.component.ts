@@ -13,7 +13,7 @@ import { Auth0ResourceModel } from '@app/core';
               <app-page-footer-hyperlink path="https://auth0.com/"
                 >Denis Rysavy in Zusammenarbeit mit Kunsort Ottersberg .eV.</app-page-footer-hyperlink
               >
-              <p>&copy; 2023 rysavy Alle Rechte vorbehalten.
+              <p>&copy; 2023 - {{ currentYear}} rysavy Alle Rechte vorbehalten.
             </p>
             <p class="page-footer-message__description">
               <app-page-footer-hyperlink
@@ -67,6 +67,8 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, fugit!
   `,
 })
 export class PageFooterComponent {
+
+  currentYear: number = new Date().getFullYear();
   resourceList: Auth0ResourceModel[] = [
     {
       path: 'https://auth0.com/why-auth0/',

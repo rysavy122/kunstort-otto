@@ -62,6 +62,7 @@ export class ProfileComponent {
   }
 
   changePage(page: number) {
+    if(this.itemsPerPage > 0)
     this.currentPage = page;
   }
   get paginatedForschungsfragen() {

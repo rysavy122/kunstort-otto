@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
         <img
           style="height:50px; margin-left: 50px;"
           class="nav-bar__logo"
-          src="https://dl.dropboxusercontent.com/scl/fi/okeb3hyqtdymzz3il2w5m/Kunstort-Otto_Logo.png?rlkey=hctodkeapapu5rds4kma4b0rv&raw=1"
+          src="https://ottoblob.blob.core.windows.net/images/Kunstort-Otto_Logo.png"
           alt="Otto logo"
         />
       </a>

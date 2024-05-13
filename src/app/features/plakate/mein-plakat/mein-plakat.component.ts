@@ -59,17 +59,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   strokeSize = 2;
   strokeColor = new paper.Color(0, 0, 0);
   isDialogOpen: boolean = false;
-
-  stickerUrls = [
-    'https://rysavyotto.blob.core.windows.net/sticker/fc8d9a4e-6d63-4f7a-bfb5-c45e7229729f.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/f02555a2-0a14-46a8-85ab-9ceccc7bde3d.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/e4ef5951-5596-43ad-91ed-3478b84ec627.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/df02839d-a49c-4402-b58e-87121d0b1870.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/de644bf0-d71b-4a0d-90e8-038019057b0d.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/d29b2cf8-898c-4e7a-a7a5-7e5af257b181.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/cc8107b5-a9fc-4adf-883a-0aff1aab232d.webp',
-    'https://rysavyotto.blob.core.windows.net/sticker/b77edec1-9d69-49f1-a6ee-8f00282a1657.webp',
-  ];
   imagesPerPage = 8;
   currentPage = 1;
   totalPages: number = 3;
