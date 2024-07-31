@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
+import { Component } from '@angular/core';
+import { CustomAuthService } from 'src/app/core/services/custom-auth-service';
 
 @Component({
   selector: 'app-signup-button',
@@ -9,17 +8,22 @@ import { AuthService } from '@auth0/auth0-angular';
   `,
 })
 export class SignupButtonComponent {
-  constructor(private auth: AuthService) {}
+  constructor(private auth: CustomAuthService) {}
 
   handleSignUp(): void {
-    this.auth.loginWithRedirect({
-      appState: {
-        target: '/profile',
-      },
-      authorizationParams: {
-        prompt: 'login',
-        screen_hint: 'signup',
-      },
-    });
+    try {
+      this.auth.loginWithRedirect({
+        appState: {
+          target: '/profile',
+          role: 'Gast'
+        },
+        authorizationParams: {
+          prompt: 'signup',
+          screen_hint: 'signup',
+        },
+      });
+    } catch (err) {
+      console.error('Signup error:', err);
+    }
   }
 }

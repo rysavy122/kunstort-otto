@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-auth0-features',
@@ -7,31 +9,58 @@ import { Component } from '@angular/core';
       <h2 class="auth0-features__title" style="color: black;">Wähle eine Rolle aus und mache mit.</h2>
       <div class="auth0-features__grid">
         <app-auth0-feature
-          title="Als Gast/Besucherin"
-          description="Als Gast/Besucherin kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
-          resourceUrl="https://auth0.com/docs/multifactor-authentication"
+          title="Als Gast/Besucher*in"
+          description="Als Gast/Besucher*in kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
+          [role]="'Gast'"
           icon="https://ottoblob.blob.core.windows.net/images/*image00040 Kopie.png"
+          (roleSelected)="handleRoleSelected($event)"
         ></app-auth0-feature>
         <app-auth0-feature
           title="Als Institution"
           description="Als Institution kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
-          resourceUrl="https://auth0.com/docs/attack-protection"
+          [role]="'Institution'"
           icon="https://ottoblob.blob.core.windows.net/images/*image00021 Kopie.png"
+          (roleSelected)="handleRoleSelected($event)"
         ></app-auth0-feature>
         <app-auth0-feature
           title="Als Team"
           description="Als Team kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
-          resourceUrl="https://auth0.com/docs/actions"
+          [role]="'Team'"
           icon="https://ottoblob.blob.core.windows.net/images/*image00013 Kopie 2.png"
+          (roleSelected)="handleRoleSelected($event)"
         ></app-auth0-feature>
         <app-auth0-feature
           title="Als Künstler*in"
           description="Als Künstler*in kannst hast du folgende Berechtigungen und kannst folgendes machen, wähle diese Rolle, wenn du folgende Kriterien erfüllst."
-          resourceUrl="https://auth0.com/docs/actions"
+          [role]="'Künstler'"
           icon="https://ottoblob.blob.core.windows.net/images/*image00042 Kopie.png"
+          (roleSelected)="handleRoleSelected($event)"
         ></app-auth0-feature>
       </div>
     </div>
   `,
 })
-export class Auth0FeaturesComponent {}
+export class Auth0FeaturesComponent {
+  constructor(private auth: AuthService, private router: Router) {}
+  selectedRole: string | undefined;
+
+  handleRoleSelected(role: string) {
+    this.selectedRole = role;
+    this.handleSignUp();
+  }
+
+  handleSignUp() {
+    console.log('handleSignUp triggered with role:', this.selectedRole);
+    const role = encodeURIComponent(this.selectedRole || '');
+    this.auth.loginWithRedirect({
+      appState: {
+        target: `/profile?role=${role}`,
+      },
+      authorizationParams: {
+        prompt: 'login',
+        screen_hint: 'signup',
+      },
+    });
+  }
+}
+

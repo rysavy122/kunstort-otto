@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { ForschungsFrageService } from '@app/core';
 import { map } from 'rxjs/operators';
@@ -7,13 +7,13 @@ import { ConfirmationDialogComponent } from 'src/app/shared/components/dialog/co
 import { ConfirmationFreezeDialogComponent } from 'src/app/shared/components/dialog/confirm-freeze-dialog.component';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
-
-
+import { CustomAuthService } from 'src/app/core/services/custom-auth-service';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   forschungsfrage: string = '';
   forschungsfragen: ForschungsfragenModel[] = [];
   selectedFile: File | null = null;
@@ -34,13 +34,14 @@ export class ProfileComponent {
   @ViewChild('confirmFreezeDialog') confirmFreezeDialog!: ConfirmationFreezeDialogComponent;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-
-
   constructor(
     private auth: AuthService,
     private toastr: ToastrService,
     private forschungsfrageService: ForschungsFrageService,
-    private freezePolylogService: FreezePolylogService
+    private freezePolylogService: FreezePolylogService,
+    private customAuthService: CustomAuthService,
+    private route: ActivatedRoute
+
   ) {}
 
   ngOnInit() {
@@ -49,10 +50,31 @@ export class ProfileComponent {
     this.freezePolylogService.getFreezeState().subscribe((state) => {
       this.VKb2xiYiQ2 = state;
     });
+
+    this.auth.user$.subscribe(user => {
+      console.log('User after login:', user);
+
+      // Read the role from query parameters
+      const role = this.route.snapshot.queryParamMap.get('role');
+      console.log('Role from query params:', role);
+
+      const userId = user?.sub;
+
+      if (userId && role) {
+        console.log('Assigning role:', role, 'to user:', userId);
+        this.customAuthService.assignRole(userId, role).subscribe({
+          next: () => console.log("Role assignment completed."),
+          error: err => console.error('Role assignment error:', err)
+        });
+      } else {
+        console.error('User ID or Role is undefined:', { userId, role });
+      }
+    });
   }
   toggleForschungsfragen() {
     this.isExpanded = !this.isExpanded;
   }
+
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.itemsPerPage);
   }
@@ -63,12 +85,14 @@ export class ProfileComponent {
 
   changePage(page: number) {
     if(this.itemsPerPage > 0)
-    this.currentPage = page;
+      this.currentPage = page;
   }
+
   get paginatedForschungsfragen() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.forschungsfragen.slice(startIndex, startIndex + this.itemsPerPage);
   }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -89,6 +113,7 @@ export class ProfileComponent {
       error => console.error('Error fetching Forschungsfragen:', error)
     );
   }
+
   clearFileInput() {
     if (this.fileInput && this.fileInput.nativeElement) {
       this.fileInput.nativeElement.value = '';
@@ -102,10 +127,11 @@ export class ProfileComponent {
       this.confirmDialog.forschungsfrage = this.forschungsfrage;
       this.confirmDialog.isOpen = true;
     } else {
-      console.log("No File Selected")
+      console.log("No File Selected");
       this.toastr.info('Kein Logo für die Forschungsfrage ausgewählt!', 'Info');
     }
   }
+
   closeDialog(success: boolean) {
     this.isDialogOpen = false;
     this.isFreezeDialogOpen = false;
@@ -129,6 +155,4 @@ export class ProfileComponent {
       this.openFreezeDialog();
     }
   }
-
-
 }

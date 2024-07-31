@@ -1,18 +1,18 @@
 @import url('../theme.css');
 
-app-hero-banner{
-  height:90vh;
+app-hero-banner {
+  height: 90vh;
   margin-top: -12vh;
-
 }
+
 .hero-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height:100%;
+  height: 100%;
   background: var(--otto-primary);
-  clip-path: polygon( 77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20% );
+  clip-path: polygon(77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20%);
   color: var(--white);
   margin: 50px auto;
   margin-top: -100px;
@@ -20,27 +20,31 @@ app-hero-banner{
   min-width: 450px;
   margin: auto;
   overflow-x: hidden;
+  animation: backgroundFade 10s linear infinite;
 }
 
-/* .hero-banner--yellow-mandarine {
-  background: var(--yellow-mandarine-gradient);
-}
-.hero-banner--pink-yellow {
-  background: var(--pink-yellow-gradient);
+@keyframes backgroundFade {
+  0% {
+    background: var(--otto-primary);
+    }
+  20% {
+    background: yellow;
+  }
+  40% {
+    background: pink;
+  }
+  60% {
+    background: blue;
+  }
+  80% {
+    background: green;
+  }
+  100% {
+    background: var(--otto-primary);
+  }
 }
 
-.hero-banner--blue-aqua {
-  background: var(--blue-aqua-gradient);
-}
-
-.hero-banner--aqua-emerald {
-  background: var(--aqua-emerald-gradient);
-}
-
-.hero-banner--emerald-yellow {
-  background: var(--emerald-yellow-gradient);
-} */
-
+/* Rest of your CSS code */
 .hero-banner__logo {
   display: flex;
   justify-content: center;
@@ -79,7 +83,7 @@ app-hero-banner{
 
 @media only screen and (max-width: 670px) {
   .hero-banner {
-    width:105%;
+    width: 105%;
     padding: 3.2rem 6.4rem;
     margin-top: -10px;
     overflow-x: hidden;
@@ -88,17 +92,15 @@ app-hero-banner{
   .hero-banner__logo {
     width: 9.6rem;
     height: 9.6rem;
-    margin:20px 0px;
+    margin: 20px 0px;
     margin-top: 200px;
     margin-right: 10px;
-
   }
 
   .hero-banner__image {
     width: 25.2rem;
     height: 15.2rem;
     margin-right: -100%;
-
   }
 
   .hero-banner__image--small {
@@ -114,15 +116,12 @@ app-hero-banner{
     font-size: 1.6rem;
     line-height: 2.4rem;
   }
-
 }
 
-
-#pictures img{
+#pictures img {
   margin: 0;
   height: 100vh;
-  width:100%;
+  width: 100%;
   position: absolute;
   z-index: -1;
-
 }

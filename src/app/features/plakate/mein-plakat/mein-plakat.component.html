@@ -1,30 +1,6 @@
 <div class="wrapper">
-  <!--   <div class="file-upload-container">
-    <input
-      type="file"
-      id="svgFileInput"
-      (change)="onFileSelected($event)"
-      accept=".svg"
-      hidden
-    />
-    <canvas id="paperCanvas" hidden></canvas>
-    <label for="svgFileInput" class="file-upload-btn">Upload SVG File</label>
-  </div>
-  <div id="svg-container" [style.height]="svgHeight" [style.width]="svgWidth">
-    <div [innerHTML]="svgContent | safeHtml"></div>
-  </div>
-  <button (click)="rearrangePaths()">Rearrange Paths</button>
-  <button (click)="revertToOriginal()">Revert to Original</button>
-  <ul>
-    <li *ngFor="let path of svgPaths; let i = index">
-      Path {{ i + 1 }}: <code>{{ path }}</code>
-    </li>
-  </ul>
-</div> -->
-
   <div id="sticker" style="height: 700px; width: 33%;">
     <h2>Sticker</h2>
-    <div id="sticker"></div>
     <div id="qr">
       <a
         href="www.qrcode-generator.de/"
@@ -58,7 +34,7 @@
     </button>
     <br>
     <div class="sticker-container" cdkDropList style="display: flex;">
-      <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="currentImages" [cdkDropListConnectedTo]="[doneList]" class="example-list" (cdkDropListDropped)="drop($event)">
+      <div cdkDropList #availableStickersList="cdkDropList" [cdkDropListData]="currentImages" [cdkDropListConnectedTo]="[canvasStickersList]" class="example-list" (cdkDropListDropped)="drop($event)">
         <div class="example-box" *ngFor="let item of currentImages" cdkDrag>
           <img [src]="item" alt="Sticker" style="width:100px;">
         </div>
@@ -89,21 +65,20 @@
     />
 
     <div
-    id="canvas"
-    class="canvas-wrapper"
-    style="width: 567px; height: 800px"
-    cdkDropList
-    #doneList="cdkDropList"
-    [cdkDropListData]="done"
-    [cdkDropListConnectedTo]="[todoList]"
-    (cdkDropListDropped)="drop($event)"
-    (mouseup)="onCanvasMouseUp($event)">
-    <div class="example-box" *ngFor="let item of done" cdkDrag>
-      <img *ngIf="item" [src]="item" alt="Sticker" class="sticker-image" >
-  </div>
-    <canvas id="drawingCanvas" #drawingCanvas height="800px" width="567px" class="custom-cursor"></canvas>
-
-  </div>
+      id="canvas"
+      class="canvas-wrapper"
+      style="width: 567px; height: 800px"
+      cdkDropList
+      #canvasStickersList="cdkDropList"
+      [cdkDropListData]="canvasStickers"
+      [cdkDropListConnectedTo]="[availableStickersList]"
+      (cdkDropListDropped)="drop($event)"
+      (mouseup)="onCanvasMouseUp($event)">
+      <div class="example-box" *ngFor="let item of canvasStickers" cdkDrag>
+        <img *ngIf="item" [src]="item" alt="Sticker" class="sticker-image">
+      </div>
+      <canvas id="drawingCanvas" #drawingCanvas height="800px" width="567px" class="custom-cursor"></canvas>
+    </div>
   </div>
 
   <div id="controlls" style="width: 33%; margin-left: 25px">

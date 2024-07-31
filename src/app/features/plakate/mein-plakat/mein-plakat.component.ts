@@ -2,10 +2,9 @@ import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, Vie
 import { MessageService } from '@app/core';
 import { ToastrService } from 'ngx-toastr';
 
-
-
 import * as paper from 'paper';
 import { CdkDragDrop, copyArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+
 @Component({
   selector: 'app-mein-plakat',
   templateUrl: './mein-plakat.component.html',
@@ -18,7 +17,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   lastDropPoint: paper.Point = new paper.Point(0, 0);
   svgPaths: string[] = [];
   stickers: paper.Raster[] = [];
-  todo: string[] = [
+  availableStickers: string[] = [
     '/assets/img/1db9bbe7-6fa7-4b50-a64d-d6c0994eeeb4.webp',
     '/assets/img/3e173ed2-662d-4f6f-82b2-db4f53c06927.webp',
     '/assets/img/3eb8c855-79df-4c19-bd0c-c89a00c128b3.webp',
@@ -37,17 +36,14 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     '/assets/img/a2e39570-2f5c-441a-ae54-108f64224e0b.webp',
     '/assets/img/b77edec1-9d69-49f1-a6ee-8f00282a1657.webp',
     '/assets/img/cc8107b5-a9fc-4adf-883a-0aff1aab232d.webp',
-    '/assets/img/d29b2cf8-898c-4e7a-a7a5-7e5af257b181.webp',
+    '/assets/img/d29b2cf8-898c-4f6f-82b2-db4f53c06927.webp',
     '/assets/img/de644bf0-d71b-4a0d-90e8-038019057b0d.webp',
     '/assets/img/df02839d-a49c-4402-b58e-87121d0b1870.webp',
     '/assets/img/e4ef5951-5596-43ad-91ed-3478b84ec627.webp',
     '/assets/img/f02555a2-0a14-46a8-85ab-9ceccc7bde3d.webp',
     '/assets/img/fc8d9a4e-6d63-4f7a-bfb5-c45e7229729f.webp',
   ];
-
-  done = [
-    '',
-  ];
+  canvasStickers = [ '' ];
 
   svgContent: string = '';
   originalSvgContent: string = '';
@@ -62,7 +58,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   imagesPerPage = 8;
   currentPage = 1;
   totalPages: number = 3;
-
+  private frameLayer!: paper.Layer;
+  private drawingLayer!: paper.Layer;
 
   constructor(
     public messageService: MessageService,
@@ -70,19 +67,17 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   ) { }
   public editorData = '<p>Initial content of the editor.</p>';
 
-
   ngOnInit(): void {
     const savedTitle = localStorage.getItem('drawingTitle');
-    {
-      if(savedTitle){
-        this.drawingTitle = savedTitle;
-      }
+    if (savedTitle) {
+      this.drawingTitle = savedTitle;
     }
   }
+
   ngAfterViewInit(): void {
     this.paperScope = new paper.PaperScope();
     this.paperScope.setup(this.drawingCanvas.nativeElement);
-    this.initializeBorderImage();
+    this.initializeLayers();
 
     const savedDrawing = localStorage.getItem('userDrawing');
     if (savedDrawing) {
@@ -98,13 +93,13 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.stopDrawing();
     };
   }
+
   handleDialogClose(success: boolean): void {
     if (success) {
       this.clearCanvas(); // Call the method to clear and reset the canvas
     }
     this.isDialogOpen = false; // Ensure the dialog can be reopened
   }
-
 
   drop(event: CdkDragDrop<string[], any>) {
     if (event.previousContainer === event.container) {
@@ -135,7 +130,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       // Adjust the position again in case the onLoad event changes anything
       sticker.position = this.lastDropPoint;
       sticker.scale(100 / sticker.bounds.width, 100 / sticker.bounds.height); // Scale sticker to 50x50px
-
     };
 
     this.stickers.push(sticker); // Optional: Keep track of stickers
@@ -147,11 +141,10 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.lastDropPoint = new paper.Point(event.clientX - bounds.left, event.clientY - bounds.top);
   }
 
-
-   get currentImages(): string[] {
+  get currentImages(): string[] {
     const start = (this.currentPage - 1) * this.imagesPerPage;
     const end = start + this.imagesPerPage;
-    return this.todo.slice(start, end);
+    return this.availableStickers.slice(start, end);
   }
 
   nextPage() {
@@ -166,8 +159,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     }
   }
 
-  initializeBorderImage(): void {
-    const borderLayer = new this.paperScope.Layer();
+  initializeLayers(): void {
+    this.drawingLayer = new this.paperScope.Layer();
+    this.frameLayer = new this.paperScope.Layer();
     const borderImage = new this.paperScope.Raster({
       source: '/assets/img/OttoRahmen_freigestellt_page-0001.jpg',
       position: this.paperScope.view.center
@@ -175,11 +169,16 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
     borderImage.onLoad = () => {
       borderImage.size = new this.paperScope.Size(this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height);
-      borderLayer.sendToBack();
-
+      this.frameLayer.addChild(borderImage); // Ensure the border image is added to the frameLayer
       this.paperScope.project.activeLayer.activate();
     };
   }
+
+  bringFrameLayerToFront(): void {
+    this.frameLayer.bringToFront();
+    this.paperScope.view.update();
+  }
+
   enableDrawing(): void {
     if (this.drawingPath) {
       this.drawingPath.remove();
@@ -200,45 +199,48 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   startDrawing(event: paper.MouseEvent): void {
     this.isDrawing = true;
 
-    this.drawingPath = new this.paperScope.Path({
-      strokeColor: this.strokeColor,
-      strokeWidth: this.strokeSize,
-    });
+    if (this.isInsideDrawingArea(event.point)) {
+      this.drawingPath = new this.paperScope.Path({
+        strokeColor: this.strokeColor,
+        strokeWidth: this.strokeSize,
+      });
 
-    this.drawingPath.add(event.point);
-  }
-
-  clearAndResetDrawing(): void {
-    if (this.drawingPath) {
-      this.drawingPath.remove();
+      this.drawingPath.add(event.point);
     }
-    this.paperScope.project.clear();
-    localStorage.removeItem('userDrawing');
-    this.toastr.success('Dein Plakat ist gelöscht!');
-    this.isDialogOpen = false;
-
   }
 
   draw(event: paper.MouseEvent): void {
-    if (this.isDrawing && this.drawingPath) {
+    if (this.isDrawing && this.drawingPath && this.isInsideDrawingArea(event.point)) {
       this.drawingPath.add(event.point);
       this.paperScope.view.requestUpdate();
     }
   }
+
   stopDrawing(): void {
     this.isDrawing = false;
   }
 
+  isInsideDrawingArea(point: paper.Point): boolean {
+    // Define the boundaries of the drawing area
+    const drawingArea = new this.paperScope.Path.Rectangle({
+      from: new this.paperScope.Point(50, 50), // Adjust as necessary
+      to: new this.paperScope.Point(this.paperScope.view.viewSize.width - 50, this.paperScope.view.viewSize.height - 50), // Adjust as necessary
+      strokeWidth: 0
+    });
+    return drawingArea.contains(point);
+  }
 
   saveDrawing(): void {
     const drawingJSON = this.paperScope.project.exportJSON({ asString: true });
     localStorage.setItem('userDrawing', drawingJSON);
     localStorage.setItem('drawingTitle', this.drawingTitle);
     this.toastr.success('Dein Plakat wurde gespeichert!');
-    console.log("Plakat gespeichert:")
+    console.log("Plakat gespeichert:");
   }
 
   exportCanvasAsImage(): void {
+    this.addFrameToTopLayer(); // Ensure the frame is on top
+
     this.paperScope.view.update();
 
     setTimeout(() => {
@@ -255,9 +257,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       downloadLink.click();
       document.body.removeChild(downloadLink);
 
+      this.initializeLayers(); // Reinitialize layers to restore drawing state
     }, 100);
   }
-
 
   addImageSticker(): void {
     const fileInput = document.createElement('input');
@@ -282,6 +284,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
     fileInput.click();
   }
+
   dragSticker(stickerImage: paper.Raster, event: paper.MouseEvent): void {
     const originalPosition = stickerImage.position;
     const offset = originalPosition.subtract(event.point);
@@ -294,7 +297,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       stickerImage.onMouseDrag = null;
     };
   }
-
 
   enableEraser(): void {
     if (this.stickers.length > 0) {
@@ -309,8 +311,17 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     }
   }
 
-  clearCanvas(): void {
+  clearAndResetDrawing(): void {
+    if (this.drawingPath) {
+      this.drawingPath.remove();
+    }
+    this.paperScope.project.clear();
+    localStorage.removeItem('userDrawing');
+    this.toastr.success('Dein Plakat ist gelöscht!');
+    this.isDialogOpen = false;
+  }
 
+  clearCanvas(): void {
     if (this.drawingPath) {
       this.drawingPath.remove();
       this.drawingPath = null;
@@ -320,15 +331,16 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     localStorage.removeItem('userDrawing');
     localStorage.removeItem('drawingTitle');
     this.drawingTitle = '';
-    this.initializeBorderImage();
+    this.initializeLayers();
 
     this.toastr.success('Neues Plakat bereit!');
-
   }
+
   initializeDrawing(): void {
     this.enableDrawing();
   }
-  openDialog(){
+
+  openDialog() {
     this.isDialogOpen = true;
   }
 
@@ -344,6 +356,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       reader.readAsText(file);
     }
   }
+
   revertToOriginal(): void {
     this.svgContent = this.originalSvgContent;
     this.parseSVG(this.svgContent);
@@ -359,6 +372,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     });
     console.log("Svg Pfade", paths);
   }
+
   rearrangePaths(): void {
     if (!this.svgContent) return;
 
@@ -393,16 +407,28 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.svgContent = serializer.serializeToString(svgDoc);
   }
 
-
   shuffleArray(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
+
   changeStrokeColor(): void {
     if (this.drawingPath) {
       this.drawingPath.strokeColor = this.strokeColor;
     }
+  }
+
+  private addFrameToTopLayer(): void {
+    const borderImage = new this.paperScope.Raster({
+      source: '/assets/img/OttoRahmen_freigestellt_page-0001.jpg',
+      position: this.paperScope.view.center
+    });
+
+    borderImage.onLoad = () => {
+      borderImage.size = new this.paperScope.Size(this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height);
+      borderImage.bringToFront();
+    };
   }
 }

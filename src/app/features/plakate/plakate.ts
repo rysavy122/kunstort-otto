@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from '@app/core';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
   selector: 'app-plakate',
@@ -12,9 +11,6 @@ export class PlakateComponent implements OnInit {
   constructor(
     public messageService: MessageService,
   ) {}
-  public Editor = ClassicEditor;
-  public editorData = '<p>Initial content of the editor.</p>';
-  
 
   ngOnInit(): void {
   }

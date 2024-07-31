@@ -1,14 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-auth0-feature',
   template: `
-    <a
-      class="auth0-feature"
-      target="_blank"
-      rel="noopener noreferrer"
-      [href]="resourceUrl"
-    >
+  <div
+   class="auth0-feature"
+  (click)="selectRole()"
+  >
       <h3 class="auth0-feature__headline">
         <img
           class="auth0-feature__icon"
@@ -18,7 +16,8 @@ import { Component, Input } from '@angular/core';
       </h3>
       <h2>{{ title }}</h2>
       <p class="auth0-feature__description">{{ description }}</p>
-    </a>
+  </div>
+
   `,
 })
 export class Auth0FeatureComponent {
@@ -26,4 +25,13 @@ export class Auth0FeatureComponent {
   @Input() description: string | undefined;
   @Input() resourceUrl: string | undefined;
   @Input() icon: string | undefined;
+  @Input() role: string | undefined;
+  @Output() roleSelected = new EventEmitter<string>();
+
+
+  selectRole() {
+    this.roleSelected.emit(this.role);
+    console.log(this.role)
+  }
+
 }
