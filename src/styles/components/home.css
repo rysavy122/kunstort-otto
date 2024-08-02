@@ -1,32 +1,32 @@
 @import url('../theme.css');
 
-app-hero-banner {
+app-home-banner {
   height: 90vh;
   margin-top: -12vh;
 }
 
-.hero-banner {
+.home-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   background: var(--otto-primary);
-  clip-path: polygon(77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20%);
+  clip-path: polygon(77% 13.2%, 90% 0%, 86.2% 28.8%, 86.2% 100%, 0% 93.8%, 5% 13.2%);
+
   color: var(--white);
-  margin: 50px auto;
-  margin-top: -100px;
   padding: 3.2rem 6.4rem;
   min-width: 450px;
   margin: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   animation: backgroundFade 10s linear infinite;
 }
 
 @keyframes backgroundFade {
   0% {
     background: var(--otto-primary);
-    }
+  }
   20% {
     background: yellow;
   }
@@ -44,84 +44,80 @@ app-hero-banner {
   }
 }
 
-/* Rest of your CSS code */
-.hero-banner__logo {
+.home-banner__wrapper {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  margin-top: 7%;
-  width: 22.8rem;
-  height: 22.8rem;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  max-width: 80%;
+  margin-top: 20vh;
+  margin-left: -10%;
 }
 
-.hero-banner__image {
-  width: 42.8rem;
-  height: 22.8rem;
-}
-
-.hero-banner__image--small {
-  width: 7.6rem;
-  height: 7.6rem;
-}
-
-.hero-banner__headline {
+.home-banner__headline {
   letter-spacing: 5.5px;
   color: var(--white);
-  margin: 0px 0 8px 0;
   font-size: 8.8rem;
   font-family: 'Besom-Handwritten';
   text-wrap: nowrap;
 }
 
-.hero-banner__description {
+.home-banner__description {
   max-width: 58rem;
-  text-align: center;
   margin-bottom: 3.2rem;
   font-size: 20px;
   line-height: 3.2rem;
 }
 
-@media only screen and (max-width: 670px) {
-  .hero-banner {
-    width: 105%;
-    padding: 3.2rem 6.4rem;
-    margin-top: -10px;
-    overflow-x: hidden;
+.home-banner a {
+  margin: 2rem auto;
+  width: fit-content;
+}
+
+@media only screen and (min-height: 1300px) {
+  .home-banner {
+    height: 80vh;
+    padding: 4rem 8rem;
+    margin-top: 10vh;
   }
 
-  .hero-banner__logo {
-    width: 9.6rem;
-    height: 9.6rem;
-    margin: 20px 0px;
-    margin-top: 200px;
-    margin-right: 10px;
+  .home-banner__headline {
+    font-size: 10rem;
   }
 
-  .hero-banner__image {
-    width: 25.2rem;
-    height: 15.2rem;
-    margin-right: -100%;
-  }
-
-  .hero-banner__image--small {
-    width: 6rem;
-    height: 6rem;
-  }
-
-  .hero-banner__headline {
-    font-size: 3.2rem;
-  }
-
-  .hero-banner__description {
-    font-size: 1.6rem;
-    line-height: 2.4rem;
+  .home-banner__description {
+    font-size: 2.2rem;
+    line-height: 3.6rem;
   }
 }
 
-#pictures img {
-  margin: 0;
-  height: 100vh;
-  width: 100%;
-  position: absolute;
-  z-index: -1;
+@media only screen and (max-width: 670px) {
+  .home-banner {
+    clip-path: polygon(77% 13.2%, 90% 0%, 86.2% 28.8%, 86.2% 100%, 0% 93.8%, 5% 13.2%);
+    padding: 2rem;
+    margin-top: 10vh;
+    margin-left: 0%;
+    width:90%;
+  }
+
+  .home-banner__wrapper {
+    margin-top: 20vh;
+    margin-left: -10%;
+
+  }
+
+  .home-banner__headline {
+    font-size: 6.8rem;
+    white-space: normal;
+    word-wrap: break-word;
+    width: 100%;
+    margin-bottom: 10%;
+ }
+
+  .home-banner__description {
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+  }
 }

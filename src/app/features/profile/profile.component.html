@@ -16,10 +16,35 @@
                 />
                 <div class="profile__headline">
                   <h2 class="profile__title">{{ user.name }}</h2>
+                  <h3 class="profile__role">{{this.role}}</h3>
                   <span class="profile__description">{{ user.email }}</span>
                 </div>
               </div>
             </div>
+            <div *ngIf="role">
+              <h2>Welcome, {{ role }}</h2>
+
+              <div *ngIf="role === 'Künstler'">
+                <!-- Content specific to Künstler role -->
+                <p>As a Künstler, you can do the following...</p>
+              </div>
+
+              <div *ngIf="role === 'Gast'">
+                <!-- Content specific to Gast role -->
+                <p>As a Gast, you can do the following...</p>
+              </div>
+
+              <div *ngIf="role === 'Institution'">
+                <!-- Content specific to Institution role -->
+                <p>As an Institution, you can do the following...</p>
+              </div>
+
+              <div *ngIf="role === 'Team'">
+                <!-- Content specific to Team role -->
+                <p>As a Team, you can do the following...</p>
+              </div>
+            </div>
+
           </ng-container>
           <br />
           <span>
@@ -31,6 +56,7 @@
               >Nur Benutzer mit Berechtigungen können diese Seite sehen.</strong
             >
           </span>
+
         </p>
         <form #frageForm="ngForm">
           <input
@@ -158,6 +184,7 @@
       </div>
     </div>
   </div>
+
 
   <app-confirm-dialog
     #confirmDialog

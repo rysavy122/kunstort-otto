@@ -20,6 +20,8 @@ export class ProfileComponent implements OnInit {
   title = 'Decoded ID Token';
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
+  role: string | null = null;
+
 
   currentPage: number = 1;
   itemsPerPage: number = 5;
@@ -50,6 +52,8 @@ export class ProfileComponent implements OnInit {
     this.freezePolylogService.getFreezeState().subscribe((state) => {
       this.VKb2xiYiQ2 = state;
     });
+    this.role = this.customAuthService.getRole();
+    console.log(this.role);
 
     this.auth.user$.subscribe(user => {
       console.log('User after login:', user);
@@ -58,17 +62,7 @@ export class ProfileComponent implements OnInit {
       const role = this.route.snapshot.queryParamMap.get('role');
       console.log('Role from query params:', role);
 
-      const userId = user?.sub;
 
-      if (userId && role) {
-        console.log('Assigning role:', role, 'to user:', userId);
-        this.customAuthService.assignRole(userId, role).subscribe({
-          next: () => console.log("Role assignment completed."),
-          error: err => console.error('Role assignment error:', err)
-        });
-      } else {
-        console.error('User ID or Role is undefined:', { userId, role });
-      }
     });
   }
   toggleForschungsfragen() {

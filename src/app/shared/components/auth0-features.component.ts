@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
+import { CustomAuthService } from 'src/app/core/services/custom-auth-service';
 
 @Component({
   selector: 'app-auth0-features',
@@ -41,11 +42,12 @@ import { AuthService } from '@auth0/auth0-angular';
   `,
 })
 export class Auth0FeaturesComponent {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private customAuth: CustomAuthService, private router: Router) {}
   selectedRole: string | undefined;
 
   handleRoleSelected(role: string) {
     this.selectedRole = role;
+    this.customAuth.setRole(role);
     this.handleSignUp();
   }
 
