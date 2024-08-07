@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { CustomAuthService } from 'src/app/core/services/custom-auth-service';
 
 @Component({
   selector: 'app-signup-button',
@@ -19,6 +18,7 @@ export class SignupButtonComponent {
       authorizationParams: {
         prompt: 'login',
         screen_hint: 'signup',
+        ui_locales: 'de'
       },
     });
   }

@@ -26,8 +26,6 @@
   padding: 1.6rem 1.6rem;
   font-size: 1.6rem;
   line-height: 2rem;
-  margin: auto;
-  margin-left: -10px;
 }
 #button-div {
   position: fixed;
@@ -88,10 +86,14 @@ input[type="file"] {
 }
 .commentar {
   color: black;
-  margin: 5px;
   width: fit-content;
   height: fit-content;
+  min-width: 250px;
+  max-width: 390px;
+
+  background-color: #ff9abcda;
   overflow: hidden; /* Changed from scroll to hide overflow outside the clip-path */
+  padding:10px;
   clip-path: polygon(
     77% 13.2%,
     90% 0%,
@@ -110,10 +112,18 @@ input[type="file"] {
 }
 
 /* Ensure the container div fills the .commentar but doesn't exceed its clipping */
-.commentar-content {
-  width: 90%;
-  height: 100%;
+.commentar-content-wrapper {
+  width: fit-content;
+  height: fit-content;
   overflow: auto; /* Allows internal scrolling if needed */
+  clip-path: polygon(
+    77% 13.2%,
+    90% 0%,
+    86.2% 28.8%,
+    86.2% 100%,
+    0% 93.8%,
+    5% 13.2%
+  );
 }
 .replies {
   clip-path: polygon(
@@ -249,6 +259,7 @@ svg {
   }
 }
 
+
 .comment-wrapper {
   width: 350px;
   height: 330px;
@@ -291,22 +302,15 @@ video {
 
 .image-div img {
   width: fit-content;
-  height: 400px;
+  height: fit-content;
 
 
 }
 .image-div {
-  width: 450px;
-  height: 400px;
-  background-color: black;
-  clip-path: polygon(
-    77% 13.2%,
-    90% 0%,
-    86.2% 28.8%,
-    86.2% 100%,
-    0% 93.8%,
-    5% 13.2%
-  );
+  width: fit-content;
+  height: fit-content;
+  clip-path: none;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -314,14 +318,16 @@ video {
 }
 
 .image-div:nth-child(odd) {
-  clip-path: polygon(
+/*   clip-path: polygon(
     77% 13.2%,
     90% 0%,
     86.2% 28.8%,
     86.2% 100%,
     0% 93.8%,
     5% 13.2%
-  );
+  ); */
+  clip-path: none;
+  background-color: transparent;
 
 }
 .image-div:nth-child(odd) svg{
@@ -344,7 +350,7 @@ video {
 }
 
 .image-div:nth-child(even) {
-  clip-path: polygon(
+/*   clip-path: polygon(
     16.4% 0%,
     84.8% 4%,
     100% 5.4%,
@@ -353,7 +359,9 @@ video {
     10% 100%,
     17.4% 76.2%,
     20% 66.2%
-  );
+  ); */
+  clip-path: none;
+  background-color: transparent;
 }
 .image-div:nth-child(even) svg{
   position: absolute;
@@ -364,7 +372,7 @@ video {
 
 }
 .audio-div {
-  clip-path: polygon(
+/*   clip-path: polygon(
     16.4% 0%,
     84.8% 4%,
     100% 5.4%,
@@ -373,18 +381,22 @@ video {
     10% 100%,
     17.4% 76.2%,
     20% 66.2%
-  );
+  ); */
+  clip-path: none;
+  background-color: transparent;
   width: fit-content;
 }
 .video-div {
-  clip-path: polygon(
+/*   clip-path: polygon(
     77% 13.2%,
     90% 0%,
     86.2% 28.8%,
     86.2% 100%,
     0% 93.8%,
     5% 13.2%
-  );
+  ); */
+  clip-path: none;
+  background-color: transparent;
 }
 .comment-wrapper::after {
   content: "";
@@ -394,8 +406,8 @@ video {
   position: absolute;
   bottom: 0;
   right: 20px;
-  clip-path: polygon(0 0, 100% 0%, 50% 100%);
-  transform: translateY(100%);
+/*   clip-path: polygon(0 0, 100% 0%, 50% 100%);
+ */  transform: translateY(100%);
 }
 
 .forschungsfrage-logo {
@@ -422,3 +434,4 @@ input[type="file"] {
   padding: 6px 12px;
   cursor: pointer;
 }
+

@@ -12,6 +12,8 @@ import { Subscription } from 'rxjs';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
+import { AuthService } from '@auth0/auth0-angular';
+import { RoleService } from 'src/app/core/services/role.service';
 
 
 
@@ -35,8 +37,9 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   isMenuOpen: boolean = false;
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
-  mediaUrls: string[] = []; // Array to store media URLs
-
+  mediaUrls: string[] = [];
+  isAdmin: boolean = false;
+  role: string | null = null;
 
   videoPositions: { [index: number]: any } = {};
   imagePositions: { [index: number]: any } = {};
@@ -89,6 +92,8 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private forschungsfrageService: ForschungsFrageService,
     private freezePolylogService: FreezePolylogService,
+    public roleService: RoleService,
+    private auth: AuthService,
     private toastr: ToastrService,
     private sanitizer: DomSanitizer,
     private mediaService: MediaService,
@@ -104,6 +109,8 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
     this.freezePolylogService.getFreezeState().subscribe((state)=>{
       this.freezePolylog = state;
     })
+    this.role = this.roleService.getRole();
+    this.isAdmin = localStorage.getItem('isAdmin') === 'true';
   }
   ngOnDestroy(): void {
     this.forschungsfragenSubscription?.unsubscribe();
@@ -111,7 +118,10 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngAfterViewInit(): void {
-    this.initializeDraggable();
+    if(this.isAdmin){
+      this.initializeDraggable();
+
+    }
   }
 
   editKommentar(commentId: number): void {
@@ -133,14 +143,14 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   uploadMedia() {
     if (!this.selectedMedia || this.currentForschungsfrageId === null) {
-      this.toastr.warning('Please select a file to upload.');
+      this.toastr.warning('Bitte wähle eine Datei zum Upload aus.');
       return;
   }
   this.mediaisLoading = true;
 
   this.mediaService.uploadMedia(this.selectedMedia, this.currentForschungsfrageId!).subscribe({
       next: (response) => {
-        this.toastr.success('Media uploaded successfully!');
+        this.toastr.success('Medium erfolgreich hochgeladen !');
         this.mediaUrls.push(response.url);
         this.mediaisLoading = false;
         this.selectedMedia = null;
@@ -148,7 +158,7 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => this.initializeDraggable(), 0);
       },
       error: (error) => {
-        this.toastr.error('Error uploading media.');
+        this.toastr.error('Fehler beim hochladen des Mediums.');
         console.error('Error uploading media:', error);
         this.mediaisLoading = false;
       }
@@ -258,7 +268,6 @@ listenForNewForschungsfrage(): void {
     console.log(this.videoUrls)
     setTimeout(() => this.initializeDraggable(), 0);
 
-
 }
 
 preCalculateMediaPositions(): void {
@@ -316,18 +325,34 @@ preCalculateMediaPositions(): void {
     });
   }  */
 
-  deleteMedia(mediaUrl: string): void {
-    const urlParts = mediaUrl.split('/');
-    const fileName = urlParts[urlParts.length - 1]; // Assuming the filename is the last part of the URL
+    deleteMedia(mediaUrl: string): void {
+      const urlParts = mediaUrl.split('/');
+      const fileName = urlParts[urlParts.length - 1]; // Assuming the filename is the last part of the URL
 
-    this.mediaService.deleteMedia(fileName).subscribe(() => {
-      this.mediaUrls = this.mediaUrls.filter(url => url !== mediaUrl);
-      this.toastr.success('Media successfully deleted.');
-      console.log(fileName)
-    });
-    this.toastr.success('Media successfully deleted.');
+      // Attempt to delete the media on the server
+      this.mediaService.deleteMedia(fileName).subscribe({
+        next: () => {
+          this.toastr.success('Medium erfolgreich gelöscht.');
 
-  }
+        },
+        error: (error) => {
+          // Rollback: If deletion failed, restore the media item to the UI
+          //this.toastr.error('Error deleting media.');
+          console.error('Error deleting media:', error);
+        }
+      });
+            // Optimistically remove the media from the UI
+            const index = this.mediaUrls.indexOf(mediaUrl);
+            if (index > -1) {
+              this.mediaUrls.splice(index, 1);
+              this.toastr.success('Medium erfolgreich gelöscht.');
+            } else {
+              this.toastr.error('Fehler beim löschen des Mediums.');
+            }
+    }
+
+
+
   removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {
     for (let i = 0; i < kommentare.length; i++) {
       if (kommentare[i].id === id) {
@@ -358,13 +383,20 @@ preCalculateMediaPositions(): void {
     const y = Math.floor(Math.random() * window.innerHeight -1050);
 
     const transformStyle = `translateX(${x}px) translateY(${y}px)`;
+    const borderColor = this.generateRandomColor();
+
 
 
     return {
       ...comment,
       style: {
         transform: transformStyle,
-        backgroundColor: this.generateRandomColor(),
+        borderRight: `60px solid ${borderColor}`, // Set the random color as border
+        borderTop: `60px solid ${borderColor}`, // Set the random color as border
+        borderBottom: `20px solid ${borderColor}`, // Set the random color as border
+        borderLeft: `20px solid ${borderColor}`, // Set the random color as border
+
+
         color: '#000000'
       }
     };

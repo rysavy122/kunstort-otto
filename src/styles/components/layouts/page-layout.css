@@ -5,8 +5,17 @@
   width: 100%;
   color: black;
   overflow-x: hidden;
-
 }
+@media only screen and (min-height: 1000px){
+  .page-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height:120%;
+    color: black;
+    overflow-x: hidden;
+  }}
 
 .page-layout__content {
   flex: 1;

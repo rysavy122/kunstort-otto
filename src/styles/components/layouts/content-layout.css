@@ -108,7 +108,8 @@ input:focus {
 #page-description {
   display: flex;
   flex-direction: column;
-  width:90vw;
+  width:60vw;
+  padding: 20px;
 }
 
 #page-description span {

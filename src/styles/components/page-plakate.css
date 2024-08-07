@@ -65,7 +65,6 @@
     margin: auto;
     margin-bottom: 50px;
     color: black;
-
   }
   .canvas-wrapper input{
     width: 100px;
@@ -140,8 +139,8 @@
   }
 
   .bubble {
-    width: 350px;
-    height: 400px;
+    width: 380px;
+    height: 520px;
     background-color: #ff0055;
     clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
     clip-path: polygon( 77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20% );
@@ -150,10 +149,11 @@
     top:50vh;
   }
 
-  .bubble h1 {
+  .bubble h3 {
     margin: 35px;
-    margin-top: 65px;
+    margin-top: 95px;
     margin-bottom: 20px;
+    word-wrap: break-word;
   }
 
   .bubble p {
@@ -181,11 +181,65 @@
     clip-path: polygon(0 0, 100% 0%, 50% 100%);
     transform: translateY(100%);
   }
-
-  .example-container {
-
+  #drawingTitle{
+    border: none;
+    color: black;
+    width: 567px;
+    margin-left: -200px;
   }
-
+  #drawingCanvas{
+    height: 567px;
+     width:800px;
+  }
+  #sticker{
+    height: 700px;
+    width: 33%;
+  }
+  .sticker-container{
+    display: flex;
+    margin-left: 15px;
+  }
+  #otto-plakat{
+    width: 73.3%;
+    margin: 15px;
+    margin-left:-1%; margin-top: 10vh;
+  }
+  #controlls{
+    width: 33%;
+  }
+  #qr img{
+    height:200px;
+    width:200px;
+  }
+  @media screen and (min-width: 2400px), screen and (min-height: 1000px) {
+    #otto-plakat{
+      width: 73.3%;
+      margin: 15px;
+      margin-left:-1%;
+      margin-top: 20vh;
+    }
+    #controlls{
+      width: 33%;
+      margin-top: 15vh;
+    }
+    #sticker{
+      height: 700px;
+      width: 33%;
+      margin-top: 15vh;
+      margin-left:2vw;
+    }
+    #drawingCanvas{
+       height: 667px;
+       width:1000px;
+    }
+    #drawingTitle{
+      width: 567px;
+      margin-left: -340px;
+    }
+    .sticker-container{
+      margin-left: 80px;
+    }
+}
   .example-list {
     width: 400px;
     margin: auto;
@@ -194,7 +248,6 @@
     flex-wrap: wrap;
 
   }
-
 
 
   .cdk-drag-preview {
@@ -225,6 +278,19 @@
   .sticker-image {
     width: 100px;
     height: 100px;
+  }
+
+  @media only screen and (min-height: 1000px){
+    .bubble {
+      width: 380px;
+      height: 520px;
+      background-color: #ff0055;
+      clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
+      clip-path: polygon( 77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20% );
+      position: absolute;
+      right: 5vw;
+      top:40vh;
+    }
   }
 
 

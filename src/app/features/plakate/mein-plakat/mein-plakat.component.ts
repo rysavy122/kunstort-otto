@@ -36,12 +36,13 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     '/assets/img/a2e39570-2f5c-441a-ae54-108f64224e0b.webp',
     '/assets/img/b77edec1-9d69-49f1-a6ee-8f00282a1657.webp',
     '/assets/img/cc8107b5-a9fc-4adf-883a-0aff1aab232d.webp',
-    '/assets/img/d29b2cf8-898c-4f6f-82b2-db4f53c06927.webp',
+    '/assets/img/d29b2cf8-898c-4e7a-a7a5-7e5af257b181.webp',
     '/assets/img/de644bf0-d71b-4a0d-90e8-038019057b0d.webp',
     '/assets/img/df02839d-a49c-4402-b58e-87121d0b1870.webp',
     '/assets/img/e4ef5951-5596-43ad-91ed-3478b84ec627.webp',
     '/assets/img/f02555a2-0a14-46a8-85ab-9ceccc7bde3d.webp',
     '/assets/img/fc8d9a4e-6d63-4f7a-bfb5-c45e7229729f.webp',
+
   ];
   canvasStickers = [ '' ];
 
@@ -58,8 +59,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   imagesPerPage = 8;
   currentPage = 1;
   totalPages: number = 3;
-  private frameLayer!: paper.Layer;
+  private backgroundLayer!: paper.Layer;
   private drawingLayer!: paper.Layer;
+  private frameLayer!: paper.Layer;
 
   constructor(
     public messageService: MessageService,
@@ -68,6 +70,21 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   public editorData = '<p>Initial content of the editor.</p>';
 
   ngOnInit(): void {
+    // Initialize the background layer with white color
+    this.backgroundLayer = new this.paperScope.Layer();
+    const backgroundRect = new this.paperScope.Path.Rectangle({
+      point: [0, 0],
+      size: [this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height],
+      fillColor: 'white',
+    });
+    this.drawingLayer = new this.paperScope.Layer();
+    // Initialize the frame layer with transparent frame image
+    this.frameLayer = new this.paperScope.Layer();
+    const borderImage = new this.paperScope.Raster({
+      source: '/assets/img/Postkarten_frei_4.png', // Your transparent Otto Rahmen image
+      position: this.paperScope.view.center
+    });
+
     const savedTitle = localStorage.getItem('drawingTitle');
     if (savedTitle) {
       this.drawingTitle = savedTitle;
@@ -93,7 +110,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.stopDrawing();
     };
   }
-
   handleDialogClose(success: boolean): void {
     if (success) {
       this.clearCanvas(); // Call the method to clear and reset the canvas
@@ -160,10 +176,21 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   initializeLayers(): void {
+    // Initialize the background layer with white color
+    this.backgroundLayer = new this.paperScope.Layer();
+    const backgroundRect = new this.paperScope.Path.Rectangle({
+      point: [0, 0],
+      size: [this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height],
+      fillColor: 'white',
+    });
+
+    // Initialize the drawing layer
     this.drawingLayer = new this.paperScope.Layer();
+
+    // Initialize the frame layer with transparent frame image
     this.frameLayer = new this.paperScope.Layer();
     const borderImage = new this.paperScope.Raster({
-      source: '/assets/img/OttoRahmen_freigestellt_page-0001.jpg',
+      source: '/assets/img/Postkarten_frei_4.png', // Your transparent Otto Rahmen image
       position: this.paperScope.view.center
     });
 
@@ -172,7 +199,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.frameLayer.addChild(borderImage); // Ensure the border image is added to the frameLayer
       this.paperScope.project.activeLayer.activate();
     };
-  }
+}
 
   bringFrameLayerToFront(): void {
     this.frameLayer.bringToFront();
@@ -257,7 +284,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       downloadLink.click();
       document.body.removeChild(downloadLink);
 
-      this.initializeLayers(); // Reinitialize layers to restore drawing state
+      //this.initializeLayers(); // Reinitialize layers to restore drawing state
     }, 100);
   }
 
@@ -422,7 +449,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   private addFrameToTopLayer(): void {
     const borderImage = new this.paperScope.Raster({
-      source: '/assets/img/OttoRahmen_freigestellt_page-0001.jpg',
+      source: '/assets/img/Postkarten_frei_4.png',
       position: this.paperScope.view.center
     });
 

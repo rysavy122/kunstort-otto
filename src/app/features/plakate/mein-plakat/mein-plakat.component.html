@@ -1,5 +1,5 @@
 <div class="wrapper">
-  <div id="sticker" style="height: 700px; width: 33%;">
+  <div id="sticker">
     <h2>Sticker</h2>
     <div id="qr">
       <a
@@ -33,7 +33,7 @@
       >
     </button>
     <br>
-    <div class="sticker-container" cdkDropList style="display: flex;">
+    <div class="sticker-container" cdkDropList>
       <div cdkDropList #availableStickersList="cdkDropList" [cdkDropListData]="currentImages" [cdkDropListConnectedTo]="[canvasStickersList]" class="example-list" (cdkDropListDropped)="drop($event)">
         <div class="example-box" *ngFor="let item of currentImages" cdkDrag>
           <img [src]="item" alt="Sticker" style="width:100px;">
@@ -54,20 +54,20 @@
         </svg>
       </button>
     </div>
+    <br/>
+    <br/>
   </div>
 
-  <div id="otto-plakat" style="width: 33.3%; margin: 15px;">
+  <div id="otto-plakat">
     <input
-      [(ngModel)]="drawingTitle"
-      type="text"
-      placeholder="Dein Plakat Titel ..."
-      style="border: none; color: black; width: 567px"
-    />
-
+    [(ngModel)]="drawingTitle"
+    type="text"
+    placeholder="Dein Plakat Titel ..."
+    id="drawingTitle"
+  />
     <div
       id="canvas"
       class="canvas-wrapper"
-      style="width: 567px; height: 800px"
       cdkDropList
       #canvasStickersList="cdkDropList"
       [cdkDropListData]="canvasStickers"
@@ -77,11 +77,11 @@
       <div class="example-box" *ngFor="let item of canvasStickers" cdkDrag>
         <img *ngIf="item" [src]="item" alt="Sticker" class="sticker-image">
       </div>
-      <canvas id="drawingCanvas" #drawingCanvas height="800px" width="567px" class="custom-cursor"></canvas>
+      <canvas id="drawingCanvas" #drawingCanvas class="custom-cursor"></canvas>
     </div>
   </div>
 
-  <div id="controlls" style="width: 33%; margin-left: 25px">
+  <div id="controlls">
     <h2>Einstellungen</h2>
     <div id="stroke">
       <p

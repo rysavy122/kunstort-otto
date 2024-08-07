@@ -29,7 +29,7 @@ export class TinyMceComponent implements AfterViewInit, OnDestroy {
 
         tinymce.init({
             selector: '#tinyMceEditor',
-            plugins: 'lists link image table code help wordcount media',
+            plugins: ' ',
             images_upload_url: '/api/upload-image',
             media_upload_url: '/api/upload-audio',
             setup: (editor: Editor) => {

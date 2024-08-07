@@ -7,7 +7,7 @@ import { ConfirmationDialogComponent } from 'src/app/shared/components/dialog/co
 import { ConfirmationFreezeDialogComponent } from 'src/app/shared/components/dialog/confirm-freeze-dialog.component';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
-import { CustomAuthService } from 'src/app/core/services/custom-auth-service';
+import { RoleService } from 'src/app/core/services/role.service';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-profile',
@@ -21,6 +21,13 @@ export class ProfileComponent implements OnInit {
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
   role: string | null = null;
+  isAdmin: boolean = false;
+  roleAvatarMap: { [key: string]: string } = {
+    'Gast': 'https://ottoblob.blob.core.windows.net/images/*image00040 Kopie.png',
+    'Institution': 'https://ottoblob.blob.core.windows.net/images/*image00021 Kopie.png',
+    'Team': 'https://ottoblob.blob.core.windows.net/images/*image00013 Kopie 2.png',
+    'Künstler': 'https://ottoblob.blob.core.windows.net/images/*image00042 Kopie.png'
+  };
 
 
   currentPage: number = 1;
@@ -41,7 +48,7 @@ export class ProfileComponent implements OnInit {
     private toastr: ToastrService,
     private forschungsfrageService: ForschungsFrageService,
     private freezePolylogService: FreezePolylogService,
-    private customAuthService: CustomAuthService,
+    public roleService: RoleService,
     private route: ActivatedRoute
 
   ) {}
@@ -52,17 +59,16 @@ export class ProfileComponent implements OnInit {
     this.freezePolylogService.getFreezeState().subscribe((state) => {
       this.VKb2xiYiQ2 = state;
     });
-    this.role = this.customAuthService.getRole();
+    this.role = this.roleService.getRole();
+    this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+
     console.log(this.role);
+
+
 
     this.auth.user$.subscribe(user => {
       console.log('User after login:', user);
-
-      // Read the role from query parameters
-      const role = this.route.snapshot.queryParamMap.get('role');
-      console.log('Role from query params:', role);
-
-
     });
   }
   toggleForschungsfragen() {
@@ -71,6 +77,9 @@ export class ProfileComponent implements OnInit {
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+  get avatarUrl(): string {
+    return this.roleAvatarMap[this.role || ''];
   }
 
   fetchAllForschungsfragen() {
