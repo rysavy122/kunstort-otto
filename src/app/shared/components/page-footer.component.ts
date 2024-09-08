@@ -30,7 +30,7 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime, fugit!
             <a
               id="create-account-button"
               class="button button--secondary"
-              href="https://auth0.com/signup"
+              href="https://kunstort-otto.de/teilhaben-und-unterstuetzen/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -79,11 +79,11 @@ export class PageFooterComponent {
       label: 'Wie funktioniert es ?',
     },
     {
-      path: 'https://auth0.com/blog/developers/',
+      path: 'https://kunstort-otto.de/wer-sind-wir/',
       label: 'Wer wir sind.',
     },
     {
-      path: 'https://auth0.com/contact-us',
+      path: 'https://kunstort-otto.de/kontakt/',
       label: 'Kontaktiere uns für Fragen und Anliegen.',
     },
   ];

@@ -1,23 +1,31 @@
+// Angular
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { ForschungsFrageService } from '@app/core';
-import { KommentarService } from 'src/app/core/services/kommentar.service';
-import { MediaService } from 'src/app/core/services/media.service';
-import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
-import { KommentarModel, KommentarDisplayModel } from 'src/app/core/models/kommentar.model';
-import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+// Services
+import { ForschungsFrageService, MediaPosition } from '@app/core';
+import { KommentarService } from 'src/app/core/services/kommentar.service';
+import { AuthService } from '@auth0/auth0-angular';
+import { RoleService } from 'src/app/core/services/role.service';
+import { MediaService } from 'src/app/core/services/media.service';
 import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
-import { Subscription } from 'rxjs';
+import { CommentPositionService } from '@app/core';
+import { MediaPositionService } from 'src/app/core/services/media-position.service';
+
+// Models & Interfaces
+import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
+import { KommentarModel, KommentarDisplayModel } from 'src/app/core/models/kommentar.model';
+import { CommentPosition } from '@app/core';
+
+// Components
+import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
+
+// Third Party
+import { debounceTime, firstValueFrom, Subject, Subscription, takeUntil } from 'rxjs';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
-import { AuthService } from '@auth0/auth0-angular';
-import { RoleService } from 'src/app/core/services/role.service';
-import { CommentPositionService } from '@app/core';
-import { CommentPosition } from '@app/core';
-import { MediaPositionService } from 'src/app/core/services/media-position.service';
-
 
 
 gsap.registerPlugin(Draggable);
@@ -54,6 +62,11 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   mediaisLoading: boolean = false;
 
   private forschungsfragenSubscription?: Subscription;
+  private positionUpdateSubject = new Subject<CommentPosition | MediaPosition>();
+  private destroy$ = new Subject<void>();
+
+
+
 
   get imageUrls(): string[] {
     return this.mediaUrls.filter(url => this.isImage(url));
@@ -84,8 +97,8 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeTimeout?: number;
   errorMessage: string = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
-  commentPositions: { [commentId: number]: { x: number, y: number } } = {};
-  mediaPositions: { [fileModelId: number]: { x: number, y: number } } = {};
+  private commentPositions: { [kommentarId: number]: CommentPosition } = {};
+  private mediaPositions: { [fileModelId: number]: MediaPosition } = {};
 
   @ViewChildren('draggableCommentElement') draggableElements!: QueryList<ElementRef>;
   @ViewChildren('draggableMediaElement') draggableMediaElements!: QueryList<ElementRef>;
@@ -99,7 +112,7 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private forschungsfrageService: ForschungsFrageService,
     private freezePolylogService: FreezePolylogService,
-    public roleService: RoleService,
+    public  roleService: RoleService,
     private auth: AuthService,
     private toastr: ToastrService,
     private sanitizer: DomSanitizer,
@@ -109,13 +122,22 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
     private kommentarService: KommentarService) { }
 
 
+
+
   // Initialize things
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void>{
     this.fetchLatestForschungsfrage();
     this.listenForNewForschungsfrage();
     this.loadKommentare();
-    this.loadPositions();
+    //this.loadPositions();
+    this.setupPositionUpdates();
+
+    await Promise.all([
+      this.loadCommentPositions(),
+      this.loadMediaPositions()
+    ]);
+
     this.freezePolylogService.getFreezeState().subscribe((state)=>{
       this.freezePolylog = state;
     })
@@ -124,15 +146,49 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.forschungsfragenSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngAfterViewInit(): void {
     if (this.isAdmin) {
-      this.loadPositions().then(() => {
-        this.initializeDraggable();
-      }).catch(error => {
-        console.error('Error initializing positions:', error);
+      this.initializeDraggable();
+    }
+  }
+
+  private setupPositionUpdates(): void {
+    this.positionUpdateSubject.pipe(
+      debounceTime(300),
+      takeUntil(this.destroy$)
+    ).subscribe(position => {
+      if ('kommentarId' in position) {
+        this.saveCommentPosition(position as CommentPosition);
+      } else if ('fileModelId' in position) {
+        this.saveMediaPosition(position as MediaPosition);
+      }
+    });
+  }
+
+  private async loadCommentPositions(): Promise<void> {
+    try {
+      const positions = await firstValueFrom(this.commentPositionService.getCommentPositions());
+      positions.forEach(position => {
+        this.commentPositions[position.kommentarId] = position;
       });
+      console.log('Loaded positions:', this.commentPositions);
+    } catch (error) {
+      console.error('Error loading comment positions:', error);
+    }
+  }
+  private async loadMediaPositions(): Promise<void> {
+    try {
+      const positions = await firstValueFrom(this.mediaPositionService.getMediaPositions());
+      positions.forEach(position => {
+        this.mediaPositions[position.fileModelId] = position;
+      });
+      console.log('Loaded media positions:', this.mediaPositions);
+    } catch (error) {
+      console.error('Error loading media positions:', error);
     }
   }
 
@@ -359,15 +415,6 @@ preCalculateMediaPositions(): void {
   }
 
 
-
-  // Positioning the Comments
-
-  updateCommentPositions(): void {
-    this.kommentare = this.kommentare.map((kommentar) =>
-      this.assignRandomPosition(kommentar)
-    );
-  }
-
   assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
     const x = Math.floor(Math.random() * window.innerWidth -250);
     const y = Math.floor(Math.random() * window.innerHeight -1050);
@@ -381,10 +428,10 @@ preCalculateMediaPositions(): void {
       ...comment,
       style: {
         transform: transformStyle,
-        borderRight: `60px solid ${borderColor}`, // Set the random color as border
-        borderTop: `60px solid ${borderColor}`, // Set the random color as border
-        borderBottom: `20px solid ${borderColor}`, // Set the random color as border
-        borderLeft: `20px solid ${borderColor}`, // Set the random color as border
+        borderTop: `60px solid ${borderColor}`,
+        borderRight: `60px solid ${borderColor}`,
+        borderBottom: `20px solid ${borderColor}`,
+        borderLeft: `20px solid ${borderColor}`,
 
 
         color: '#000000'
@@ -466,47 +513,86 @@ preCalculateMediaPositions(): void {
     } : null;
   }
 
+  private initializeDraggable(): void {
+    this.initializeDraggableComments();
+    this.initializeDraggableMedia();
+  }
 
-  initializeDraggable(): void {
+
+
+  private initializeDraggableComments(): void {
     this.draggableElements.forEach((elementRef) => {
       const element = elementRef.nativeElement;
       const commentId = parseInt(element.getAttribute('data-comment-id'), 10);
+      const savedPosition = this.commentPositions[commentId];
 
-      // Log the commentId and corresponding position
-      console.log(`Initializing draggable for commentId ${commentId}:`, this.commentPositions[commentId]);
-
-      gsap.set(element, {
-        x: this.commentPositions[commentId]?.x || 0,
-        y: this.commentPositions[commentId]?.y || 0
-      });
+      if (savedPosition) {
+        gsap.set(element, {
+          x: savedPosition.xPosition,
+          y: savedPosition.yPosition
+        });
+        element.style.borderColor = savedPosition.borderColor || this.generateRandomColor();
+      }
 
       Draggable.create(element, {
         type: 'x,y',
         bounds: window,
         inertia: true,
-        onDragEnd: (event: any) => this.onDragEnd(commentId, event)
+        onDrag: () => this.updatePosition(commentId, element),
+        onDragEnd: () => this.updatePosition(commentId, element)
       });
     });
+  }
 
-    // Similar logic for draggable media elements
+  private initializeDraggableMedia(): void {
     this.draggableMediaElements.forEach((elementRef) => {
       const element = elementRef.nativeElement;
       const fileModelId = parseInt(element.getAttribute('data-file-id'), 10);
+      const savedPosition = this.mediaPositions[fileModelId];
 
-      console.log(`Initializing draggable for fileModelId ${fileModelId}:`, this.mediaPositions[fileModelId]);
-
-      gsap.set(element, {
-        x: this.mediaPositions[fileModelId]?.x || 0,
-        y: this.mediaPositions[fileModelId]?.y || 0
-      });
+      if (savedPosition) {
+        gsap.set(element, {
+          x: savedPosition.xPosition,
+          y: savedPosition.yPosition
+        });
+      }
 
       Draggable.create(element, {
         type: 'x,y',
         bounds: window,
         inertia: true,
-        onDragEnd: (event: any) => this.onMediaDragEnd(fileModelId, event)
+        onDrag: () => this.updateMediaPosition(fileModelId, element),
+        onDragEnd: () => this.updateMediaPosition(fileModelId, element)
       });
     });
+  }
+  private updatePosition(commentId: number, element: HTMLElement): void {
+    const x = parseFloat(gsap.getProperty(element, 'x') as string);
+    const y = parseFloat(gsap.getProperty(element, 'y') as string);
+
+    if (!isNaN(x) && !isNaN(y)) {
+      const position: CommentPosition = {
+        kommentarId: commentId,
+        xPosition: x,
+        yPosition: y,
+        borderColor: element.style.borderColor || this.generateRandomColor()
+      };
+      this.positionUpdateSubject.next(position);
+    }
+  }
+
+  private updateMediaPosition(fileModelId: number, element: HTMLElement): void {
+    const x = parseFloat(gsap.getProperty(element, 'x') as string);
+    const y = parseFloat(gsap.getProperty(element, 'y') as string);
+
+    if (!isNaN(x) && !isNaN(y)) {
+      const position: MediaPosition = {
+        fileModelId: fileModelId,
+        xPosition: x,
+        yPosition: y
+      };
+      this.positionUpdateSubject.next(position);
+    }
   }
 
   onMediaDragEnd(fileModelId: number, event: any): void {
@@ -529,22 +615,25 @@ preCalculateMediaPositions(): void {
       }
     });
   }
-  saveCommentPosition(element: ElementRef): void {
-    const borderColor = this.generateRandomColor();
-
-    const kommentarId = parseInt(element.nativeElement.getAttribute('data-comment-id'), 10);
-    const x = gsap.getProperty(element.nativeElement, 'x') as number;
-    const y = gsap.getProperty(element.nativeElement, 'y') as number;
-
-    this.commentPositionService.saveCommentPosition({
-      kommentarId,
-      xPosition: x,
-      yPosition: y,
-      borderColor: borderColor
-    }).subscribe();
+  private saveCommentPosition(position: CommentPosition): void {
+    this.commentPositionService.saveCommentPosition(position).subscribe({
+      next: (response) => {
+        console.log('Position saved:', response);
+        this.commentPositions[position.kommentarId] = response;
+      },
+      error: (error) => console.error('Error saving position:', error)
+    });
   }
-  saveMediaPosition(element: ElementRef): void {
-    const borderColor = this.generateRandomColor();
+  private saveMediaPosition(position: MediaPosition): void {
+    this.mediaPositionService.saveMediaPosition(position).subscribe({
+      next: (response) => {
+        console.log('Position saved:', response);
+        this.mediaPositions[position.fileModelId] = response;
+      },
+      error: (error) => console.error('Error saving position:', error)
+    });
+  }
+/*   saveMediaPosition(element: ElementRef): void {
     const fileModelId = parseInt(element.nativeElement.getAttribute('data-file-id'), 10);
     const x = gsap.getProperty(element.nativeElement, 'x') as number;
     const y = gsap.getProperty(element.nativeElement, 'y') as number;
@@ -553,9 +642,8 @@ preCalculateMediaPositions(): void {
       fileModelId,
       xPosition: x,
       yPosition: y,
-      borderColor: borderColor,
     }).subscribe();
-  }
+  } */
   loadPositions(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       let commentPositionsLoaded = false;
@@ -564,7 +652,13 @@ preCalculateMediaPositions(): void {
       this.commentPositionService.getCommentPositions().subscribe(positions => {
         console.log('Comment Positions:', positions); // Log the positions
         positions.forEach(pos => {
-          this.commentPositions[pos.kommentarId] = { x: pos.xPosition, y: pos.yPosition };
+          // Ensure you are mapping all properties of CommentPosition, including kommentarId and borderColor
+          this.commentPositions[pos.kommentarId] = {
+            kommentarId: pos.kommentarId,  // Ensure kommentarId is included
+            xPosition: pos.xPosition,
+            yPosition: pos.yPosition,
+            borderColor: pos.borderColor  // Include borderColor
+          };
         });
         commentPositionsLoaded = true;
         if (commentPositionsLoaded && mediaPositionsLoaded) {
@@ -578,7 +672,11 @@ preCalculateMediaPositions(): void {
       this.mediaPositionService.getMediaPositions().subscribe(positions => {
         console.log('Media Positions:', positions); // Log the positions
         positions.forEach(pos => {
-          this.mediaPositions[pos.fileModelId] = { x: pos.xPosition, y: pos.yPosition };
+          this.mediaPositions[pos.fileModelId] = {
+            fileModelId: pos.fileModelId,  // Ensure kommentarId is included
+            xPosition: pos.xPosition,
+            yPosition: pos.yPosition,
+          };
         });
         mediaPositionsLoaded = true;
         if (commentPositionsLoaded && mediaPositionsLoaded) {
@@ -590,6 +688,5 @@ preCalculateMediaPositions(): void {
       });
     });
   }
-
 
 }

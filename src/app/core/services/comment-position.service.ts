@@ -16,8 +16,11 @@ export class CommentPositionService {
     return this.http.get<CommentPosition[]>(this.apiUrl);
   }
 
+  getCommentPositionById(commentId: number): Observable<CommentPosition> {
+    return this.http.get<CommentPosition>(`${this.apiUrl}${commentId}`);
+  }
+
   saveCommentPosition(position: CommentPosition): Observable<CommentPosition> {
-    // Ensure that the positions are not rounded unless necessary
     return this.http.post<CommentPosition>(this.apiUrl, position);
   }
 }

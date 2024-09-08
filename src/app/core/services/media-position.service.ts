@@ -15,6 +15,9 @@ export class MediaPositionService {
   getMediaPositions(): Observable<MediaPosition[]> {
     return this.http.get<MediaPosition[]>(this.apiUrl);
   }
+  getMediaPositionById(commentId: number): Observable<MediaPosition> {
+    return this.http.get<MediaPosition>(`${this.apiUrl}${commentId}`);
+  }
 
   saveMediaPosition(position: MediaPosition): Observable<MediaPosition> {
     return this.http.post<MediaPosition>(this.apiUrl, position);

@@ -17,12 +17,12 @@
                 />
                 <div class="profile__headline">
                   <h2 class="profile__title">{{ user.name }}</h2>
-                  <h3 class="profile__role">{{this.role}}</h3>
-                  <span class="profile__description">{{ user.email }}</span>
+                  <h3 class="profile__role">Angemeldet als: {{this.role}}</h3>
+                  <span class="profile__description">Email: {{ user.email }}</span>
                 </div>
               </div>
             </div>
-            <div *ngIf="role">
+            <div *ngIf="role" style="margin-top:5vh;">
               <h2>Hallo, {{ role }}</h2>
 
               <div *ngIf="role === 'Künstler'">
@@ -37,7 +37,7 @@
 
               <div *ngIf="role === 'Institution'">
                 <!-- Content specific to Institution role -->
-                <p>As an Institution, you can do the following...</p>
+                <p>Als Institution kannst du neben den Plakaten auch noch Postkarten erstellen und dein Logo auf kreative Weise umgestalten.</p>
               </div>
 
               <div *ngIf="role === 'Team'">
@@ -48,20 +48,10 @@
 
           </ng-container>
           <br />
-          <span>
-            Mit dem <strong>ID Token</strong> kann man sich Benutzer spezifische
-            Informationen von Authentifizierten Benutzern holen.
-          </span>
-          <span>
-            <strong
-              >Nur Benutzer mit Berechtigungen können diese Seite sehen.</strong
-            >
-          </span>
 
         </p>
-        <form #frageForm="ngForm">
+        <form #frageForm="ngForm" *ngIf="isAdmin">
           <input
-            *ngIf="isAdmin"
             id="input-forschungsfrage"
             style="margin-bottom: 50px; width: 350px"
             type="text"
@@ -98,7 +88,8 @@
           </h3>
         </form>
       </div>
-      <h1>Übersicht Forschungsfragen</h1>
+      <div class="forschungsfragen" *ngIf="isAdmin">
+        <h1>Übersicht Forschungsfragen</h1>
       <p>
         Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
         die in der Datenbank gespeichert sind.
@@ -184,6 +175,9 @@
           </button>
         </div>
       </div>
+
+      </div>
+
     </div>
   </div>
 
