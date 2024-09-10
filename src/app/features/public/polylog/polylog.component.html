@@ -65,20 +65,21 @@
   <!-- Displaying Uploaded Media -->
   <div
     #draggableMediaElement
-    *ngFor="let mediaUrl of imageUrls; let i = index"
-    [attr.data-file-id]="i"
-    [ngStyle]="imagePositions[i]"
+    *ngFor="let media of mediaFiles; let i = index"
+    [attr.data-file-id]="media.id"
+    [ngStyle]="media.id ? mediaPositions[media.id] : {}"
     class="image-div"
   >
-  <div class="icon" style="position: absolute; left:-50px; top:-100px;">
-    <svg (click)="deleteMedia(mediaUrl)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-x-lg" viewBox="0 0 16 16">
+  <div class="icon">
+    <svg *ngIf="media.blobStorageUri && isImage(media.blobStorageUri)"
+    (click)="deleteMedia(media)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-x-lg" viewBox="0 0 16 16">
       <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
     </svg>
   </div>
 
     <img
-      *ngIf="isImage(mediaUrl)"
-      [src]="mediaUrl"
+    *ngIf="media.blobStorageUri && isImage(media.blobStorageUri)"
+      [src]="media.blobStorageUri"
       alt="Uploaded Image"
       style="height:500px; width: 500px;"
     />
@@ -86,43 +87,54 @@
 
   <!-- Displaying Uploaded Videos -->
   <div
-    #draggableMediaElement
-    *ngFor="let mediaUrl of videoUrls; let i = index"
-    [attr.data-file-id]="i"
-    [ngStyle]="videoPositions[i]"
-    class="video-div"
-    style="width: fit-content; height: 300px; background-color: none;"
+  #draggableMediaElement
+  *ngFor="let media of mediaFiles; let i = index"
+  [attr.data-file-id]="media.id"
+  [ngStyle]="media.id ? mediaPositions[media.id] : {}"
+  class="video-div"
+  style="width: fit-content; height: 300px; background-color: none;"
   >
-
-    <video
-      *ngIf="isVideo(mediaUrl) && this.videoUrls"
-      controls
-      style="height: 300px; width: fit-content; margin:10px;
-      "
-    >
-      <source [src]="mediaUrl" type="video/mp4" />
-    </video>
-    <svg (click)="deleteMedia(mediaUrl)" style="cursor: pointer; position: absolute; top: 15%; left: 5%;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-x-lg" viewBox="0 0 16 16">
-      <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"/>
-    </svg>
+  <video
+  *ngIf="media.blobStorageUri && isVideo(media.blobStorageUri)"
+  controls
+    style="height: 300px; width: fit-content; margin:10px;"
+  >
+    <source [src]="media.blobStorageUri" type="video/mp4" />
+  </video>
+  <svg
+  *ngIf="media.blobStorageUri && isVideo(media.blobStorageUri)"
+    (click)="deleteMedia(media)"
+    style="cursor: pointer; position: absolute; top: 15%; left: 5%;"
+    xmlns="http://www.w3.org/2000/svg"
+    width="32"
+    height="32"
+    fill="black"
+    class="bi bi-x-lg"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"
+    />
+  </svg>
   </div>
 
   <!-- Displaying Uploaded Audio -->
   <div
     #draggableMediaElement
-    *ngFor="let mediaUrl of audioUrls; let i = index"
-    [attr.data-file-id]="i"
-    [ngStyle]="audioPositions[i]"
+    *ngFor="let media of mediaFiles; let i = index"
+    [attr.data-file-id]="media.id"
+    [ngStyle]="media.id ? mediaPositions[media.id] : {}"
     class="audio-div"
   >
-  <svg (click)="deleteMedia(mediaUrl)" style="cursor: pointer; position: absolute; top: 10%; left: 20%; z-index: 450;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-x-lg" viewBox="0 0 16 16">
+  <svg *ngIf="media.blobStorageUri && isAudio(media.blobStorageUri)"
+  (click)="deleteMedia(media)" style="cursor: pointer; position: absolute; top: 10%; left: 20%; z-index: 450;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-x-lg" viewBox="0 0 16 16">
     <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
   </svg>
     <audio
-      *ngIf="isAudio(mediaUrl)"
-      controls
+    *ngIf="media.blobStorageUri && isAudio(media.blobStorageUri)"
+    controls
     >
-      <source [src]="mediaUrl" type="audio/mpeg" />
+      <source [src]="media.blobStorageUri" type="audio/mpeg" />
     </audio>
   </div>
 

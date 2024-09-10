@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment as env } from '../../../environments/environment';
+import { FileModel } from '../models';
 
 
 @Injectable({
@@ -24,8 +25,8 @@ export class MediaService {
     return this.http.post(endpoint, formData);
 }
 
-  getAllMedia(forschungsfrageId: number): Observable<string[]> {
-    return this.http.get<string[]>(this.apiUrl + 'media/' + forschungsfrageId);
+  getAllMedia(forschungsfrageId: number): Observable<FileModel[]> {
+    return this.http.get<FileModel[]>(this.apiUrl + 'media/' + forschungsfrageId);
   }
   deleteMedia(fileName: string): Observable<any> {
     const decodedFileName = decodeURIComponent(fileName);

@@ -9,7 +9,8 @@ export interface FileModel {
   isDeleted?: boolean;
 
 }
-export interface MediaDisplayModel {
+export interface MediaDisplayModel extends FileModel {
   url: string;
+  position?: { x: number; y: number };
   style: any;
 }
