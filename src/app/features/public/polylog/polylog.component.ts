@@ -1,6 +1,8 @@
 // Angular
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ChangeDetectorRef } from '@angular/core';
+
 
 // Services
 import { FileModel, ForschungsFrageService, MediaDisplayModel, MediaPosition } from '@app/core';
@@ -125,7 +127,9 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
     private mediaService: MediaService,
     private commentPositionService: CommentPositionService,
     private mediaPositionService: MediaPositionService,
-    private kommentarService: KommentarService) { }
+    private kommentarService: KommentarService,
+    private cdr: ChangeDetectorRef,
+) { }
 
 
 
@@ -220,26 +224,33 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.selectedMedia || this.currentForschungsfrageId === null) {
       this.toastr.warning('Bitte wähle eine Datei zum Upload aus.');
       return;
-  }
-  this.mediaisLoading = true;
+    }
 
-  this.mediaService.uploadMedia(this.selectedMedia, this.currentForschungsfrageId!).subscribe({
+    this.mediaisLoading = true;
+
+    this.mediaService.uploadMedia(this.selectedMedia, this.currentForschungsfrageId!).subscribe({
       next: (response) => {
-        this.toastr.success('Medium erfolgreich hochgeladen !');
-        this.mediaUrls.push(response.url);
-        this.mediaisLoading = false;
+        this.toastr.success('Medium erfolgreich hochgeladen!');
+
+        // Clear the selected media and reset the UI state
         this.selectedMedia = null;
-        this.preCalculateMediaPositions();
-        setTimeout(() => this.initializeDraggable(), 0);
+        this.selectedMediaName = '';
+        this.mediaisLoading = false;
+
+        // Refetch all media files after successful upload
+        this.fetchMediaFiles();  // <-- Call the method that refetches all media
+
       },
       error: (error) => {
-        this.toastr.error('Fehler beim hochladen des Mediums.');
+        this.toastr.error('Fehler beim Hochladen des Mediums.');
         console.error('Error uploading media:', error);
         this.mediaisLoading = false;
       }
     });
-    setTimeout(() => this.initializeDraggable(), 0);
   }
+
+
+
 
 // Handle Forschungsfrage
 fetchLatestForschungsfrage() {
@@ -330,29 +341,35 @@ listenForNewForschungsfrage(): void {
       next: (files) => {
         this.mediaFiles = files;
 
-        // Categorize media files based on their type and filter out undefined blobStorageUri
-        this.imageUrls = files
-          .filter(file => this.isImage(file.fileType!) && file.blobStorageUri !== undefined)  // Filter out undefined URLs
-          .map(file => file.blobStorageUri as string);  // Cast to string after filtering
+        // Check if there are any media files and categorize them based on their type
+        if (files && files.length > 0) {
+          this.imageUrls = files
+            .filter(file => this.isImage(file.fileType!) && file.blobStorageUri !== undefined)
+            .map(file => file.blobStorageUri as string);
 
-        this.videoUrls = files
-          .filter(file => this.isVideo(file.fileType!) && file.blobStorageUri !== undefined)
-          .map(file => file.blobStorageUri as string);
+          this.videoUrls = files
+            .filter(file => this.isVideo(file.fileType!) && file.blobStorageUri !== undefined)
+            .map(file => file.blobStorageUri as string);
 
-        this.audioUrls = files
-          .filter(file => this.isAudio(file.fileType!) && file.blobStorageUri !== undefined)
-          .map(file => file.blobStorageUri as string);
+          this.audioUrls = files
+            .filter(file => this.isAudio(file.fileType!) && file.blobStorageUri !== undefined)
+            .map(file => file.blobStorageUri as string);
 
-        // Additional logic to set positions if needed
-        this.preCalculateMediaPositions();
-        setTimeout(() => this.initializeDraggable(), 0);
+          // Set media positions and enable drag functionality
+          this.preCalculateMediaPositions();
+          setTimeout(() => this.initializeDraggable(), 0);
+        } else {
+          console.log('No media files found.');
+          // Handle the case when there are no media files (optional)
+        }
       },
       error: (error) => {
         console.error('Error fetching media:', error);
-        this.toastr.error('Error fetching media.');
+        //this.toastr.error('Error fetching media.'); // Show error toast only on actual error
       }
     });
   }
+
 
 
 preCalculateMediaPositions(): void {
@@ -389,29 +406,31 @@ preCalculateMediaPositions(): void {
 
   deleteMedia(media: FileModel): void {
     const urlParts = media.fileName?.split('/');
-    const fileName = urlParts![urlParts!.length - 1];// Assuming the filename is the last part of the URL
+    const fileName = urlParts![urlParts!.length - 1]; // Assuming the filename is the last part of the URL
+
+    // Optimistically remove the media from the UI
+    const index = this.mediaFiles.findIndex(m => m.id === media.id);
+    if (index > -1) {
+      this.mediaFiles.splice(index, 1); // Remove media from the mediaFiles array
+    }
 
     // Attempt to delete the media on the server
     this.mediaService.deleteMedia(fileName!).subscribe({
       next: () => {
         this.toastr.success('Medium erfolgreich gelöscht.');
-
+        // Optionally recalculate media positions after deletion
+        //this.preCalculateMediaPositions();
+        //setTimeout(() => this.initializeDraggable(), 0);
       },
       error: (error) => {
-        // Rollback: If deletion failed, restore the media item to the UI
-        //this.toastr.error('Error deleting media.');
+        this.toastr.error('Fehler beim Löschen des Mediums.');
         console.error('Error deleting media:', error);
+        // If an error occurred during deletion, restore the media back into the array
+        this.mediaFiles.splice(index, 0, media);
       }
     });
-          // Optimistically remove the media from the UI
-          const index = this.mediaUrls.indexOf(media.blobStorageUri!);
-          if (index > -1) {
-            this.mediaUrls.splice(index, 1);
-            this.toastr.success('Medium erfolgreich gelöscht.');
-          } else {
-            this.toastr.error('Fehler beim löschen des Mediums.');
-          }
   }
+
 
 
 
@@ -601,15 +620,20 @@ preCalculateMediaPositions(): void {
     const x = parseFloat(gsap.getProperty(element, 'x') as string);
     const y = parseFloat(gsap.getProperty(element, 'y') as string);
 
-    if (!isNaN(x) && !isNaN(y)) {
+    // Ensure that fileModelId is valid before saving the position
+    if (!isNaN(x) && !isNaN(y) && fileModelId) {
       const position: MediaPosition = {
-        fileModelId: fileModelId,
+        fileModelId: fileModelId, // Ensure this is available
         xPosition: x,
         yPosition: y
       };
+
+      // Call the position saving function after ensuring a valid ID
       this.positionUpdateSubject.next(position);
     }
   }
+
+
 
   onMediaDragEnd(fileModelId: number, event: any): void {
     const element = event.target;

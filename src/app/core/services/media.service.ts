@@ -31,7 +31,8 @@ export class MediaService {
   deleteMedia(fileName: string): Observable<any> {
     const decodedFileName = decodeURIComponent(fileName);
     const encodedFileName = encodeURIComponent(decodedFileName);
-    return this.http.delete(`${this.apiUrl}deleteMedia/${encodedFileName}`);
+    return this.http.delete(`${this.apiUrl}deleteMedia/${encodedFileName}`, { responseType: 'text' });
   }
+
 
 }
