@@ -1,4 +1,5 @@
 <div class="wrapper">
+
   <div id="sticker">
     <h2>Sticker</h2>
     <div id="qr">
@@ -79,6 +80,14 @@
       </div>
       <canvas id="drawingCanvas" #drawingCanvas class="custom-cursor"></canvas>
     </div>
+    <button
+    class="page-plakate__button"
+    style="min-width: 180px; margin: 10px; margin-top: -30px; background-color: royalblue"
+    (click)="switchFormat()"
+  >
+  {{ isPostcard ? 'Wechsel zu Poster' : 'Wechsel zu Postkarte' }}
+
+  </button>
   </div>
 
   <div id="controlls">
@@ -113,14 +122,14 @@
       </p>
       <br />
       <input
-        style="width: fit-content; float: left"
+        style="width: fit-content; float: left;"
         placeholder="Farbe"
         type="color"
         id="stroke-color"
         [(ngModel)]="strokeColor"
       />
     </div>
-    <div style="float: left; margin-top: 50px; margin-left: -80px" id="buttons">
+    <div style="float: left; margin-top: 55px; margin-left: -40px" id="buttons">
       <button
         class="page-plakate__button"
         style="min-width: 180px; margin: 10px; background-color: royalblue"
@@ -151,6 +160,7 @@
       </button>
     </div>
   </div>
+
 </div>
 
 <app-new-poster-dialog

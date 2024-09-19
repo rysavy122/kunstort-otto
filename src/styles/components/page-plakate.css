@@ -61,6 +61,16 @@
     display: flex;
     justify-content: space-evenly;
   }
+  @media only screen and (max-width: 600px){
+    .wrapper{
+      margin-top: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+
   .canvas-wrapper{
     margin: auto;
     margin-bottom: 50px;
@@ -97,7 +107,7 @@
     color: black;
     height:fit-content;
     width:fit-content;
-    margin-top: 50px
+    margin-top: 50px;
   }
   .sticker img {
     width: 100px; /* Adjust as needed */
@@ -120,9 +130,11 @@
   #stroke-color::-webkit-color-swatch-wrapper {
     padding: 0;
     border: none;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     background: transparent;
+    border:1px solid royalblue;
+    border-radius: 50%;
   }
 
   #stroke-color::-webkit-color-swatch {
@@ -130,9 +142,11 @@
     border-radius: 50%;
     width: 30px;
     height: 30px;
+
   }
   #stroke-color{
     background-color: white;
+
   }
   #controlls input{
     border: none;
@@ -185,7 +199,7 @@
     border: none;
     color: black;
     width: 567px;
-    margin-left: -200px;
+    margin-left: 35%;
   }
   #drawingCanvas{
     height: 567px;
@@ -202,7 +216,7 @@
   #otto-plakat{
     width: 73.3%;
     margin: 15px;
-    margin-left:-1%; margin-top: 10vh;
+    margin-left:-1%; margin-top: 1vh;
   }
   #controlls{
     width: 33%;

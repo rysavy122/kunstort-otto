@@ -16,7 +16,7 @@
                   style="margin-top: 50px;"
                 />
                 <div class="profile__headline">
-                  <h2 class="profile__title">{{ user.name }}</h2>
+                  <h2 class="profile__title">Hallo, {{ user.name }}</h2>
                   <h3 class="profile__role">Angemeldet als: {{this.role}}</h3>
                   <span class="profile__description">Email: {{ user.email }}</span>
                 </div>
@@ -38,6 +38,16 @@
               <div *ngIf="role === 'Institution'">
                 <!-- Content specific to Institution role -->
                 <p>Als Institution kannst du neben den Plakaten auch noch Postkarten erstellen und dein Logo auf kreative Weise umgestalten.</p>
+                <br/>
+                <a
+                class="button button--secondary"
+                routerLink="/plakate/mein-plakat"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="border:1px solid black;"
+              >
+                Klicke hier und werde kreativ →
+              </a>
               </div>
 
               <div *ngIf="role === 'Team'">

@@ -11,8 +11,10 @@ import { KommentarService } from 'src/app/core/services/kommentar.service';
                 <div class="modal">
                     <h2>Teile deine Meinung mit uns.</h2>
                     <h6>Verfasse ein Kommentar und nehme an der Diskussion teil.</h6>
-                    <!--<input type="text" [(ngModel)]="commentTitle" placeholder="Titel">-->
-                  <app-tiny-mce (editorContent)="handleEditorContent($event)"></app-tiny-mce>
+                    <input type="text" [(ngModel)]="commentTitle" placeholder="Kommentar">
+
+<!--                   <app-tiny-mce (editorContent)="handleEditorContent($event)"></app-tiny-mce>
+ -->
                     <button class="submit-button" (click)="handleSubmit()">Bestätigen</button>
                     <button class="close-button" (click)="closeDialog()">Zurück</button>
                 </div>

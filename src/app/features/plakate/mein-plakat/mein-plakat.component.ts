@@ -52,16 +52,31 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   svgWidth: string = '300px';
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
-  private isDrawing = false;
+  private isDrawing:boolean = false;
+  isDialogOpen: boolean = false;
+
+  isPostcard: boolean = false;
+  isPoster: boolean = true;
+
   strokeSize = 2;
   strokeColor = new paper.Color(0, 0, 0);
-  isDialogOpen: boolean = false;
   imagesPerPage = 8;
   currentPage = 1;
   totalPages: number = 3;
   private backgroundLayer!: paper.Layer;
   private drawingLayer!: paper.Layer;
   private frameLayer!: paper.Layer;
+
+  // Define dimensions for postcard and poster
+// Define half-size dimensions for postcard and poster
+private postcardSize = { width: 1225 / 1.5, height: 874 / 1.5 }; // Half of landscape (Postcard)
+private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portrait (Poster)
+
+
+
+  private postCardSource: string = '/assets/img/Postkarten_frei_4.png'
+  private posterSource: string = '/assets/img/OttoRahmen_bunt_1.png'
+
 
   constructor(
     public messageService: MessageService,
@@ -81,7 +96,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     // Initialize the frame layer with transparent frame image
     this.frameLayer = new this.paperScope.Layer();
     const borderImage = new this.paperScope.Raster({
-      source: '/assets/img/Postkarten_frei_4.png', // Your transparent Otto Rahmen image
+      source: this.isPostcard ? this.postCardSource : this.posterSource, // Your transparent Otto Rahmen image
       position: this.paperScope.view.center
     });
 
@@ -176,30 +191,36 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   initializeLayers(): void {
-    // Initialize the background layer with white color
     this.backgroundLayer = new this.paperScope.Layer();
+
+    // Set the initial size for the canvas
+    let initialSize = this.isPostcard ? this.postcardSize : this.posterSize;
+    this.paperScope.view.viewSize = new this.paperScope.Size(initialSize.width, initialSize.height);
+
     const backgroundRect = new this.paperScope.Path.Rectangle({
       point: [0, 0],
-      size: [this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height],
+      size: [initialSize.width, initialSize.height],
       fillColor: 'white',
     });
 
-    // Initialize the drawing layer
     this.drawingLayer = new this.paperScope.Layer();
-
-    // Initialize the frame layer with transparent frame image
     this.frameLayer = new this.paperScope.Layer();
-    const borderImage = new this.paperScope.Raster({
-      source: '/assets/img/Postkarten_frei_4.png', // Your transparent Otto Rahmen image
+
+    // Load the initial frame (postcard or poster)
+    const initialSource = this.isPostcard ? this.postCardSource : this.posterSource;
+    const initialFrame = new this.paperScope.Raster({
+      source: initialSource,
       position: this.paperScope.view.center
     });
 
-    borderImage.onLoad = () => {
-      borderImage.size = new this.paperScope.Size(this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height);
-      this.frameLayer.addChild(borderImage); // Ensure the border image is added to the frameLayer
+    initialFrame.onLoad = () => {
+      initialFrame.size = new this.paperScope.Size(initialSize.width, initialSize.height);
+      this.frameLayer.addChild(initialFrame);
       this.paperScope.project.activeLayer.activate();
     };
-}
+  }
+
+
 
   bringFrameLayerToFront(): void {
     this.frameLayer.bringToFront();
@@ -242,6 +263,39 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.paperScope.view.requestUpdate();
     }
   }
+
+  switchFormat() {
+    // Toggle between postcard and poster formats
+    this.isPostcard = !this.isPostcard;
+    this.isPoster = !this.isPoster;
+
+    // Clear the current frame before switching
+    this.frameLayer.removeChildren();
+
+    // Set new canvas size and frame image based on the format
+    let newSize = this.isPostcard ? this.postcardSize : this.posterSize;
+    const newSource = this.isPostcard ? this.postCardSource : this.posterSource;
+
+    // Update the canvas size
+    this.paperScope.view.viewSize = new this.paperScope.Size(newSize.width, newSize.height);
+
+    // Load the new frame image
+    const newFrame = new this.paperScope.Raster({
+      source: newSource,
+      position: this.paperScope.view.center
+    });
+
+    newFrame.onLoad = () => {
+      newFrame.size = new this.paperScope.Size(newSize.width, newSize.height);
+      this.frameLayer.addChild(newFrame); // Add the new frame to the frameLayer
+      this.paperScope.project.activeLayer.activate();
+      this.paperScope.view.update(); // Force view update to display the new frame
+    };
+
+    console.log(`Switched format: Postcard: ${this.isPostcard}, Poster: ${this.isPoster}`);
+  }
+
+
 
   stopDrawing(): void {
     this.isDrawing = false;
@@ -449,7 +503,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   private addFrameToTopLayer(): void {
     const borderImage = new this.paperScope.Raster({
-      source: '/assets/img/Postkarten_frei_4.png',
+      source: this.isPostcard ? this.postCardSource : this.posterSource, // Your transparent Otto Rahmen image
       position: this.paperScope.view.center
     });
 
