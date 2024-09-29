@@ -1,5 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
+import { UserService } from './core/services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,9 @@ import { AuthService } from '@auth0/auth0-angular';
 export class AppComponent {
   isAuth0Loading$ = this.auth.isLoading$;
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private userService: UserService) {
+
+  }
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {

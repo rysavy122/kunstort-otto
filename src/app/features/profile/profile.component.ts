@@ -1,13 +1,11 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { ForschungsFrageService } from '@app/core';
+import { ForschungsFrageService, UserService, FreezePolylogService, RoleService, User } from '@app/core';
 import { map } from 'rxjs/operators';
 import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/dialog/confirm-dialog.component';
 import { ConfirmationFreezeDialogComponent } from 'src/app/shared/components/dialog/confirm-freeze-dialog.component';
-import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
 import { ToastrService } from 'ngx-toastr';
-import { RoleService } from 'src/app/core/services/role.service';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-profile',
@@ -48,6 +46,7 @@ export class ProfileComponent implements OnInit {
     private toastr: ToastrService,
     private forschungsfrageService: ForschungsFrageService,
     private freezePolylogService: FreezePolylogService,
+    private userService: UserService,
     public roleService: RoleService,
     private route: ActivatedRoute
 
@@ -67,10 +66,26 @@ export class ProfileComponent implements OnInit {
 
 
 
-    this.auth.user$.subscribe(user => {
-      console.log('User after login:', user);
+ // Subscribe to user after login
+ this.auth.user$.subscribe(user => {
+  console.log('User after login:', user);
+  if (user) {
+    const role = this.role || 'guest';  // Get the selected role or default to guest
+
+    // Create a User object
+    const newUser: User = {
+      email: user.email!,
+      role: role
+    };
+
+    // Send user data to the backend
+    this.userService.saveUser(newUser).subscribe({
+      next: (response) => console.log('User saved successfully to the database', response),
+      error: (error) => console.error('Error saving user to the database', error)
     });
   }
+});
+}
   toggleForschungsfragen() {
     this.isExpanded = !this.isExpanded;
   }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
@@ -9,6 +9,8 @@ import { AuthService } from '@auth0/auth0-angular';
 })
 export class LoginButtonComponent {
   constructor(private auth: AuthService) {}
+  @Output() loginClick = new EventEmitter<void>();
+
 
   handleLogin(): void {
     this.auth.loginWithRedirect({
@@ -19,5 +21,6 @@ export class LoginButtonComponent {
         prompt: 'login',
       },
     });
+    this.loginClick.emit();  // Emit event when login button is clicked
   }
 }

@@ -17,7 +17,7 @@
   font-size: 1.6rem;
   line-height: 2.4rem;
 }
-input {
+input, textarea {
   width: fit-content;
   width: 45vw;
   line-height: 2.4rem;
@@ -33,9 +33,27 @@ input {
   line-height: 1.6rem;
   color: var(--otto-primary);
 }
+textarea {
+  width: fit-content;
+  width: 45vw;
+  line-height: 2.4rem;
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  padding: 5px;
+  border: none;
+  border: 2px solid var(--otto-primary);
+  outline: none;
+  transition: transform 0.3s ease;
+  padding: 1.6rem 1.6rem;
+  font-size: 2.6rem;
+  line-height: 1.6rem;
+  color: var(--otto-primary);
+  border-radius: 0.8rem;
+}
 
-input:focus {
-  border-bottom: 3px solid var(--otto-secondary);
+
+textarea:focus{
+  border: 2px solid var(--otto-secondary);
 }
 
 .submit-button{

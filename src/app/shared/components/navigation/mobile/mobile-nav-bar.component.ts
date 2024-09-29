@@ -23,7 +23,7 @@ import { NavigationEnd, Router } from '@angular/router';
           <app-mobile-nav-bar-tabs
             (mobileNavBarTabClick)="handleNavTabClick($event)"
           ></app-mobile-nav-bar-tabs>
-          <app-mobile-nav-bar-buttons></app-mobile-nav-bar-buttons>
+          <app-mobile-nav-bar-buttons (signupClick)="closeMobileMenu()" (loginClick)="closeMobileMenu()"></app-mobile-nav-bar-buttons>
         </div>
       </nav>
     </div>

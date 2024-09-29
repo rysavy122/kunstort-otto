@@ -8,4 +8,6 @@ export * from './media-position.service';
 export * from './external-api.service';
 export * from './media.service';
 export * from './role.service';
+export * from './user.service';
+export * from './scroll.service';
 

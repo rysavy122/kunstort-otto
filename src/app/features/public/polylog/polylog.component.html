@@ -159,7 +159,7 @@
       <div class="commentar-content-wrapper">
         <h4>{{ comment.title }}</h4>
         <p [innerHTML]="getSafeHtml(comment.comment)"></p>
-        <p>Datum: {{ comment.createdAt | date }}</p>
+        <p id="date">{{ comment.createdAt | date }}</p>
         <br />
         <div class="icons">
           <svg

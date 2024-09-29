@@ -60,7 +60,12 @@ h4 {
   margin: auto;
   width: 90%;
   padding: 5px;
+  white-space: nowrap; /* Prevent line breaks */
 
+}
+#date{
+  white-space: nowrap; /* Prevent line breaks */
+  font-size:8px;
 }
 .replies p {
   height: fit-content;
@@ -276,6 +281,9 @@ svg {
   );
   position: relative;
   margin: 50px;
+}
+.commentar-content-wrapper p{
+  font-size:12px;
 }
 audio::-webkit-media-controls-panel {
   background-color: #ff0055;
