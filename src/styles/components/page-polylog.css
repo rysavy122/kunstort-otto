@@ -139,7 +139,7 @@ input[type="file"] {
     13% 76.8%,
     11% 11.6%
   );
-  background-color: #ff0055;
+  background-color: #ff00558a;
   color: white;
   margin: 5px;
   width: fit-content;
@@ -154,10 +154,9 @@ svg {
 .menu {
   position: fixed;
   justify-content: center;
-  border-radius: 8px;
-  background-color: #ffffffd5;
+  background-color: #ffffff;
   border: 1px solid #ddd;
-  clip-path: polygon(
+/*   clip-path: polygon(
     16.4% 0%,
     84.8% 4%,
     100% 5.4%,
@@ -166,23 +165,14 @@ svg {
     10% 100%,
     17.4% 76.2%,
     20% 66.2%
-  );
+  ); */
   border-radius: 8px;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.3s ease, transform 0.3s ease;
   text-align: center;
-  height: 110px;
-  margin-top:15px;
-  margin: auto;
+  height: fit-content;
   z-index:300;
-  width:60px;
+  width:fit-content;
   margin-top:-100px;
-  margin-right:-60px;
-
-
 }
 .reply-menu {
   position: relative;
@@ -441,5 +431,11 @@ input[type="file"] {
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
+}
+
+.commentar-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 

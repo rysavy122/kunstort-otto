@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+img {
+  image-rendering: crisp-edges; /* For Chrome, Firefox */
+  image-rendering: -webkit-optimize-contrast; /* For Safari */
+  image-rendering: pixelated; /* Fallback for pixelated scaling */
+}

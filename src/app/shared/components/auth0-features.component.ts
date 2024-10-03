@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { RoleService, ScrollService, UserService } from '@app/core';
 
@@ -39,16 +39,28 @@ import { User } from 'src/app/core/models/user.model';  // Import the User inter
           (roleSelected)="handleRoleSelected($event)"
         ></app-auth0-feature>
       </div>
-
-     <!-- https://ottoblob.blob.core.windows.net/images/*image00042 Kopie.png -->
-
     </div>
+
+    <!-- Add the dialog component to open on demand -->
+    <app-otto-admin-dialog
+      [isOpen]="isAdminDialogOpen"
+      (close)="isAdminDialogOpen = false"
+      (adminAuthSuccess)="handleAdminAuthSuccess()">
+    </app-otto-admin-dialog>
   `
 })
 export class Auth0FeaturesComponent implements AfterViewInit {
   selectedRole: string | undefined;
+  isAdminAuthenticated = false;
+  isAdminDialogOpen = false; // Controls the dialog visibility
 
-  constructor(private auth: AuthService, private roleService: RoleService, private userService: UserService, private elRef: ElementRef, private scrollService: ScrollService) {}
+  constructor(
+    private auth: AuthService,
+    private roleService: RoleService,
+    private userService: UserService,
+    private elRef: ElementRef,
+    private scrollService: ScrollService
+  ) {}
 
   ngAfterViewInit(): void {
     const featuresSectionElement = this.elRef.nativeElement.querySelector('#featuresSection');
@@ -56,12 +68,24 @@ export class Auth0FeaturesComponent implements AfterViewInit {
       this.scrollService.setFeaturesSection(featuresSectionElement);  // Register the element reference
     }
   }
+
   handleRoleSelected(role: string) {
-    console.log('Role selected:', role); // Log the selected role
+    if (role === 'Team' && !this.isAdminAuthenticated) {
+      this.isAdminDialogOpen = true; // Open the dialog
+      return;
+    }
+
+    // Proceed with sign-up for non-team roles or if already authenticated
     this.selectedRole = role;
-    this.roleService.setRole(role); // Set the role in localStorage
-    console.log('Stored role in localStorage:', role); // Log stored role
+    this.roleService.setRole(role);
     this.handleSignUp();
+  }
+
+  handleAdminAuthSuccess() {
+    this.isAdminAuthenticated = true; // Mark as authenticated
+    this.isAdminDialogOpen = false; // Close the dialog
+    this.selectedRole = 'Team'; // Set the role to 'Team'
+    this.handleSignUp(); // Proceed with sign-up
   }
 
   handleSignUp() {
@@ -69,35 +93,27 @@ export class Auth0FeaturesComponent implements AfterViewInit {
     console.log('handleSignUp triggered with role:', role);
 
     this.auth.user$.subscribe(user => {
-      console.log('User observable triggered');  // Ensure this is logged
       if (user) {
-        const email = user.email!;  // Get email from Auth0 user object
-         // Create a User object that follows the User interface
-         const newUser: User = {
+        const email = user.email!;
+        const newUser: User = {
           email: email,
           role: role
         };
 
-        const userId = user.sub;
         this.userService.saveUser(newUser).subscribe({
-          next: (response) => console.log('User saved successfully to the database'),
+          next: () => console.log('User saved successfully to the database'),
           error: (error) => console.error('Error saving user to the database', error)
-        });// The unique identifier from Auth0
-        console.log('User logged in, sending role to backend...');
+        });
       }
     });
 
-    // Delay the redirect to ensure backend role assignment happens first
-      this.auth.loginWithRedirect({
-        appState: { target: `/profile?role=${role}` },
-        authorizationParams: {
-          prompt: 'login',
-          screen_hint: 'signup',
-          ui_locales: 'de',
-        },
-      }); // Adjust the delay as needed to ensure proper flow
+    this.auth.loginWithRedirect({
+      appState: { target: `/profile?role=${role}` },
+      authorizationParams: {
+        prompt: 'login',
+        screen_hint: 'signup',
+        ui_locales: 'de',
+      },
+    });
+  }
 }
-}
-
-
-

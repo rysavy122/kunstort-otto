@@ -8,3 +8,7 @@ export * from './user.model';
 export * from './comment-position.model';
 export * from './media-position.model';
 export * from './file.model';
+export * from './sticker.model';
+export * from './kommentar.model';
+export * from './plakat.model';
+

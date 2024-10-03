@@ -1,37 +1,54 @@
 // Angular
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ChangeDetectorRef } from '@angular/core';
-
 
 // Services
-import { FileModel, ForschungsFrageService, MediaDisplayModel, MediaPosition } from '@app/core';
-import { KommentarService } from 'src/app/core/services/kommentar.service';
-import { AuthService } from '@auth0/auth0-angular';
-import { RoleService } from 'src/app/core/services/role.service';
-import { MediaService } from 'src/app/core/services/media.service';
-import { FreezePolylogService } from 'src/app/core/services/freeze-polylog.service';
+import {
+  ForschungsFrageService,
+  KommentarService,
+  RoleService,
+  FreezePolylogService,
+  CommentPositionService,
+  MediaPositionService,
+  MediaService,
+  MediaPosition,
+} from '@app/core';
 import { ToastrService } from 'ngx-toastr';
-import { CommentPositionService } from '@app/core';
-import { MediaPositionService } from 'src/app/core/services/media-position.service';
 
 // Models & Interfaces
 import { ForschungsfragenModel } from 'src/app/core/models/forschungsfrage.model';
-import { KommentarModel, KommentarDisplayModel } from 'src/app/core/models/kommentar.model';
-import { CommentPosition } from '@app/core';
+import {
+  KommentarModel,
+  FileModel,
+  CommentPosition,
+  KommentarDisplayModel,
+} from '@app/core';
 
 // Components
 import { CommentDialogComponent } from 'src/app/shared/components/dialog/comment-dialog.component';
 
 // Third Party
-import { debounceTime, firstValueFrom, Subject, Subscription, takeUntil } from 'rxjs';
+import {
+  debounceTime,
+  firstValueFrom,
+  Subject,
+  Subscription,
+  takeUntil,
+} from 'rxjs';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { gsap } from 'gsap';
 import Draggable from 'gsap/Draggable';
 
-
 gsap.registerPlugin(Draggable);
-
 
 @Component({
   selector: 'app-polylog',
@@ -51,10 +68,10 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   activeCommentId: number | null = null;
   kommentare: KommentarDisplayModel[] = [];
   mediaFiles: FileModel[] = [];
-
   mediaUrls: string[] = [];
   isAdmin: boolean = false;
   role: string | null = null;
+  hasFileUploadAccess: boolean = false;
 
   videoPositions: { [index: number]: any } = {};
   imagePositions: { [index: number]: any } = {};
@@ -64,31 +81,13 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   videoUrls: string[] = [];
   audioUrls: string[] = [];
 
-
-
-
   mediaisLoading: boolean = false;
 
   private forschungsfragenSubscription?: Subscription;
-  private positionUpdateSubject = new Subject<CommentPosition | MediaPosition>();
+  private positionUpdateSubject = new Subject<
+    CommentPosition | MediaPosition
+  >();
   private destroy$ = new Subject<void>();
-
-
-
-
-/*   get imageUrls(): string[] {
-    return this.mediaUrls.filter(url => this.isImage(url));
-  }
-
-  get videoUrls(): string[] {
-    return this.mediaUrls.filter(url => this.isVideo(url));
-  }
-
-  get audioUrls(): string[] {
-    return this.mediaUrls.filter(url => this.isAudio(url));
-  }
- */
-
 
   isImage(url: string): boolean {
     return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
@@ -101,58 +100,49 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   isAudio(url: string): boolean {
     return url.match(/\.(mp3|wav)$/) != null;
   }
-
-  private resizeTimeout?: number;
   errorMessage: string = 'Fehler beim laden der Forschungsfrage.';
   isDialogOpen: boolean = false;
   private commentPositions: { [kommentarId: number]: CommentPosition } = {};
   public mediaPositions: { [fileModelId: number]: MediaPosition } = {};
 
-  @ViewChildren('draggableCommentElement') draggableElements!: QueryList<ElementRef>;
-  @ViewChildren('draggableMediaElement') draggableMediaElements!: QueryList<ElementRef>;
+  @ViewChildren('draggableCommentElement')
+  draggableElements!: QueryList<ElementRef>;
+  @ViewChildren('draggableMediaElement')
+  draggableMediaElements!: QueryList<ElementRef>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('commentDialog') commentDialog!: CommentDialogComponent;
-
-
-
-
 
   constructor(
     private forschungsfrageService: ForschungsFrageService,
     private freezePolylogService: FreezePolylogService,
-    public  roleService: RoleService,
-    private auth: AuthService,
+    public roleService: RoleService,
     private toastr: ToastrService,
     private sanitizer: DomSanitizer,
     private mediaService: MediaService,
     private commentPositionService: CommentPositionService,
     private mediaPositionService: MediaPositionService,
-    private kommentarService: KommentarService,
-    private cdr: ChangeDetectorRef,
-) { }
-
-
-
+    private kommentarService: KommentarService
+  ) { }
 
   // Initialize things
 
-  async ngOnInit(): Promise<void>{
+  async ngOnInit(): Promise<void> {
     this.fetchLatestForschungsfrage();
     this.listenForNewForschungsfrage();
     this.loadKommentare();
-    //this.loadPositions();
     this.setupPositionUpdates();
 
-    await Promise.all([
-      this.loadCommentPositions(),
-      this.loadMediaPositions()
-    ]);
+    await Promise.all([this.loadCommentPositions(), this.loadMediaPositions()]);
 
-    this.freezePolylogService.getFreezeState().subscribe((state)=>{
+    this.freezePolylogService.getFreezeState().subscribe((state) => {
       this.freezePolylog = state;
-    })
+    });
     this.role = this.roleService.getRole();
     this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+    if (this.role === 'Team' || this.role === 'Künstler') {
+      this.hasFileUploadAccess = true;
+    }
   }
   ngOnDestroy(): void {
     this.forschungsfragenSubscription?.unsubscribe();
@@ -167,22 +157,23 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupPositionUpdates(): void {
-    this.positionUpdateSubject.pipe(
-      debounceTime(300),
-      takeUntil(this.destroy$)
-    ).subscribe(position => {
-      if ('kommentarId' in position) {
-        this.saveCommentPosition(position as CommentPosition);
-      } else if ('fileModelId' in position) {
-        this.saveMediaPosition(position as MediaPosition);
-      }
-    });
+    this.positionUpdateSubject
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe((position) => {
+        if ('kommentarId' in position) {
+          this.saveCommentPosition(position as CommentPosition);
+        } else if ('fileModelId' in position) {
+          this.saveMediaPosition(position as MediaPosition);
+        }
+      });
   }
 
   private async loadCommentPositions(): Promise<void> {
     try {
-      const positions = await firstValueFrom(this.commentPositionService.getCommentPositions());
-      positions.forEach(position => {
+      const positions = await firstValueFrom(
+        this.commentPositionService.getCommentPositions()
+      );
+      positions.forEach((position) => {
         this.commentPositions[position.kommentarId] = position;
       });
       console.log('Loaded positions:', this.commentPositions);
@@ -192,8 +183,10 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private async loadMediaPositions(): Promise<void> {
     try {
-      const positions = await firstValueFrom(this.mediaPositionService.getMediaPositions());
-      positions.forEach(position => {
+      const positions = await firstValueFrom(
+        this.mediaPositionService.getMediaPositions()
+      );
+      positions.forEach((position) => {
         this.mediaPositions[position.fileModelId] = position;
       });
       console.log('Loaded media positions:', this.mediaPositions);
@@ -201,7 +194,6 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
       console.error('Error loading media positions:', error);
     }
   }
-
 
   editKommentar(commentId: number): void {
     // Logic to handle editing a comment
@@ -228,62 +220,59 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.mediaisLoading = true;
 
-    this.mediaService.uploadMedia(this.selectedMedia, this.currentForschungsfrageId!).subscribe({
-      next: (response) => {
-        this.toastr.success('Medium erfolgreich hochgeladen!');
+    this.mediaService
+      .uploadMedia(this.selectedMedia, this.currentForschungsfrageId!)
+      .subscribe({
+        next: (response) => {
+          this.toastr.success('Medium erfolgreich hochgeladen!');
+          this.selectedMedia = null;
+          this.selectedMediaName = '';
+          this.mediaisLoading = false;
 
-        // Clear the selected media and reset the UI state
-        this.selectedMedia = null;
-        this.selectedMediaName = '';
-        this.mediaisLoading = false;
-
-        // Refetch all media files after successful upload
-        this.fetchMediaFiles();  // <-- Call the method that refetches all media
-
-      },
-      error: (error) => {
-        this.toastr.error('Fehler beim Hochladen des Mediums.');
-        console.error('Error uploading media:', error);
-        this.mediaisLoading = false;
-      }
-    });
+          this.fetchMediaFiles();
+        },
+        error: (error) => {
+          this.toastr.error('Fehler beim Hochladen des Mediums.');
+          console.error('Error uploading media:', error);
+          this.mediaisLoading = false;
+        },
+      });
   }
 
-
-
-
-// Handle Forschungsfrage
-fetchLatestForschungsfrage() {
-  this.forschungsfrageService.getLatestForschungsfrage().subscribe({
-    next: (forschungsfrage: ForschungsfragenModel) => {
-      this.forschungsfrage = forschungsfrage.title;
-      this.imagePath = forschungsfrage.imagePath;
-      this.currentForschungsfrageId = forschungsfrage.id;
-      this.clearKommentare();
-      this.fetchMediaFiles(); // Fetch the media URLs
-      console.log('Forschungsfrage updated. ID:', this.currentForschungsfrageId); // Log the ID
-
-    },
-    error: () => {
-      this.forschungsfrage = this.errorMessage;
-    }
-  });
-}
-listenForNewForschungsfrage(): void {
-  this.forschungsfragenSubscription = this.forschungsfrageService.forschungsfragen$.subscribe(() => {
-    if (this.currentForschungsfrageId) {
-      this.fetchLatestForschungsfrage();
-    }
-  });
-}
+  // Handle Forschungsfrage
+  fetchLatestForschungsfrage() {
+    this.forschungsfrageService.getLatestForschungsfrage().subscribe({
+      next: (forschungsfrage: ForschungsfragenModel) => {
+        this.forschungsfrage = forschungsfrage.title;
+        this.imagePath = forschungsfrage.imagePath;
+        this.currentForschungsfrageId = forschungsfrage.id;
+        this.clearKommentare();
+        this.fetchMediaFiles();
+        console.log(
+          'Forschungsfrage updated. ID:',
+          this.currentForschungsfrageId
+        );
+      },
+      error: () => {
+        this.forschungsfrage = this.errorMessage;
+      },
+    });
+  }
+  listenForNewForschungsfrage(): void {
+    this.forschungsfragenSubscription =
+      this.forschungsfrageService.forschungsfragen$.subscribe(() => {
+        if (this.currentForschungsfrageId) {
+          this.fetchLatestForschungsfrage();
+        }
+      });
+  }
   openDialog(parentId?: number) {
     this.isDialogOpen = true;
     this.commentDialog.parentKommentarId = parentId;
   }
   openReplyDialog(parentId: number) {
     this.openDialog(parentId);
-    this.isMenuOpen =false;
-
+    this.isMenuOpen = false;
   }
   closeDialog() {
     this.isDialogOpen = false;
@@ -308,7 +297,9 @@ listenForNewForschungsfrage(): void {
     if (newKommentar.parentKommentarId == null) {
       this.kommentare.push(kommentarWithPosition);
     } else {
-      const parentIndex = this.kommentare.findIndex(k => k.id === newKommentar.parentKommentarId);
+      const parentIndex = this.kommentare.findIndex(
+        (k) => k.id === newKommentar.parentKommentarId
+      );
 
       if (parentIndex !== -1) {
         const parentKommentar = this.kommentare[parentIndex];
@@ -317,14 +308,17 @@ listenForNewForschungsfrage(): void {
           if (!parentKommentar.replies) {
             parentKommentar.replies = [];
           }
-            parentKommentar.replies.push(kommentarWithPosition);
+          parentKommentar.replies.push(kommentarWithPosition);
         }
       }
     }
 
     this.loadKommentare();
   }
-  addReplyToKommentar(kommentare: KommentarDisplayModel[], reply: KommentarModel) {
+  addReplyToKommentar(
+    kommentare: KommentarDisplayModel[],
+    reply: KommentarModel
+  ) {
     for (let kommentar of kommentare) {
       if (kommentar.id === reply.parentKommentarId) {
         if (!kommentar.replies) kommentar.replies = [];
@@ -341,59 +335,73 @@ listenForNewForschungsfrage(): void {
       next: (files) => {
         this.mediaFiles = files;
 
-        // Check if there are any media files and categorize them based on their type
         if (files && files.length > 0) {
           this.imageUrls = files
-            .filter(file => this.isImage(file.fileType!) && file.blobStorageUri !== undefined)
-            .map(file => file.blobStorageUri as string);
+            .filter(
+              (file) =>
+                this.isImage(file.fileType!) &&
+                file.blobStorageUri !== undefined
+            )
+            .map((file) => file.blobStorageUri as string);
 
           this.videoUrls = files
-            .filter(file => this.isVideo(file.fileType!) && file.blobStorageUri !== undefined)
-            .map(file => file.blobStorageUri as string);
+            .filter(
+              (file) =>
+                this.isVideo(file.fileType!) &&
+                file.blobStorageUri !== undefined
+            )
+            .map((file) => file.blobStorageUri as string);
 
           this.audioUrls = files
-            .filter(file => this.isAudio(file.fileType!) && file.blobStorageUri !== undefined)
-            .map(file => file.blobStorageUri as string);
+            .filter(
+              (file) =>
+                this.isAudio(file.fileType!) &&
+                file.blobStorageUri !== undefined
+            )
+            .map((file) => file.blobStorageUri as string);
 
-          // Set media positions and enable drag functionality
           this.preCalculateMediaPositions();
           setTimeout(() => this.initializeDraggable(), 0);
         } else {
           console.log('No media files found.');
-          // Handle the case when there are no media files (optional)
         }
       },
       error: (error) => {
         console.error('Error fetching media:', error);
-        //this.toastr.error('Error fetching media.'); // Show error toast only on actual error
-      }
+      },
     });
   }
 
-
-
-preCalculateMediaPositions(): void {
-
-  this.videoUrls.forEach((_, index) => {
-    const x = Math.floor(Math.random() * window.innerWidth - 250);
-    const y = Math.floor(Math.random() * window.innerHeight - 850);
-    this.videoPositions[index] = { transform: `translateX(${x}px) translateY(${y}px)` };
-  });
-  this.imageUrls.forEach((_, index) => {
-    const x = Math.floor(Math.random() * window.innerWidth - 250);
-    const y = Math.floor(Math.random() * window.innerHeight - 850);
-    this.imagePositions[index] = { transform: `translateX(${x}px) translateY(${y}px)` };
-  });
-  this.audioUrls.forEach((_, index) => {
-    const x = Math.floor(Math.random() * window.innerWidth - 250);
-    const y = Math.floor(Math.random() * window.innerHeight - 850);
-    this.audioPositions[index] = { transform: `translateX(${x}px) translateY(${y}px)` };
-  });
-}
+  preCalculateMediaPositions(): void {
+    this.videoUrls.forEach((_, index) => {
+      const x = Math.floor(Math.random() * window.innerWidth - 250);
+      const y = Math.floor(Math.random() * window.innerHeight - 850);
+      this.videoPositions[index] = {
+        transform: `translateX(${x}px) translateY(${y}px)`,
+      };
+    });
+    this.imageUrls.forEach((_, index) => {
+      const x = Math.floor(Math.random() * window.innerWidth - 250);
+      const y = Math.floor(Math.random() * window.innerHeight - 850);
+      this.imagePositions[index] = {
+        transform: `translateX(${x}px) translateY(${y}px)`,
+      };
+    });
+    this.audioUrls.forEach((_, index) => {
+      const x = Math.floor(Math.random() * window.innerWidth - 250);
+      const y = Math.floor(Math.random() * window.innerHeight - 850);
+      this.audioPositions[index] = {
+        transform: `translateX(${x}px) translateY(${y}px)`,
+      };
+    });
+  }
 
   loadKommentare(): void {
     this.kommentarService.getAllKommentare().subscribe(kommentare => {
-      this.kommentare = kommentare.map((k: KommentarModel) => this.assignRandomPosition(k));
+      this.kommentare = kommentare.map((k: KommentarModel) => {
+        // Only assign a random position if the comment doesn't already have one
+        return this.assignRandomPosition(k);
+      });
       setTimeout(() => this.initializeDraggable(), 0);
     });
   }
@@ -404,78 +412,81 @@ preCalculateMediaPositions(): void {
     });
   }
 
+
   deleteMedia(media: FileModel): void {
     const urlParts = media.fileName?.split('/');
-    const fileName = urlParts![urlParts!.length - 1]; // Assuming the filename is the last part of the URL
+    const fileName = urlParts![urlParts!.length - 1];
+    const index = this.mediaFiles.findIndex((m) => m.id === media.id);
 
-    // Optimistically remove the media from the UI
-    const index = this.mediaFiles.findIndex(m => m.id === media.id);
     if (index > -1) {
-      this.mediaFiles.splice(index, 1); // Remove media from the mediaFiles array
+      this.mediaFiles.splice(index, 1);
     }
 
-    // Attempt to delete the media on the server
     this.mediaService.deleteMedia(fileName!).subscribe({
       next: () => {
         this.toastr.success('Medium erfolgreich gelöscht.');
-        // Optionally recalculate media positions after deletion
-        //this.preCalculateMediaPositions();
-        //setTimeout(() => this.initializeDraggable(), 0);
       },
       error: (error) => {
         this.toastr.error('Fehler beim Löschen des Mediums.');
         console.error('Error deleting media:', error);
-        // If an error occurred during deletion, restore the media back into the array
         this.mediaFiles.splice(index, 0, media);
-      }
+      },
     });
   }
 
-
-
-
   removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {
-    for (let i = 0; i < kommentare.length; i++) {
-      if (kommentare[i].id === id) {
-        kommentare.splice(i, 1);
-        return;
-      } else if (kommentare[i].replies) {
-        this.removeCommentById(kommentare[i].replies!, id);
-      }
+    const index = kommentare.findIndex(comment => comment.id === id);
+    if (index > -1) {
+      kommentare.splice(index, 1);  // Remove the comment by ID
     }
+    // Ensure positions are recalculated only for remaining comments
+    this.loadPositions();
+    this.loadCommentPositions();  // Reload saved positions from the backend
   }
+
 
   trackById(index: number, item: KommentarModel): number {
-    return item.id!; // assuming `id` is a unique identifier for each comment
+    return item.id!;
   }
 
+  assignRandomPosition(comment: KommentarModel): KommentarDisplayModel {
+    const displayComment = comment as KommentarDisplayModel;
 
-  assignRandomPosition(comment: KommentarModel, index: number = 0): KommentarDisplayModel {
-    const x = Math.floor(Math.random() * window.innerWidth -250);
-    const y = Math.floor(Math.random() * window.innerHeight -1050);
+    // Check if the comment already has a saved position (loaded from backend)
+    const savedPosition = this.commentPositions[comment.id!];
 
-    const transformStyle = `translateX(${x}px) translateY(${y}px)`;
+    // If the comment has a saved position, use it
+    if (savedPosition) {
+      return {
+        ...displayComment,
+        style: {
+          transform: `translateX(${savedPosition.xPosition}px) translateY(${Math.max(savedPosition.yPosition, 0)}px)`,
+          borderTop: `60px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
+          borderRight: `60px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
+          borderBottom: `30px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
+          borderLeft: `20px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
+          color: '#000000',
+        },
+      };
+    }
+
+    // If the comment doesn't have a saved position, assign a random position
+    const x = Math.floor(Math.random() * (window.innerWidth - 250));
+    const y = Math.floor(Math.random() * (Math.max(window.innerHeight - 1050, 0)));
     const borderColor = this.generateRandomColor();
 
-
-
     return {
-      ...comment,
+      ...displayComment,
       style: {
-        transform: transformStyle,
+        transform: `translateX(${x}px) translateY(${Math.max(y, 0)}px)`,
         borderTop: `60px solid ${borderColor}`,
         borderRight: `60px solid ${borderColor}`,
-        borderBottom: `20px solid ${borderColor}`,
+        borderBottom: `30px solid ${borderColor}`,
         borderLeft: `20px solid ${borderColor}`,
-
-
-        color: '#000000'
-      }
+        color: '#000000',
+      },
     };
   }
-
-
-
 
   //Random Colours
   generateRandomColor(): string {
@@ -522,7 +533,7 @@ preCalculateMediaPositions(): void {
       kommentarId: commentId,
       xPosition: x,
       yPosition: y,
-      borderColor: this.generateRandomColor()
+      borderColor: this.generateRandomColor(),
     };
 
     console.log('Saving comment position:', position);
@@ -533,27 +544,25 @@ preCalculateMediaPositions(): void {
       },
       error: (error) => {
         console.error('Error saving comment position:', error);
-      }
+      },
     });
   }
 
-
-
   hexToRgb(hex: string): { r: number; g: number; b: number } | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
+    return result
+      ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+      : null;
   }
 
   private initializeDraggable(): void {
     this.initializeDraggableComments();
     this.initializeDraggableMedia();
   }
-
-
 
   private initializeDraggableComments(): void {
     this.draggableElements.forEach((elementRef) => {
@@ -564,9 +573,10 @@ preCalculateMediaPositions(): void {
       if (savedPosition) {
         gsap.set(element, {
           x: savedPosition.xPosition,
-          y: savedPosition.yPosition
+          y: savedPosition.yPosition,
         });
-        element.style.borderColor = savedPosition.borderColor || this.generateRandomColor();
+        element.style.borderColor =
+          savedPosition.borderColor || this.generateRandomColor();
       }
 
       Draggable.create(element, {
@@ -574,9 +584,10 @@ preCalculateMediaPositions(): void {
         bounds: window,
         inertia: true,
         onDrag: () => this.updatePosition(commentId, element),
-        onDragEnd: () => this.updatePosition(commentId, element)
+        onDragEnd: () => this.updatePosition(commentId, element),
       });
     });
+
   }
 
   private initializeDraggableMedia(): void {
@@ -588,7 +599,7 @@ preCalculateMediaPositions(): void {
       if (savedPosition) {
         gsap.set(element, {
           x: savedPosition.xPosition,
-          y: savedPosition.yPosition
+          y: savedPosition.yPosition,
         });
       }
 
@@ -597,7 +608,7 @@ preCalculateMediaPositions(): void {
         bounds: window,
         inertia: true,
         onDrag: () => this.updateMediaPosition(fileModelId, element),
-        onDragEnd: () => this.updateMediaPosition(fileModelId, element)
+        onDragEnd: () => this.updateMediaPosition(fileModelId, element),
       });
     });
   }
@@ -610,7 +621,7 @@ preCalculateMediaPositions(): void {
         kommentarId: commentId,
         xPosition: x,
         yPosition: y,
-        borderColor: element.style.borderColor || this.generateRandomColor()
+        borderColor: element.style.borderColor || this.generateRandomColor(),
       };
       this.positionUpdateSubject.next(position);
     }
@@ -620,20 +631,15 @@ preCalculateMediaPositions(): void {
     const x = parseFloat(gsap.getProperty(element, 'x') as string);
     const y = parseFloat(gsap.getProperty(element, 'y') as string);
 
-    // Ensure that fileModelId is valid before saving the position
     if (!isNaN(x) && !isNaN(y) && fileModelId) {
       const position: MediaPosition = {
-        fileModelId: fileModelId, // Ensure this is available
+        fileModelId: fileModelId,
         xPosition: x,
-        yPosition: y
+        yPosition: y,
       };
-
-      // Call the position saving function after ensuring a valid ID
       this.positionUpdateSubject.next(position);
     }
   }
-
-
 
   onMediaDragEnd(fileModelId: number, event: any): void {
     const element = event.target;
@@ -643,7 +649,7 @@ preCalculateMediaPositions(): void {
     const position = {
       fileModelId: fileModelId,
       xPosition: x,
-      yPosition: y
+      yPosition: y,
     };
 
     this.mediaPositionService.saveMediaPosition(position).subscribe({
@@ -652,7 +658,7 @@ preCalculateMediaPositions(): void {
       },
       error: (error) => {
         console.error('Error saving media position:', error);
-      }
+      },
     });
   }
   private saveCommentPosition(position: CommentPosition): void {
@@ -661,7 +667,7 @@ preCalculateMediaPositions(): void {
         console.log('Position saved:', response);
         this.commentPositions[position.kommentarId] = response;
       },
-      error: (error) => console.error('Error saving position:', error)
+      error: (error) => console.error('Error saving position:', error),
     });
   }
   private saveMediaPosition(position: MediaPosition): void {
@@ -670,63 +676,56 @@ preCalculateMediaPositions(): void {
         console.log('Position saved:', response);
         this.mediaPositions[position.fileModelId] = response;
       },
-      error: (error) => console.error('Error saving position:', error)
+      error: (error) => console.error('Error saving position:', error),
     });
   }
-/*   saveMediaPosition(element: ElementRef): void {
-    const fileModelId = parseInt(element.nativeElement.getAttribute('data-file-id'), 10);
-    const x = gsap.getProperty(element.nativeElement, 'x') as number;
-    const y = gsap.getProperty(element.nativeElement, 'y') as number;
-
-    this.mediaPositionService.saveMediaPosition({
-      fileModelId,
-      xPosition: x,
-      yPosition: y,
-    }).subscribe();
-  } */
   loadPositions(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       let commentPositionsLoaded = false;
       let mediaPositionsLoaded = false;
 
-      this.commentPositionService.getCommentPositions().subscribe(positions => {
-        console.log('Comment Positions:', positions); // Log the positions
-        positions.forEach(pos => {
-          // Ensure you are mapping all properties of CommentPosition, including kommentarId and borderColor
-          this.commentPositions[pos.kommentarId] = {
-            kommentarId: pos.kommentarId,  // Ensure kommentarId is included
-            xPosition: pos.xPosition,
-            yPosition: pos.yPosition,
-            borderColor: pos.borderColor  // Include borderColor
-          };
-        });
-        commentPositionsLoaded = true;
-        if (commentPositionsLoaded && mediaPositionsLoaded) {
-          resolve();
+      this.commentPositionService.getCommentPositions().subscribe(
+        (positions) => {
+          console.log('Comment Positions:', positions);
+          positions.forEach((pos) => {
+            this.commentPositions[pos.kommentarId] = {
+              kommentarId: pos.kommentarId,
+              xPosition: pos.xPosition,
+              yPosition: pos.yPosition,
+              borderColor: pos.borderColor,
+            };
+          });
+          commentPositionsLoaded = true;
+          if (commentPositionsLoaded && mediaPositionsLoaded) {
+            resolve();
+          }
+        },
+        (error) => {
+          console.error('Error loading comment positions:', error);
+          reject();
         }
-      }, error => {
-        console.error('Error loading comment positions:', error);
-        reject();
-      });
+      );
 
-      this.mediaPositionService.getMediaPositions().subscribe(positions => {
-        console.log('Media Positions:', positions); // Log the positions
-        positions.forEach(pos => {
-          this.mediaPositions[pos.fileModelId] = {
-            fileModelId: pos.fileModelId,  // Ensure kommentarId is included
-            xPosition: pos.xPosition,
-            yPosition: pos.yPosition,
-          };
-        });
-        mediaPositionsLoaded = true;
-        if (commentPositionsLoaded && mediaPositionsLoaded) {
-          resolve();
+      this.mediaPositionService.getMediaPositions().subscribe(
+        (positions) => {
+          console.log('Media Positions:', positions);
+          positions.forEach((pos) => {
+            this.mediaPositions[pos.fileModelId] = {
+              fileModelId: pos.fileModelId,
+              xPosition: pos.xPosition,
+              yPosition: pos.yPosition,
+            };
+          });
+          mediaPositionsLoaded = true;
+          if (commentPositionsLoaded && mediaPositionsLoaded) {
+            resolve();
+          }
+        },
+        (error) => {
+          console.error('Error loading media positions:', error);
+          reject();
         }
-      }, error => {
-        console.error('Error loading media positions:', error);
-        reject();
-      });
+      );
     });
   }
-
 }

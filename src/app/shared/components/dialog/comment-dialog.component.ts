@@ -59,10 +59,10 @@ export class CommentDialogComponent {
   constructor(private kommentarService: KommentarService) { }
 
   handleSubmit() {
-    if (!this.editorContent.trim() || !this.commentTitle?.trim()) return;
+    if (!this.editorContent.trim()) return;
 
     const newComment: KommentarModel = {
-      title: this.commentTitle,
+      title: this.commentTitle?.trim() || undefined, // Title is optional
       comment: this.editorContent,
       parentKommentarId: this.parentKommentarId
     };

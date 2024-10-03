@@ -15,6 +15,7 @@ import { TinyMceComponent } from "./editor/tiny-mce.component";
 import { CommentComponent } from "src/app/features/public/polylog/comment/comment.component";
 import { DeleteDialogComponent } from "./dialog/delete-dialog.component";
 import { NewPosterDialogComponent } from "./dialog/new-poster-dialog.component";
+import { OttoAdminDialogComponent } from "./dialog/otto-admin-dialog.component";
 
 
 export const COMPONENTS = [
@@ -28,6 +29,7 @@ export const COMPONENTS = [
     ConfirmationFreezeDialogComponent,
     CommentDialogComponent,
     CommentComponent,
+    OttoAdminDialogComponent,
     TinyMceComponent,
     CodeSnippetComponent,
     HomeComponent,

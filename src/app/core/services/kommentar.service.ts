@@ -10,7 +10,7 @@ import { environment as env } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class KommentarService {
-  private apiUrl = `${env.api.serverUrl}/api/kommentare/`;
+  private apiUrl = `${env.api.serverUrl}/api/kommentare`;
 
   private kommentareSource = new BehaviorSubject<any[]>([]);
   kommentare$ = this.kommentareSource.asObservable();
@@ -28,7 +28,6 @@ export class KommentarService {
     console.log(`${this.apiUrl}/${id}`);
     return this.http.delete(`${this.apiUrl}/${id}`);
 }
-
 
   getAllKommentare(): Observable<any> {
     return this.http.get<any[]>(this.apiUrl).pipe(

@@ -10,4 +10,5 @@ export * from './media.service';
 export * from './role.service';
 export * from './user.service';
 export * from './scroll.service';
+export * from './plakat.service';
 

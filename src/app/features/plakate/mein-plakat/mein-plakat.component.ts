@@ -1,9 +1,22 @@
-import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { MessageService } from '@app/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
+import { MessageService, PlakatService } from '@app/core';
 import { ToastrService } from 'ngx-toastr';
 
 import * as paper from 'paper';
-import { CdkDragDrop, copyArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  copyArrayItem,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import { Plakat } from 'src/app/core/models/plakat.model';
 
 @Component({
   selector: 'app-mein-plakat',
@@ -42,9 +55,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     '/assets/img/e4ef5951-5596-43ad-91ed-3478b84ec627.webp',
     '/assets/img/f02555a2-0a14-46a8-85ab-9ceccc7bde3d.webp',
     '/assets/img/fc8d9a4e-6d63-4f7a-bfb5-c45e7229729f.webp',
-
   ];
-  canvasStickers = [ '' ];
+  canvasStickers = [''];
 
   svgContent: string = '';
   originalSvgContent: string = '';
@@ -52,11 +64,20 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   svgWidth: string = '300px';
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
-  private isDrawing:boolean = false;
+  private isDrawing: boolean = false;
+  private isDraggingSticker: boolean = false; // Add this to your component
+
   isDialogOpen: boolean = false;
 
   isPostcard: boolean = false;
   isPoster: boolean = true;
+
+  plakat: Plakat = {
+    id: 0,
+    title: '',
+    drawingJson: '',
+    stickers: [],
+  };
 
   strokeSize = 2;
   strokeColor = new paper.Color(0, 0, 0);
@@ -68,20 +89,18 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   private frameLayer!: paper.Layer;
 
   // Define dimensions for postcard and poster
-// Define half-size dimensions for postcard and poster
-private postcardSize = { width: 1225 / 1.5, height: 874 / 1.5 }; // Half of landscape (Postcard)
-private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portrait (Poster)
+  // Define half-size dimensions for postcard and poster
+  private postcardSize = { width: 1225 / 1.5, height: 874 / 1.5 }; // Half of landscape (Postcard)
+  private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portrait (Poster)
 
-
-
-  private postCardSource: string = '/assets/img/Postkarten_frei_4.png'
-  private posterSource: string = '/assets/img/OttoRahmen_bunt_1.png'
-
+  private postCardSource: string = '/assets/img/Postkarten_frei_4.png';
+  private posterSource: string = '/assets/img/OttoRahmen_bunt_1 copy.png';
 
   constructor(
     public messageService: MessageService,
-    private toastr: ToastrService,
-  ) { }
+    private plakatService: PlakatService,
+    private toastr: ToastrService
+  ) {}
   public editorData = '<p>Initial content of the editor.</p>';
 
   ngOnInit(): void {
@@ -89,7 +108,10 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     this.backgroundLayer = new this.paperScope.Layer();
     const backgroundRect = new this.paperScope.Path.Rectangle({
       point: [0, 0],
-      size: [this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height],
+      size: [
+        this.paperScope.view.viewSize.width,
+        this.paperScope.view.viewSize.height,
+      ],
       fillColor: 'white',
     });
     this.drawingLayer = new this.paperScope.Layer();
@@ -97,13 +119,18 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     this.frameLayer = new this.paperScope.Layer();
     const borderImage = new this.paperScope.Raster({
       source: this.isPostcard ? this.postCardSource : this.posterSource, // Your transparent Otto Rahmen image
-      position: this.paperScope.view.center
+      position: this.paperScope.view.center,
     });
 
     const savedTitle = localStorage.getItem('drawingTitle');
     if (savedTitle) {
       this.drawingTitle = savedTitle;
     }
+    const scaleFactor = window.devicePixelRatio || 1;
+    this.paperScope.view.viewSize = new this.paperScope.Size(
+      this.paperScope.view.viewSize.width * scaleFactor,
+      this.paperScope.view.viewSize.height * scaleFactor
+    );
   }
 
   ngAfterViewInit(): void {
@@ -131,11 +158,33 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     }
     this.isDialogOpen = false; // Ensure the dialog can be reopened
   }
+  savePlakat(): void {
+    this.plakatService.createPlakat(this.plakat).subscribe((response) => {
+      console.log('Plakat created:', response);
+    });
+  }
+
+  addStickerToPlakat(stickerUrl: string): void {
+    const sticker = {
+      id: 0,
+      fileName: '',
+      fileType: '',
+      blobStorageUri: stickerUrl,
+      plakatId: this.plakat.id,
+    };
+    this.plakatService.addSticker(this.plakat.id, sticker).subscribe(() => {
+      console.log('Sticker added to plakat');
+    });
+  }
 
   drop(event: CdkDragDrop<string[], any>) {
     if (event.previousContainer === event.container) {
       // Move items within the same list
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
     } else {
       // Differentiate between dropping on the canvas vs. other containers
       if (event.container.id === 'canvas') {
@@ -144,7 +193,12 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
         this.addStickerToCanvas(stickerUrl);
       } else {
         // Handle moving items between different lists
-        copyArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+        copyArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex
+        );
       }
     }
   }
@@ -154,7 +208,7 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
 
     const sticker = new paper.Raster({
       source: stickerUrl,
-      position: this.lastDropPoint // Use the last drop point for positioning
+      position: this.lastDropPoint, // Use the last drop point for positioning
     });
 
     sticker.onLoad = () => {
@@ -169,7 +223,10 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
   onCanvasMouseUp(event: MouseEvent) {
     // Convert mouse position to canvas coordinate system
     const bounds = this.drawingCanvas.nativeElement.getBoundingClientRect();
-    this.lastDropPoint = new paper.Point(event.clientX - bounds.left, event.clientY - bounds.top);
+    this.lastDropPoint = new paper.Point(
+      event.clientX - bounds.left,
+      event.clientY - bounds.top
+    );
   }
 
   get currentImages(): string[] {
@@ -195,7 +252,10 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
 
     // Set the initial size for the canvas
     let initialSize = this.isPostcard ? this.postcardSize : this.posterSize;
-    this.paperScope.view.viewSize = new this.paperScope.Size(initialSize.width, initialSize.height);
+    this.paperScope.view.viewSize = new this.paperScope.Size(
+      initialSize.width,
+      initialSize.height
+    );
 
     const backgroundRect = new this.paperScope.Path.Rectangle({
       point: [0, 0],
@@ -207,20 +267,23 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     this.frameLayer = new this.paperScope.Layer();
 
     // Load the initial frame (postcard or poster)
-    const initialSource = this.isPostcard ? this.postCardSource : this.posterSource;
+    const initialSource = this.isPostcard
+      ? this.postCardSource
+      : this.posterSource;
     const initialFrame = new this.paperScope.Raster({
       source: initialSource,
-      position: this.paperScope.view.center
+      position: this.paperScope.view.center,
     });
 
     initialFrame.onLoad = () => {
-      initialFrame.size = new this.paperScope.Size(initialSize.width, initialSize.height);
+      initialFrame.size = new this.paperScope.Size(
+        initialSize.width,
+        initialSize.height
+      );
       this.frameLayer.addChild(initialFrame);
       this.paperScope.project.activeLayer.activate();
     };
   }
-
-
 
   bringFrameLayerToFront(): void {
     this.frameLayer.bringToFront();
@@ -245,6 +308,11 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
   }
 
   startDrawing(event: paper.MouseEvent): void {
+    if (this.isDraggingSticker) {
+      // If a sticker is being dragged, do not start drawing
+      return;
+    }
+
     this.isDrawing = true;
 
     if (this.isInsideDrawingArea(event.point)) {
@@ -258,7 +326,12 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
   }
 
   draw(event: paper.MouseEvent): void {
-    if (this.isDrawing && this.drawingPath && this.isInsideDrawingArea(event.point)) {
+    if (this.isDraggingSticker || !this.isDrawing || !this.drawingPath) {
+      // If a sticker is being dragged, or not in drawing mode, skip drawing
+      return;
+    }
+
+    if (this.isInsideDrawingArea(event.point)) {
       this.drawingPath.add(event.point);
       this.paperScope.view.requestUpdate();
     }
@@ -277,12 +350,15 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     const newSource = this.isPostcard ? this.postCardSource : this.posterSource;
 
     // Update the canvas size
-    this.paperScope.view.viewSize = new this.paperScope.Size(newSize.width, newSize.height);
+    this.paperScope.view.viewSize = new this.paperScope.Size(
+      newSize.width,
+      newSize.height
+    );
 
     // Load the new frame image
     const newFrame = new this.paperScope.Raster({
       source: newSource,
-      position: this.paperScope.view.center
+      position: this.paperScope.view.center,
     });
 
     newFrame.onLoad = () => {
@@ -292,10 +368,10 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
       this.paperScope.view.update(); // Force view update to display the new frame
     };
 
-    console.log(`Switched format: Postcard: ${this.isPostcard}, Poster: ${this.isPoster}`);
+    console.log(
+      `Switched format: Postcard: ${this.isPostcard}, Poster: ${this.isPoster}`
+    );
   }
-
-
 
   stopDrawing(): void {
     this.isDrawing = false;
@@ -305,8 +381,11 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     // Define the boundaries of the drawing area
     const drawingArea = new this.paperScope.Path.Rectangle({
       from: new this.paperScope.Point(50, 50), // Adjust as necessary
-      to: new this.paperScope.Point(this.paperScope.view.viewSize.width - 50, this.paperScope.view.viewSize.height - 50), // Adjust as necessary
-      strokeWidth: 0
+      to: new this.paperScope.Point(
+        this.paperScope.view.viewSize.width - 50,
+        this.paperScope.view.viewSize.height - 50
+      ), // Adjust as necessary
+      strokeWidth: 0,
     });
     return drawingArea.contains(point);
   }
@@ -316,7 +395,7 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     localStorage.setItem('userDrawing', drawingJSON);
     localStorage.setItem('drawingTitle', this.drawingTitle);
     this.toastr.success('Dein Plakat wurde gespeichert!');
-    console.log("Plakat gespeichert:");
+    console.log('Plakat gespeichert:');
   }
 
   exportCanvasAsImage(): void {
@@ -329,8 +408,10 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
       const imageURL = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
 
-      let filename = this.drawingTitle.trim() !== '' ? this.drawingTitle : 'Unbenannt';
-      filename = filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '') + '.png';
+      let filename =
+        this.drawingTitle.trim() !== '' ? this.drawingTitle : 'Unbenannt';
+      filename =
+        filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '') + '.png';
 
       downloadLink.href = imageURL;
       downloadLink.download = filename; // Set the title as the download name
@@ -353,11 +434,24 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
         const reader = new FileReader();
         reader.onload = (e: any) => {
           const stickerImage = new this.paperScope.Raster(e.target.result);
-          stickerImage.size = new this.paperScope.Size(10, 10);
-          stickerImage.onMouseDown = (mouseEvent: paper.MouseEvent) => {
-            this.dragSticker(stickerImage, mouseEvent);
+
+          // Set initial size after image is loaded
+          stickerImage.onLoad = () => {
+            // Scale to 50x50px, regardless of original size
+            const desiredWidth = 100;
+            const desiredHeight = 100;
+
+            const widthScale = desiredWidth / stickerImage.width;
+            const heightScale = desiredHeight / stickerImage.height;
+
+            stickerImage.scale(widthScale, heightScale);
+
+            // Adjust the position or add any further logic as needed
+            stickerImage.position = this.paperScope.view.center;
           };
+
           this.stickers.push(stickerImage);
+          this.dragSticker(stickerImage, event);
         };
         reader.readAsDataURL(file);
       }
@@ -370,11 +464,14 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
     const originalPosition = stickerImage.position;
     const offset = originalPosition.subtract(event.point);
 
+    this.isDraggingSticker = true; // Flag that a sticker is being dragged
+
     stickerImage.onMouseDrag = (mouseEvent: paper.MouseEvent) => {
       stickerImage.position = mouseEvent.point.add(offset);
     };
 
     stickerImage.onMouseUp = () => {
+      this.isDraggingSticker = false; // Reset the flag after dragging is complete
       stickerImage.onMouseDrag = null;
     };
   }
@@ -427,7 +524,7 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
-    if (file && file.type === "image/svg+xml") {
+    if (file && file.type === 'image/svg+xml') {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.originalSvgContent = e.target.result;
@@ -445,20 +542,20 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
 
   parseSVG(svgContent: string): void {
     const parser = new DOMParser();
-    const svgDoc = parser.parseFromString(svgContent, "image/svg+xml");
+    const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
     const paths = svgDoc.querySelectorAll('path');
     this.svgPaths = [];
     paths.forEach((path) => {
       this.svgPaths.push(path.getAttribute('d') || '');
     });
-    console.log("Svg Pfade", paths);
+    console.log('Svg Pfade', paths);
   }
 
   rearrangePaths(): void {
     if (!this.svgContent) return;
 
     const parser = new DOMParser();
-    const svgDoc = parser.parseFromString(this.svgContent, "image/svg+xml");
+    const svgDoc = parser.parseFromString(this.svgContent, 'image/svg+xml');
     const svgElement = svgDoc.querySelector('svg');
 
     if (!svgElement) return;
@@ -468,16 +565,22 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
 
     const paths = Array.from(svgElement.querySelectorAll('path'));
 
-    paths.forEach(path => {
+    paths.forEach((path) => {
       let d = path.getAttribute('d') || '';
 
       d = d.replace(/([0-9]+\.?[0-9]*)/g, (match, offset, string) => {
         const num = parseFloat(match);
-        let randomAdjustment = (Math.random() * 200 - 10);
+        let randomAdjustment = Math.random() * 200 - 10;
         if (offset % 2 === 0) {
-          return Math.min(Math.max(num + randomAdjustment, 10), containerWidth).toFixed(2);
+          return Math.min(
+            Math.max(num + randomAdjustment, 10),
+            containerWidth
+          ).toFixed(2);
         } else {
-          return Math.min(Math.max(num + randomAdjustment, 10), containerHeight).toFixed(2);
+          return Math.min(
+            Math.max(num + randomAdjustment, 10),
+            containerHeight
+          ).toFixed(2);
         }
       });
 
@@ -504,10 +607,14 @@ private posterSize = { width: 874 / 1.5, height: 1225 / 1.5 }; // Half of portra
   private addFrameToTopLayer(): void {
     const borderImage = new this.paperScope.Raster({
       source: this.isPostcard ? this.postCardSource : this.posterSource, // Your transparent Otto Rahmen image
-      position: this.paperScope.view.center
+      position: this.paperScope.view.center,
     });
 
     borderImage.onLoad = () => {
+/*       borderImage.size = new this.paperScope.Size(
+        this.paperScope.view.viewSize.width,
+        this.paperScope.view.viewSize.height
+      ); */
       borderImage.size = new this.paperScope.Size(this.paperScope.view.viewSize.width, this.paperScope.view.viewSize.height);
       borderImage.bringToFront();
     };
