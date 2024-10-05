@@ -22,7 +22,7 @@ import { KommentarService } from 'src/app/core/services/kommentar.service';
             [(ngModel)]="commentTitle"
             placeholder="Titel..."
             class="comment-title-input"
-            style="margin-bottom: 25px;"
+            style="margin-bottom: 25px; width:90%;"
           />
 
           <!-- Comment Content Textarea -->

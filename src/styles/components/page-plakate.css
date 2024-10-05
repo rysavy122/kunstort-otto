@@ -26,12 +26,14 @@
   }
 
   #svg-container {
-    border: 1px solid #ccc;
-    background-color: var(--otto-secondary);
+    border: 2px solid royalblue;
     position: relative;
     overflow: hidden;
     margin: auto;
     margin-top: 20px;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom: 10vh;
   }
 
   .file-upload-container {
@@ -207,14 +209,14 @@
   }
   #sticker{
     height: 700px;
-    width: 33%;
+    width: 25%;
   }
   .sticker-container{
     display: flex;
     margin-left: 15px;
   }
   #otto-plakat{
-    width: 73.3%;
+    width: 85.3%;
     margin: 15px;
     margin-left:-1%; margin-top: 1vh;
   }

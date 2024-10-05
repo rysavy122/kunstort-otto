@@ -2,44 +2,25 @@
   <div id="sticker">
     <h2>Sticker</h2>
     <div id="qr">
-      <a
-        href="www.qrcode-generator.de/"
-        style="cursor: default"
-        rel="nofollow"
-      ></a
-      ><img src="https://ottoblob.blob.core.windows.net/images/frame.png" />
+      <a href="www.qrcode-generator.de/" style="cursor: default" rel="nofollow"></a><img
+        src="https://ottoblob.blob.core.windows.net/images/frame.png" />
       <p style="color: black; font-size: 2rem">
         Scanne den QR-Code, und lade dir unser Whatsapp Sticker Paket direkt auf
         dein Smartphone!
       </p>
       <span style="color: blueviolet; font-size: 2rem">oder</span>
     </div>
-    <button
-      class="page-plakate__button"
-      style="min-width: 180px; margin: 10px; background-color: royalblue"
-      (click)="addImageSticker()"
-    >
+    <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+      (click)="addImageSticker()">
       Sticker hochladen
     </button>
-    <button
-      class="page-plakate__button"
-      style="min-width: 180px; margin: 10px; background-color: royalblue"
-    >
-      <a
-        href="https://ottoblob.blob.core.windows.net/sticker/otto-sticker-collection.zip"
-        >Sticker herunterladen</a
-      >
+    <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue">
+      <a href="https://ottoblob.blob.core.windows.net/sticker/otto-sticker-collection.zip">Sticker herunterladen</a>
     </button>
     <br />
     <div class="sticker-container" cdkDropList>
-      <div
-        cdkDropList
-        #availableStickersList="cdkDropList"
-        [cdkDropListData]="currentImages"
-        [cdkDropListConnectedTo]="[canvasStickersList]"
-        class="example-list"
-        (cdkDropListDropped)="drop($event)"
-      >
+      <div cdkDropList #availableStickersList="cdkDropList" [cdkDropListData]="currentImages"
+        [cdkDropListConnectedTo]="[canvasStickersList]" class="example-list" (cdkDropListDropped)="drop($event)">
         <div class="example-box" *ngFor="let item of currentImages" cdkDrag>
           <img [src]="item" alt="Sticker" style="width: 100px" />
         </div>
@@ -48,36 +29,18 @@
 
     <div class="pagination-controls">
       <button (click)="previousPage()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          class="bi bi-chevron-left"
-          viewBox="0 0 16 16"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
+          viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0" />
         </svg>
       </button>
-      <span style="font-size: 1.5rem"
-        >{{ currentPage }} / {{ totalPages }}</span
-      >
+      <span style="font-size: 1.5rem">{{ currentPage }} / {{ totalPages }}</span>
       <button (click)="nextPage()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          class="bi bi-chevron-right"
-          viewBox="0 0 16 16"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right"
+          viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708" />
         </svg>
       </button>
     </div>
@@ -86,37 +49,22 @@
   </div>
 
   <div id="otto-plakat">
-    <input
-      [(ngModel)]="drawingTitle"
-      type="text"
-      placeholder="Dein Titel ..."
-      id="drawingTitle"
-    />
-    <div
-      id="canvas"
-      class="canvas-wrapper"
-      cdkDropList
-      #canvasStickersList="cdkDropList"
-      [cdkDropListData]="canvasStickers"
-      [cdkDropListConnectedTo]="[availableStickersList]"
-      (cdkDropListDropped)="drop($event)"
-      (mouseup)="onCanvasMouseUp($event)"
-    >
+    <input [(ngModel)]="drawingTitle" type="text" placeholder="Dein Titel ..." id="drawingTitle" />
+    <div id="canvas" class="canvas-wrapper" cdkDropList #canvasStickersList="cdkDropList"
+      [cdkDropListData]="canvasStickers" [cdkDropListConnectedTo]="[availableStickersList]"
+      (cdkDropListDropped)="drop($event)" (mouseup)="onCanvasMouseUp($event)">
       <div class="example-box" *ngFor="let item of canvasStickers" cdkDrag>
         <img *ngIf="item" [src]="item" alt="Sticker" class="sticker-image" />
       </div>
       <canvas id="drawingCanvas" #drawingCanvas class="custom-cursor"></canvas>
     </div>
-    <button
-      class="page-plakate__button"
-      style="
+    <button class="page-plakate__button" style="
         min-width: 180px;
         margin: 10px;
         margin-top: -30px;
+        margin: -30px 10px 20vh 10px;
         background-color: royalblue;
-      "
-      (click)="switchFormat()"
-    >
+      " (click)="switchFormat()">
       {{ isPostcard ? "Wechsel zu Plakat" : "Wechsel zu Postkarte" }}
     </button>
   </div>
@@ -124,76 +72,92 @@
   <div id="controlls">
     <h2>Einstellungen</h2>
     <div id="stroke">
-      <p
-        style="
+      <p style="
           color: black;
           text-align: start;
           font-size: 2rem;
           margin-bottom: -20px;
-        "
-      >
+        ">
         Pinsel Grösse:
       </p>
       <br />
-      <input
-        type="number"
-        id="strokeSize"
-        [(ngModel)]="strokeSize"
-        style="width: 100px; color: royalblue; float: left"
-      /><br /><br /><br /><br /><br /><br />
-      <p
-        style="
+      <input type="number" id="strokeSize" [(ngModel)]="strokeSize"
+        style="width: 100px; color: royalblue; float: left" /><br /><br /><br /><br /><br /><br />
+      <p style="
           color: black;
           text-align: start;
           font-size: 2rem;
           margin-bottom: 0px;
-        "
-      >
+        ">
         Pinsel Farbe:
       </p>
       <br />
-      <input
-        style="width: fit-content; float: left"
-        placeholder="Farbe"
-        type="color"
-        id="stroke-color"
-        [(ngModel)]="strokeColor"
-      />
+      <input style="width: fit-content; float: left" placeholder="Farbe" type="color" id="stroke-color"
+        [(ngModel)]="strokeColor" />
     </div>
     <div style="float: left; margin-top: 55px; margin-left: -40px" id="buttons">
-      <button
-        class="page-plakate__button"
-        style="min-width: 180px; margin: 10px; background-color: royalblue"
-        (click)="openDialog()"
-      >
+      <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+        (click)="openDialog()">
         {{ isPostcard ? "Neue Postkarte" : "Neues Plakat" }}
       </button>
-      <button
-        class="page-plakate__button"
-        style="min-width: 180px; margin: 10px; background-color: royalblue"
-        (click)="saveDrawing()"
-      >
-        {{ isPostcard ? "Postkarte speichern" : "Plakat speichern" }}</button
-      ><br />
-      <button
-        class="page-plakate__button"
-        style="min-width: 180px; margin: 10px; background-color: royalblue"
-        (click)="enableEraser()"
-      >
+      <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+        (click)="saveDrawing()">
+        {{ isPostcard ? "Postkarte speichern" : "Plakat speichern" }}</button><br />
+      <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+        (click)="enableEraser()">
         Rückgängig
       </button>
-      <button
-        class="page-plakate__button"
-        style="min-width: 180px; margin: 10px; background-color: royalblue"
-        (click)="exportCanvasAsImage()"
-      >
+      <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+        (click)="exportCanvasAsImage()">
         {{ isPostcard ? "Postkarte exportieren" : "Plakat exportieren" }}
       </button>
     </div>
   </div>
 </div>
 
-<app-new-poster-dialog
-  [isOpen]="isDialogOpen"
-  (close)="handleDialogClose($event)"
-></app-new-poster-dialog>
+<div class="wrapper" style="display: flex; flex-direction: column;">
+  <h1>Hallo Institut. Forme dein Logo um.</h1>
+  <p style="color:black; font-size: large;">Lade dein Logo im svg Format hoch, der Algorithmus generiert ein komplett
+    neues Kunstwerk, welches dann als Bild Datei herunterladen werden kann.</p>
+  <h4>Viel Spass !</h4>
+  <div class="file-upload-container">
+    <input type="file" id="svgFileInput" (change)="onLogoFileSelected($event)" accept=".svg" hidden />
+    <canvas id="paperCanvas" hidden></canvas>
+    <label style="background-color: royalblue; margin-bottom: 100px;" for="svgFileInput" class="file-upload-btn"> <svg
+        style="margin-bottom: -5px; margin-right:5px;" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+        fill="currentColor" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
+        <path
+          d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z" />
+      </svg> SVG Datei hochladen</label>
+      <br/>
+  </div>
+  <div *ngIf="svgContent" id="svg-container" [style.height]="svgHeight" [style.width]="svgWidth">
+    <div [innerHTML]="svgContent | safeHtml"></div>
+  </div>
+  <div class="buttons">
+    <button class="page-plakate__button" style="
+      min-width: 180px;
+      margin: 10px;
+      background-color: royalblue;" (click)="rearrangePaths()">Logo Umgestalten</button>
+    <button class="page-plakate__button" style="
+      min-width: 180px;
+      margin: 10px;
+      margin-bottom: 10vh;
+      background-color: royalblue;" (click)="revertToOriginal()">Original Wiederherstellen</button>
+    <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue;"
+      (click)="downloadLogoAsPNG()">Logo herunterladen</button>
+
+  </div>
+
+  <!--   <ul>
+    <li *ngFor="let path of svgPaths; let i = index">
+      Path {{ i + 1 }}: <code>{{ path }}</code>
+    </li>
+  </ul> -->
+
+  <div class="plakat-editing-wrapper">
+    <canvas></canvas>
+  </div>
+</div>
+
+<app-new-poster-dialog [isOpen]="isDialogOpen" (close)="handleDialogClose($event)"></app-new-poster-dialog>

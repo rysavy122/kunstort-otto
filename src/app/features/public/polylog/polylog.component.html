@@ -110,9 +110,9 @@
           </svg>
           <div *ngIf="isMenuOpen && activeCommentId === comment.id" class="menu" [class.menu]="!isReply"
             [class.reply-menu]="isReply" [class.show]="isMenuOpen">
-            <button (click)="editKommentar(comment.id)">Edit</button>
-            <button (click)="openReplyDialog(comment.id)">Reply</button>
-            <button (click)="deleteKommentar(comment.id)">Delete</button>
+            <button (click)="editKommentar(comment.id)">Bearbeiten</button>
+            <button (click)="openReplyDialog(comment.id)">Antworten</button>
+            <button (click)="deleteKommentar(comment.id)">Löschen</button>
           </div>
         </div>
       </div>

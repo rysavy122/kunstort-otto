@@ -60,8 +60,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   svgContent: string = '';
   originalSvgContent: string = '';
-  svgHeight: string = '300px';
-  svgWidth: string = '300px';
+  svgHeight: string = '';
+  svgWidth: string = '';
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
   private isDrawing: boolean = false;
@@ -534,6 +534,99 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       reader.readAsText(file);
     }
   }
+
+  onLogoFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file && file.type === 'image/svg+xml') {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.originalSvgContent = e.target.result;
+        this.svgContent = e.target.result;
+
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(this.svgContent, 'image/svg+xml');
+        const svgElement = svgDoc.querySelector('svg');
+
+        if (svgElement) {
+          const width = svgElement.getAttribute('width');
+          const height = svgElement.getAttribute('height');
+
+          // Set canvas size to match SVG dimensions
+          this.svgWidth = width || '500px'; // default if width not provided
+          this.svgHeight = height || '500px'; // default if height not provided
+
+          // Set the actual canvas element size
+          const logoCanvas = document.getElementById('paperCanvas') as HTMLCanvasElement;
+          logoCanvas.width = parseInt(this.svgWidth, 10);
+          logoCanvas.height = parseInt(this.svgHeight, 10);
+        }
+
+        this.parseSVG(this.svgContent);
+      };
+      reader.readAsText(file);
+    }
+  }
+
+
+  downloadLogoAsPNG(): void {
+    const logoCanvas = document.getElementById('paperCanvas') as HTMLCanvasElement;
+    const ctx = logoCanvas.getContext('2d');
+
+
+    // Create an image from the rearranged SVG content
+    const img = new Image();
+    const svgBlob = new Blob([this.svgContent], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      // Set canvas width and height to match the SVG image
+      logoCanvas.width = img.width;
+      logoCanvas.height = img.height;
+
+      // Clear the canvas before drawing
+      ctx!.clearRect(0, 0, logoCanvas.width, logoCanvas.height);
+
+      // Draw the image on the canvas
+      ctx!.drawImage(img, 0, 0, img.width, img.height);
+
+      // Create a PNG from the canvas
+      const imageURL = logoCanvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+
+      let filename = this.drawingTitle.trim() !== '' ? this.drawingTitle : 'Unbenannt';
+      filename = filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '') + '.png';
+
+      downloadLink.href = imageURL;
+      downloadLink.download = filename; // Set the title as the download name
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(url); // Clean up the URL after download
+    };
+
+    img.src = url; // Set the image source to the blob URL
+  }
+
+
+
+  downloadSVG(): void {
+    const svgBlob = new Blob([this.svgContent], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+
+    const downloadLink = document.createElement('a');
+    let filename = this.drawingTitle.trim() !== '' ? this.drawingTitle : 'Unbenannt';
+    filename = filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '') + '.svg';
+
+    downloadLink.href = url;
+    downloadLink.download = filename;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    URL.revokeObjectURL(url); // Clean up the URL after download
+  }
+
 
   revertToOriginal(): void {
     this.svgContent = this.originalSvgContent;

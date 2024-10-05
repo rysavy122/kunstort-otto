@@ -47,7 +47,7 @@ h4 {
   background-color: rgba(255, 255, 255, 0.9);
   background-color: #ff9abcb4;
 
-  z-index: 100;
+  z-index: 1000;
   position: fixed;
   left: 50%;
   top: 40vh;
@@ -95,7 +95,6 @@ input[type="file"] {
   height: fit-content;
   min-width: 250px;
   max-width: 390px;
-
   background-color: #ff9abcda;
   overflow: hidden; /* Changed from scroll to hide overflow outside the clip-path */
   padding:10px;
@@ -120,6 +119,8 @@ input[type="file"] {
 .commentar-content-wrapper {
   width: fit-content;
   height: fit-content;
+  padding:10px;
+  padding-left: 5px;
   overflow: auto; /* Allows internal scrolling if needed */
   clip-path: polygon(
     77% 13.2%,
@@ -139,19 +140,32 @@ input[type="file"] {
     13% 76.8%,
     11% 11.6%
   );
-  background-color: #ff00558a;
-  color: white;
-  margin: 5px;
+
+  border-bottom: 100px solid var(--otto-primary);
+  border-left: 50px solid var(--otto-primary);
+  border-top: 60px solid var(--otto-primary);
+  border-right: 20px solid var(--otto-primary);
+
+  color: black;
   width: fit-content;
   height: fit-content;
-  overflow: auto;
-  padding: 0px 10px 0px 50px;
+  min-width: 250px;
+  max-width: 370px;
+  background-color: #ff9abcda;
+  overflow: hidden; /* Changed from scroll to hide overflow outside the clip-path */
+  padding:10px;
+  z-index: 200;
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-align: center; /* Ensure text within is centered */
+  overflow-y: auto;
 }
 svg {
   cursor: pointer;
 }
 
-.menu {
+.menu, .reply-menu {
   position: fixed;
   justify-content: center;
   background-color: #ffffff;
@@ -166,38 +180,13 @@ svg {
     17.4% 76.2%,
     20% 66.2%
   ); */
-  border-radius: 8px;
-  padding: 10px;
+/*   border-radius: 8px;
+ */  padding: 10px;
   text-align: center;
-  height: fit-content;
   z-index:300;
-  width:fit-content;
   margin-top:-100px;
-}
-.reply-menu {
-  position: relative;
-  bottom: 40px;
-  border-radius: 8px;
-  clip-path: polygon(
-    100% 10%,
-    95% 78.4%,
-    99.6% 100%,
-    78.6% 79.2%,
-    13% 76.8%,
-    11% 11.6%
-  );
-
-
-  right: 15px;
-  background-color: #ffffffad;
-  border: 1px solid #ddd;
-  padding: 10px;
-  height: 110px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  text-align: center;
+  width:max-content;
+  height:fit-content;
 }
 
 .menu.show {
@@ -220,6 +209,9 @@ svg {
   width: 100%;
   margin: 0 auto;
 }
+
+
+
 
 .menu button:hover,
 .reply-menu button:hover {
@@ -304,6 +296,7 @@ video {
 
 
 }
+
 .image-div {
   width: fit-content;
   height: fit-content;

@@ -269,9 +269,21 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   openDialog(parentId?: number) {
     this.isDialogOpen = true;
     this.commentDialog.parentKommentarId = parentId;
+
+    // Reset z-index of all comments to ensure they are behind the dialog
+    this.draggableElements.forEach((elementRef) => {
+      gsap.set(elementRef.nativeElement, { zIndex: 890 });
+    });
   }
+
   openReplyDialog(parentId: number) {
     this.openDialog(parentId);
+
+    // Same logic here to ensure replies also have lower z-index
+    this.draggableElements.forEach((elementRef) => {
+      gsap.set(elementRef.nativeElement, { zIndex: 790 });
+    });
+
     this.isMenuOpen = false;
   }
   closeDialog() {
@@ -292,43 +304,35 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   onCommentSubmitted(newKommentar: KommentarModel): void {
     if (!newKommentar) return;
 
-    const kommentarWithPosition = this.assignRandomPosition(newKommentar);
-
     if (newKommentar.parentKommentarId == null) {
-      this.kommentare.push(kommentarWithPosition);
+      // Push to top-level comments if it's a new comment
+      this.kommentare.push(newKommentar);
     } else {
-      const parentIndex = this.kommentare.findIndex(
+      // Find the parent comment and attach the reply
+      const parentKommentar = this.kommentare.find(
         (k) => k.id === newKommentar.parentKommentarId
       );
-
-      if (parentIndex !== -1) {
-        const parentKommentar = this.kommentare[parentIndex];
-
-        if (parentKommentar) {
-          if (!parentKommentar.replies) {
-            parentKommentar.replies = [];
-          }
-          parentKommentar.replies.push(kommentarWithPosition);
+      if (parentKommentar) {
+        if (!parentKommentar.replies) {
+          parentKommentar.replies = [];
         }
+        parentKommentar.replies.push(newKommentar);
       }
     }
-
     this.loadKommentare();
   }
-  addReplyToKommentar(
-    kommentare: KommentarDisplayModel[],
-    reply: KommentarModel
-  ) {
+  addReplyToKommentar(kommentare: KommentarDisplayModel[], reply: KommentarModel, parentBorderColor: string) {
     for (let kommentar of kommentare) {
       if (kommentar.id === reply.parentKommentarId) {
         if (!kommentar.replies) kommentar.replies = [];
-        kommentar.replies.push(this.assignRandomPosition(reply));
+        kommentar.replies.push(this.assignRandomPosition(reply, parentBorderColor));
         return;
       } else if (kommentar.replies && kommentar.replies.length) {
-        this.addReplyToKommentar(kommentar.replies, reply);
+        this.addReplyToKommentar(kommentar.replies, reply, parentBorderColor);
       }
     }
   }
+
 
   fetchMediaFiles(): void {
     this.mediaService.getAllMedia(this.currentForschungsfrageId!).subscribe({
@@ -435,45 +439,54 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   removeCommentById(kommentare: KommentarDisplayModel[], id: number): void {
-    const index = kommentare.findIndex(comment => comment.id === id);
-    if (index > -1) {
-      kommentare.splice(index, 1);  // Remove the comment by ID
+    for (let i = 0; i < kommentare.length; i++) {
+      if (kommentare[i].id === id) {
+        // Recursively delete all replies if they exist
+        if (kommentare[i].replies && kommentare[i].replies!.length > 0) {
+          for (let reply of kommentare[i].replies!) {
+            this.removeCommentById(kommentare[i].replies!, reply.id!);
+          }
+        }
+        kommentare.splice(i, 1);  // Delete the parent comment
+        return;
+      } else if (kommentare[i].replies) {
+        this.removeCommentById(kommentare[i].replies!, id);  // Search and delete in nested replies
+      }
     }
-    // Ensure positions are recalculated only for remaining comments
-    this.loadPositions();
-    this.loadCommentPositions();  // Reload saved positions from the backend
   }
+
+
 
 
   trackById(index: number, item: KommentarModel): number {
     return item.id!;
   }
 
-  assignRandomPosition(comment: KommentarModel): KommentarDisplayModel {
+  assignRandomPosition(comment: KommentarModel, parentBorderColor?: string): KommentarDisplayModel {
     const displayComment = comment as KommentarDisplayModel;
 
-    // Check if the comment already has a saved position (loaded from backend)
+    // Check if the comment already has a saved position
     const savedPosition = this.commentPositions[comment.id!];
 
-    // If the comment has a saved position, use it
+    // If it's a reply, use the parent's border color
+    const borderColor = parentBorderColor || this.generateRandomColor();
+
     if (savedPosition) {
       return {
         ...displayComment,
         style: {
           transform: `translateX(${savedPosition.xPosition}px) translateY(${Math.max(savedPosition.yPosition, 0)}px)`,
-          borderTop: `60px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
-          borderRight: `60px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
-          borderBottom: `30px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
-          borderLeft: `20px solid ${savedPosition.borderColor || this.generateRandomColor()}`,
+          borderTop: `60px solid ${savedPosition.borderColor || borderColor}`,
+          borderRight: `60px solid ${savedPosition.borderColor || borderColor}`,
+          borderBottom: `30px solid ${savedPosition.borderColor || borderColor}`,
+          borderLeft: `20px solid ${savedPosition.borderColor || borderColor}`,
           color: '#000000',
         },
       };
     }
 
-    // If the comment doesn't have a saved position, assign a random position
     const x = Math.floor(Math.random() * (window.innerWidth - 250));
     const y = Math.floor(Math.random() * (Math.max(window.innerHeight - 1050, 0)));
-    const borderColor = this.generateRandomColor();
 
     return {
       ...displayComment,
@@ -488,7 +501,6 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  //Random Colours
   generateRandomColor(): string {
     let color = '#';
     for (let i = 0; i < 3; i++) {
@@ -584,8 +596,10 @@ export class PolylogComponent implements OnInit, AfterViewInit, OnDestroy {
         bounds: window,
         inertia: true,
         onDrag: () => this.updatePosition(commentId, element),
-        onDragEnd: () => this.updatePosition(commentId, element),
-      });
+        onDragEnd: () => {
+          this.updatePosition(commentId, element);
+          gsap.set(element, { zIndex: 790 });  // Reset the zIndex after drag ends
+        }      });
     });
 
   }
