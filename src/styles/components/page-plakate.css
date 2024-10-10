@@ -213,15 +213,15 @@
   }
   .sticker-container{
     display: flex;
-    margin-left: 15px;
+    margin-left: 2vw;
   }
   #otto-plakat{
-    width: 85.3%;
+    width: 50%;
     margin: 15px;
     margin-left:-1%; margin-top: 1vh;
   }
   #controlls{
-    width: 33%;
+    width: 25%;
   }
   #qr img{
     height:200px;
@@ -257,8 +257,9 @@
     }
 }
   .example-list {
-    width: 400px;
+    width: 300px;
     margin: auto;
+    margin-left: 0.5vw;
     display: flex;
     max-height: fit-content;
     flex-wrap: wrap;

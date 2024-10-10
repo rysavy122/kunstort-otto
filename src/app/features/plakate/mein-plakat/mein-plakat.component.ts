@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { MessageService, PlakatService } from '@app/core';
+import { MessageService, PlakatService, RoleService } from '@app/core';
 import { ToastrService } from 'ngx-toastr';
 
 import * as paper from 'paper';
@@ -114,6 +114,10 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   originalSvgContent: string = '';
   svgHeight: string = '';
   svgWidth: string = '';
+  role: string | null = null;
+  hasPostCardAccess: boolean = false;
+
+
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
   private isDrawing: boolean = false;
@@ -133,7 +137,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   strokeSize = 2;
   strokeColor = new paper.Color(0, 0, 0);
-  imagesPerPage = 8;
+  public strokeHexColor: string = '#000000'; // Default to black
+
+  imagesPerPage = 9;
   currentPage = 1;
   totalPages: number = 3;
 
@@ -152,6 +158,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   constructor(
     public messageService: MessageService,
     private plakatService: PlakatService,
+    private roleService: RoleService,
     private toastr: ToastrService
   ) {}
   public editorData = '<p>Initial content of the editor.</p>';
@@ -170,17 +177,15 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     if (savedBackgroundColor) {
       this.setBackground(savedBackgroundColor);
     }
+    this.role = this.roleService.getRole();
+
+    if (this.role === 'Team' || this.role === 'Künstler') {
+      this.hasPostCardAccess = true;
+    }
 
     // Proceed with the rest of the initialization
     this.backgroundLayer = new this.paperScope.Layer();
-    const backgroundRect = new this.paperScope.Path.Rectangle({
-      point: [0, 0],
-      size: [
-        this.paperScope.view.viewSize.width,
-        this.paperScope.view.viewSize.height,
-      ],
-      fillColor: 'white',
-    });
+
 
     this.drawingLayer = new this.paperScope.Layer();
     this.frameLayer = new this.paperScope.Layer();
@@ -195,12 +200,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     if (savedTitle) {
       this.drawingTitle = savedTitle;
     }
-
-    const scaleFactor = window.devicePixelRatio || 1;
-    this.paperScope.view.viewSize = new this.paperScope.Size(
-      this.paperScope.view.viewSize.width * scaleFactor,
-      this.paperScope.view.viewSize.height * scaleFactor
-    );
   }
 
   ngAfterViewInit(): void {
@@ -234,6 +233,15 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       // Set the background color
       this.setBackground(selectedBackgroundColor);
 
+      // Check if the selected background color is black, and set drawing color to white if true
+      if (selectedBackgroundColor === 'Schwarz' || this.mapColorNameToHex(selectedBackgroundColor) === '#000000') {
+        this.strokeColor = new paper.Color('#FFFFFF');  // Set drawing color to white
+        this.strokeHexColor = '#FFFFFF';  // Update the hex color for the template
+      } else {
+        this.strokeColor = new paper.Color('#000000');  // Set drawing color to black
+        this.strokeHexColor = '#000000';  // Update the hex color for the template
+      }
+
       // Save the selected colors in localStorage
       localStorage.setItem('selectedFrameColor', selectedColor);
       localStorage.setItem('selectedBackgroundColor', selectedBackgroundColor);
@@ -242,7 +250,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     }
     this.isDialogOpen = false;
   }
-  setBackground(color: string) {
+  setBackground(color: string): void {
     const backgroundColor = this.mapColorNameToHex(color); // Optionally map color names to hex codes
 
     // Save the background color in localStorage
@@ -251,18 +259,25 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     // Clear the previous background
     this.backgroundLayer.removeChildren();
 
-    // Ensure the background fills the entire postcard or poster size
-    const size = this.isPostcard ? this.postcardSize : this.posterSize;
+    // Get the correct size for the canvas based on whether it's a postcard or a poster
+    const size = this.isPostcard ? this.postcardSize: this.posterSize;
 
-    // Create a new rectangle with the background color
+    // Set the view size of the canvas to match the postcard or poster size
+    this.paperScope.view.viewSize = new this.paperScope.Size(size.width, size.height);
+
+    // Create a new rectangle that completely covers the canvas
     const backgroundRect = new this.paperScope.Path.Rectangle({
-      point: [0, 0],
-      size: [size.width, size.height], // Ensure it fully covers the canvas
+      point: [0, 0],  // Starting from the top-left corner
+      size: [size.width, size.height],  // Make sure it covers the entire width and height
       fillColor: backgroundColor,
     });
 
     this.backgroundLayer.addChild(backgroundRect);
-    this.backgroundLayer.sendToBack();
+    this.backgroundLayer.sendToBack();  // Ensure the background is behind other layers
+  }
+  updateStrokeColor(newColor: string): void {
+    this.strokeHexColor = newColor;
+    this.strokeColor = new paper.Color(newColor);  // Convert the hex to a paper.Color object
   }
   // Optional helper to map color names to hex codes
 mapColorNameToHex(color: string): string {
@@ -282,6 +297,18 @@ mapColorNameToHex(color: string): string {
     this.plakatService.createPlakat(this.plakat).subscribe((response) => {
       console.log('Plakat created:', response);
     });
+  }
+  savePosterDrawing(): void {
+    const drawingJSON = this.paperScope.project.exportJSON(); // Export the drawing as JSON
+    localStorage.setItem('posterDrawing', drawingJSON);  // Save it only for the poster
+    localStorage.setItem('drawingTitle', this.drawingTitle);  // Optionally save the title
+    this.toastr.success('Dein Plakat wurde gespeichert!');
+  }
+  savePostcardDrawing(): void {
+    const drawingJSON = this.paperScope.project.exportJSON();  // Export the drawing as JSON
+    localStorage.setItem('postcardDrawing', drawingJSON);  // Save it for postcards
+    localStorage.setItem('drawingTitle', this.drawingTitle);  // Save title (optional)
+    this.toastr.success('Deine Postkarte wurde gespeichert!');
   }
 
   addStickerToPlakat(stickerUrl: string): void {
@@ -319,19 +346,109 @@ mapColorNameToHex(color: string): string {
     }
   }
 
-  addStickerToCanvas(stickerUrl: string) {
+  addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
     this.paperScope.activate();
+
+    // Add the sticker to the canvas
     const sticker = new paper.Raster({
       source: stickerUrl,
       position: this.lastDropPoint,
     });
 
     sticker.onLoad = () => {
-      sticker.position = this.lastDropPoint;
-      sticker.scale(100 / sticker.bounds.width, 100 / sticker.bounds.height);
+      // Set default size for both Otto and user-uploaded stickers
+      const scaleFactor = isUploaded ? 150 : 100;
+      sticker.scale(scaleFactor / sticker.bounds.width, scaleFactor / sticker.bounds.height);
+
+      // Create a group for sticker and resize handle
+      const group = new this.paperScope.Group([sticker]);
+
+      // Add resize SVG icon (bi-arrows-angle-expand) as the resize handle
+      const svgHandle = new paper.Raster({
+        source: 'data:image/svg+xml;base64,' + btoa(`
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/>
+          </svg>
+        `),
+        position: sticker.bounds.bottomRight.add([0, 0]), // Position the SVG near the bottom right of the sticker
+        opacity: 0, // Make it invisible initially
+      });
+
+      group.addChild(svgHandle);
+
+      // Enable dragging for the sticker and resizing using the SVG handle
+      this.enableStickerDragging(group, svgHandle);
+
+      // Show resize handle on hover
+      group.onMouseEnter = () => {
+        svgHandle.opacity = 1; // Show the resize handle
+      };
+
+      group.onMouseLeave = () => {
+        svgHandle.opacity = 0; // Hide the resize handle when not hovering
+      };
     };
 
     this.stickers.push(sticker);
+  }
+  enableStickerDragging(group: paper.Group, resizeHandle: paper.Raster): void {
+    let isResizing = false;
+    let scaleFactor = 1;
+
+    // OnMouseDown: Check if the user clicked the resize handle
+    group.onMouseDown = (event: paper.MouseEvent) => {
+      event.stopPropagation(); // Stop the event from propagating to the canvas
+
+      if (resizeHandle.bounds.contains(event.point)) {
+        isResizing = true; // Start resizing if the handle is clicked
+      }
+    };
+
+    // OnMouseDrag: Handle both resizing and dragging
+    group.onMouseDrag = (event: paper.MouseEvent) => {
+      event.stopPropagation(); // Prevent canvas drawing while dragging or resizing
+
+      if (isResizing) {
+        // If resizing, adjust the size based on the drag distance
+        const delta = event.delta;
+        scaleFactor = (delta.x + delta.y) / 100;
+        group.scale(1 + scaleFactor, group.bounds.bottomRight);
+      } else {
+        // If not resizing, move the entire group (sticker + handle)
+        group.position = group.position.add(event.delta);
+      }
+    };
+
+    // OnMouseUp: Stop resizing
+    group.onMouseUp = (event: paper.MouseEvent) => {
+      event.stopPropagation(); // Stop event propagation
+      isResizing = false;
+    };
+  }
+  enableStickerResizing(sticker: paper.Raster): void {
+    let originalBounds: paper.Rectangle;
+    let scaleFactor: number;
+
+    // Prevent drawing while resizing
+    sticker.onMouseDown = (event: paper.MouseEvent) => {
+      event.stopPropagation();
+    };
+
+    sticker.onMouseDrag = (event: paper.MouseEvent) => {
+      event.stopPropagation();  // Stop the event from propagating to the drawing handler
+
+      // Calculate the drag distance and resize accordingly
+      const dragVector = event.delta;
+      const widthIncrease = dragVector.x;
+      const heightIncrease = dragVector.y;
+
+      scaleFactor = (widthIncrease + heightIncrease) / 100;  // Adjust sensitivity if necessary
+      sticker.scale(1 + scaleFactor);
+    };
+
+    sticker.onMouseUp = (event: paper.MouseEvent) => {
+      event.stopPropagation();  // Ensure that propagation is stopped after resizing
+    };
   }
 
   onCanvasMouseUp(event: MouseEvent) {
@@ -430,14 +547,13 @@ mapColorNameToHex(color: string): string {
 
     if (this.isInsideDrawingArea(event.point)) {
       this.drawingPath = new this.paperScope.Path({
-        strokeColor: this.strokeColor,
+        strokeColor: this.strokeColor,  // Use the updated paper.Color object
         strokeWidth: this.strokeSize,
       });
 
       this.drawingPath.add(event.point);
     }
   }
-
   draw(event: paper.MouseEvent): void {
     if (this.isDraggingSticker || !this.isDrawing || !this.drawingPath) {
       return;
@@ -448,29 +564,76 @@ mapColorNameToHex(color: string): string {
       this.paperScope.view.requestUpdate();
     }
   }
-
   switchFormat() {
+    // Save the current drawing before switching formats
+    if (this.isPoster) {
+      const drawingJSON = this.paperScope.project.exportJSON(); // Export the drawing as JSON
+      localStorage.setItem('posterDrawing', drawingJSON);  // Save it only for the poster
+      localStorage.setItem('drawingTitle', this.drawingTitle);
+    } else {
+      const drawingJSON = this.paperScope.project.exportJSON();  // Export the drawing as JSON
+      localStorage.setItem('postcardDrawing', drawingJSON);  // Save it for postcards
+      localStorage.setItem('drawingTitle', this.drawingTitle);  // Save title (optional)
+    }
+
+    // Toggle between postcard and poster formats
     this.isPostcard = !this.isPostcard;
     this.isPoster = !this.isPoster;
+
+    // Remove the frame and resize the canvas for the new format
     this.frameLayer.removeChildren();
 
+    // Set the new size for the selected format (postcard or poster)
     const newSize = this.isPostcard ? this.postcardSize : this.posterSize;
     const newSource = this.isPostcard ? this.postCardSource : this.posterSource;
 
+    // Update the canvas size for the new format
     this.paperScope.view.viewSize = new this.paperScope.Size(newSize.width, newSize.height);
 
+    // Set the background to fill the entire canvas
+    const savedBackgroundColor = localStorage.getItem('selectedBackgroundColor') || 'white';
+    this.setBackground(savedBackgroundColor);  // Ensure the background fills the entire canvas
+
+    // Add the new frame (poster or postcard) after resizing the canvas
     const newFrame = new this.paperScope.Raster({
       source: newSource,
       position: this.paperScope.view.center,
     });
 
     newFrame.onLoad = () => {
-      newFrame.size = new this.paperScope.Size(newSize.width, newSize.height); // Ensure the frame matches the new size
+      newFrame.size = new this.paperScope.Size(newSize.width, newSize.height);
       this.frameLayer.addChild(newFrame);
-      this.paperScope.project.activeLayer.activate();
       this.paperScope.view.update();
+
+      // Restore the drawing based on the format
+      if (this.isPostcard) {
+        this.restorePostcardDrawing();  // Load the saved postcard drawing
+      } else {
+        this.restorePosterDrawing();  // Load the saved poster drawing
+      }
     };
-  }
+}
+  restorePosterDrawing(): void {
+    const savedPosterDrawing = localStorage.getItem('posterDrawing'); // Use 'posterDrawing' key
+    if (savedPosterDrawing) {
+      // Clear the current project and import the saved drawing
+      this.paperScope.project.clear();  // Clear the canvas before restoring
+      this.paperScope.project.importJSON(savedPosterDrawing);  // Load the saved poster drawing
+    } else {
+      this.clearCanvas();  // If there's no saved drawing, clear the canvas
+    }
+}
+
+restorePostcardDrawing(): void {
+    const savedPostcardDrawing = localStorage.getItem('postcardDrawing'); // Use 'postcardDrawing' key
+    if (savedPostcardDrawing) {
+      // Clear the current project and import the saved drawing
+      this.paperScope.project.clear();  // Clear the canvas before restoring
+      this.paperScope.project.importJSON(savedPostcardDrawing);  // Load the saved postcard drawing
+    } else {
+      this.clearCanvas();  // If there's no saved drawing, clear the canvas
+    }
+}
 
   stopDrawing(): void {
     this.isDrawing = false;
@@ -489,11 +652,11 @@ mapColorNameToHex(color: string): string {
   }
 
   saveDrawing(): void {
-    const drawingJSON = this.paperScope.project.exportJSON({ asString: true });
-    localStorage.setItem('userDrawing', drawingJSON);
-    localStorage.setItem('drawingTitle', this.drawingTitle);
-    this.toastr.success('Dein Plakat wurde gespeichert!');
-    console.log('Plakat gespeichert:');
+    if (this.isPoster) {
+      this.savePosterDrawing();
+    } else {
+      this.savePostcardDrawing();
+    }
   }
 
   exportCanvasAsImage(): void {
@@ -528,21 +691,8 @@ mapColorNameToHex(color: string): string {
       if (file) {
         const reader = new FileReader();
         reader.onload = (e: any) => {
-          const stickerImage = new this.paperScope.Raster(e.target.result);
-
-          stickerImage.onLoad = () => {
-            const desiredWidth = 100;
-            const desiredHeight = 100;
-
-            const widthScale = desiredWidth / stickerImage.width;
-            const heightScale = desiredHeight / stickerImage.height;
-
-            stickerImage.scale(widthScale, heightScale);
-            stickerImage.position = this.paperScope.view.center;
-          };
-
-          this.stickers.push(stickerImage);
-          this.dragSticker(stickerImage, event);
+          const uploadedSticker = e.target.result;
+          this.addStickerToCanvas(uploadedSticker, true);  // Pass 'true' for user-uploaded stickers
         };
         reader.readAsDataURL(file);
       }

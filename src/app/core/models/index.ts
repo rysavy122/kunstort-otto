@@ -9,6 +9,9 @@ export * from './comment-position.model';
 export * from './media-position.model';
 export * from './file.model';
 export * from './sticker.model';
+export * from './logo.model';
 export * from './kommentar.model';
 export * from './plakat.model';
+export * from './postCard.model';
+
 

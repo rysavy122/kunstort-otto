@@ -58,7 +58,7 @@
       </div>
       <canvas id="drawingCanvas" #drawingCanvas class="custom-cursor"></canvas>
     </div>
-    <button class="page-plakate__button" style="
+    <button *ngIf="!hasPostCardAccess" class="page-plakate__button" style="
         min-width: 180px;
         margin: 10px;
         margin-top: -30px;
@@ -92,8 +92,14 @@
         Pinsel Farbe:
       </p>
       <br />
-      <input style="width: fit-content; float: left" placeholder="Farbe" type="color" id="stroke-color"
-        [(ngModel)]="strokeColor" />
+      <input
+      style="width: fit-content; float: left"
+      placeholder="Farbe"
+      type="color"
+      id="stroke-color"
+      [(ngModel)]="strokeHexColor"
+      (ngModelChange)="updateStrokeColor($event)"
+    />
     </div>
     <div style="float: left; margin-top: 55px; margin-left: -40px" id="buttons">
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
