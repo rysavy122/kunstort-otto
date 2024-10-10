@@ -119,6 +119,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   role: string | null = null;
   hasPostCardAccess: boolean = false;
 
+
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
   private isDrawing: boolean = false;
@@ -298,7 +299,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   mapColorNameToHex(color: string): string {
     const colorMap: { [key: string]: string } = {
       Weiß: '#FFFFFF',
-      Grau: '#808080',
+      Hellblau: '#ADD8E6', // Light blue hex code
       Schwarz: '#000000',
       Blau: '#0000FF',
       Rot: '#FF0000',

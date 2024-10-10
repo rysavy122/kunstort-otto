@@ -106,7 +106,7 @@ export class NewPosterDialogComponent {
 
   backgroundColors: string[] = [
     'Weiß',
-    'Grau',
+    'Hellblau',
     'Schwarz',
     'Blau',
     'Rot',
