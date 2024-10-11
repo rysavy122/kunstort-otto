@@ -15,4 +15,7 @@ export const environment = {
   api: {
     serverUrl: 'https://ottoapi.azurewebsites.net',
   },
+  adminAuthentication: {
+    secret: 'Otto_Admin',
+  },
 };

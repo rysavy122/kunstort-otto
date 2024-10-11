@@ -217,6 +217,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.initializePaperCanvas(); // Call the new initialization method
+  }
+  initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
     this.paperScope.setup(this.drawingCanvas.nativeElement);
     this.initializeLayers();
@@ -232,14 +235,23 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.paperScope.view.onMouseDrag = (event: paper.MouseEvent) => {
       this.draw(event);
     };
+
     if (this.currentStateIndex > 0) {
-      this.paperScope.project.importJSON(
-        this.stateHistory[this.currentStateIndex]
-      );
+      this.paperScope.project.importJSON(this.stateHistory[this.currentStateIndex]);
     }
+
+    // Add a delay before saving the state initially
+    setTimeout(() => {
+      this.saveState();
+    }, 100);
+
     this.paperScope.view.onMouseUp = () => {
       this.stopDrawing();
-      this.saveState();
+
+      // Add a delay before saving the state after drawing
+      setTimeout(() => {
+        this.saveState();
+      }, 100);
     };
   }
   private saveState(): void {
@@ -341,6 +353,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         this.strokeColor = new paper.Color('#000000'); // Set drawing color to black
         this.strokeHexColor = '#000000'; // Update the hex color for the template
       }
+
+      this.initializePaperCanvas(); // Initialize the canvas again after clearing it
 
       // Save the selected colors in localStorage
       localStorage.setItem('selectedFrameColor', selectedColor);
@@ -448,6 +462,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       if (event.container.id === 'canvas') {
         const stickerUrl = event.previousContainer.data[event.previousIndex];
         this.addStickerToCanvas(stickerUrl);
+        //this.saveState();
       } else {
         copyArrayItem(
           event.previousContainer.data,
@@ -461,74 +476,80 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
     this.paperScope.activate();
-
     this.saveState();
 
-    // Add the sticker to the canvas
+    // Add the sticker to the canvas but make it invisible initially
     const sticker = new paper.Raster({
       source: stickerUrl,
       position: this.lastDropPoint,
+      visible: false, // Hide the sticker initially
     });
 
     sticker.onLoad = () => {
-      // Set default size for both Otto and user-uploaded stickers
+      // Once the sticker is loaded, scale it
       const scaleFactor = isUploaded ? 150 : 100;
+
+      // Now apply the scaling
       sticker.scale(
         scaleFactor / sticker.bounds.width,
         scaleFactor / sticker.bounds.height
       );
 
+      // After scaling, make the sticker visible
+      requestAnimationFrame(() => {
+        sticker.visible = true;
+      });
+
       // Create a group for sticker, resize handle, and rotation handle
       const group = new this.paperScope.Group([sticker]);
 
-      // Add resize SVG icon (bi-arrows-angle-expand) as the resize handle
-      const resizeHandle = new paper.Raster({
-        source:
-          'data:image/svg+xml;base64,' +
-          this.svgToBase64(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/>
-          </svg>
-        `),
-        position: sticker.bounds.bottomRight.add([0, 0]), // Position the resize handle
-        opacity: 0, // Make it invisible initially
-      });
-
-      // Add rotation SVG icon (bi-arrow-clockwise) as the rotation handle
-      const rotationHandle = new paper.Raster({
-        source:
-          'data:image/svg+xml;base64,' +
-          this.svgToBase64(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
-          <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
-        </svg>
-        `),
-        position: sticker.bounds.topRight.add([1, -1]), // Position the rotation handle
-        opacity: 0, // Make it invisible initially
-      });
-
-      group.addChild(resizeHandle);
-      group.addChild(rotationHandle);
-
-      // Enable dragging, resizing, and rotation for the group
-      this.enableStickerInteraction(group, resizeHandle, rotationHandle);
-
-      // Toggle handles on click
-      let handlesVisible = false;
-      group.onDoubleClick = () => {
-        handlesVisible = !handlesVisible; // Toggle visibility
-        resizeHandle.opacity = handlesVisible ? 1 : 0;
-        rotationHandle.opacity = handlesVisible ? 1 : 0;
-      };
-
-      // Prevent handles from disappearing when leaving the area
-      group.onMouseLeave = () => {
-        // Do nothing here, so the handles stay visible if toggled on
-      };
+      // Add resize and rotation handlers
+      this.addResizeAndRotationHandles(group, sticker);
     };
 
     this.stickers.push(sticker);
+  }
+  addResizeAndRotationHandles(group: paper.Group, sticker: paper.Raster): void {
+    // Add resize SVG icon (bi-arrows-angle-expand) as the resize handle
+    const resizeHandle = new paper.Raster({
+      source:
+        'data:image/svg+xml;base64,' +
+        this.svgToBase64(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/>
+        </svg>
+      `),
+      position: sticker.bounds.bottomRight.add([0, 0]), // Position the resize handle
+      opacity: 0, // Make it invisible initially
+    });
+
+    // Add rotation SVG icon (bi-arrow-clockwise) as the rotation handle
+    const rotationHandle = new paper.Raster({
+      source:
+        'data:image/svg+xml;base64,' +
+        this.svgToBase64(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+      </svg>
+      `),
+      position: sticker.bounds.topRight.add([1, -1]), // Position the rotation handle
+      opacity: 0, // Make it invisible initially
+    });
+
+    group.addChild(resizeHandle);
+    group.addChild(rotationHandle);
+
+    // Enable dragging, resizing, and rotation for the group
+    this.enableStickerInteraction(group, resizeHandle, rotationHandle);
+
+    // Toggle handles on click
+    let handlesVisible = false;
+    group.onDoubleClick = () => {
+      handlesVisible = !handlesVisible; // Toggle visibility
+      resizeHandle.opacity = handlesVisible ? 1 : 0;
+      rotationHandle.opacity = handlesVisible ? 1 : 0;
+    };
   }
   enableStickerInteraction(
     group: paper.Group,
@@ -897,6 +918,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   openDialog() {
     this.isDialogOpen = true;
+    this.initializePaperCanvas();
   }
 
   onFileSelected(event: any): void {

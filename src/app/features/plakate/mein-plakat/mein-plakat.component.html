@@ -109,11 +109,11 @@
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="saveDrawing()">
         {{ isPostcard ? "Postkarte speichern" : "Plakat speichern" }}</button><br />
-      <button [disabled]="currentStateIndex < 0" class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+      <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="undo()">
         Schritt zurück
       </button>
-      <button [disabled]="currentStateIndex >= stateHistory.length - 1" class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+      <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
       (click)="redo()">
       Schritt vorwärts
     </button>

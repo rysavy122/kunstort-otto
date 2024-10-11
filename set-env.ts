@@ -28,9 +28,10 @@ const envConfigFile = `export const environment = {
   api: {
     serverUrl: '${process.env['API_SERVER_URL']}',
   },
-  adminPass: {
-    serverUrl: '${process.env['OTTO_ADMIN_SECRET']}',
-  };
+  adminAuthentication: {
+    secret: '${process.env['OTTO_ADMIN_SECRET']}',
+  },
+}
 `;
 
 (async () => {
