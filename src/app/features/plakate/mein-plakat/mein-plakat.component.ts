@@ -119,11 +119,15 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   role: string | null = null;
   hasPostCardAccess: boolean = false;
 
-
   private paperScope!: paper.PaperScope;
   private drawingPath: paper.Path | null = null;
   private isDrawing: boolean = false;
   private isDraggingSticker: boolean = false; // Add this to your component
+  private isUndoRedoAction: boolean = false; // Add this flag
+
+  stateHistory: string[] = [];
+  currentStateIndex: number = 0;
+  maxHistoryStates: number = 50;
 
   isDialogOpen: boolean = false;
 
@@ -205,6 +209,11 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     if (savedTitle) {
       this.drawingTitle = savedTitle;
     }
+    const savedHistory = localStorage.getItem('drawingStateHistory');
+    if (savedHistory) {
+      this.stateHistory = JSON.parse(savedHistory);
+      this.currentStateIndex = this.stateHistory.length - 1;
+    }
   }
 
   ngAfterViewInit(): void {
@@ -216,15 +225,93 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     if (savedDrawing) {
       this.paperScope.project.importJSON(savedDrawing);
     }
+
     this.paperScope.view.onMouseDown = (event: paper.MouseEvent) => {
       this.startDrawing(event);
     };
     this.paperScope.view.onMouseDrag = (event: paper.MouseEvent) => {
       this.draw(event);
     };
+    if (this.currentStateIndex > 0) {
+      this.paperScope.project.importJSON(
+        this.stateHistory[this.currentStateIndex]
+      );
+    }
     this.paperScope.view.onMouseUp = () => {
       this.stopDrawing();
+      this.saveState();
     };
+  }
+  private saveState(): void {
+    if (this.isUndoRedoAction) {
+      console.log('Undo/redo action in progress, not saving state.');
+      return; // Don't save state if undo/redo is happening
+    }
+
+    const currentState = this.paperScope.project.exportJSON();
+
+    // Remove any future states if we're not at the end of the history
+    this.stateHistory = this.stateHistory.slice(0, this.currentStateIndex + 1);
+
+    // Add the new state
+    this.stateHistory.push(currentState);
+    this.currentStateIndex++;
+
+    // Limit the history size
+    if (this.stateHistory.length > this.maxHistoryStates) {
+      this.stateHistory.shift();
+      this.currentStateIndex--;
+    }
+
+    // Save to localStorage
+    localStorage.setItem(
+      'drawingStateHistory',
+      JSON.stringify(this.stateHistory)
+    );
+
+    console.log('State saved.');
+    console.log('Current State Index: ', this.currentStateIndex);
+    console.log('Total History Length: ', this.stateHistory.length);
+  }
+  undo(): void {
+    console.log('Undo triggered.');
+    if (this.currentStateIndex > 0) {
+      this.isUndoRedoAction = true; // Set the flag before loading the state
+      this.currentStateIndex--;
+      this.loadState();
+      this.isUndoRedoAction = false; // Reset the flag after loading
+    }
+    console.log('After undo, currentStateIndex: ', this.currentStateIndex);
+    console.log('Total History Length: ', this.stateHistory.length);
+  }
+
+
+  // Modified redo method
+  redo(): void {
+    console.log('Redo triggered.');
+    if (this.currentStateIndex < this.stateHistory.length - 1) {
+      this.isUndoRedoAction = true; // Set the flag before loading the state
+      this.currentStateIndex++;
+      this.loadState();
+      this.isUndoRedoAction = false; // Reset the flag after loading
+    }
+    console.log('After redo, currentStateIndex: ', this.currentStateIndex);
+    console.log('Total History Length: ', this.stateHistory.length);
+  }
+  private loadState(): void {
+    console.log('Loading state at index: ', this.currentStateIndex);
+    if (
+      this.currentStateIndex >= 0 &&
+      this.currentStateIndex < this.stateHistory.length
+    ) {
+      this.paperScope.project.clear();
+      this.paperScope.project.importJSON(
+        this.stateHistory[this.currentStateIndex]
+      );
+      this.paperScope.view.update();
+    } else {
+      console.warn('Invalid state index:', this.currentStateIndex);
+    }
   }
   handleDialogClose(event: {
     success: boolean;
@@ -344,7 +431,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     const data = encoder.encode(svgString);
 
     let binaryString = '';
-    data.forEach(byte => {
+    data.forEach((byte) => {
       binaryString += String.fromCharCode(byte);
     });
     return window.btoa(binaryString);
@@ -374,6 +461,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
     this.paperScope.activate();
+
+    this.saveState();
 
     // Add the sticker to the canvas
     const sticker = new paper.Raster({
@@ -750,6 +839,13 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     fileInput.click();
   }
 
+  isCanvasEmpty(): boolean {
+    return (
+      this.paperScope.project.activeLayer &&
+      this.paperScope.project.activeLayer.isEmpty()
+    );
+  }
+
   dragSticker(stickerImage: paper.Raster, event: paper.MouseEvent): void {
     const originalPosition = stickerImage.position;
     const offset = originalPosition.subtract(event.point);
@@ -764,19 +860,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.isDraggingSticker = false;
       stickerImage.onMouseDrag = null;
     };
-  }
-
-  enableEraser(): void {
-    if (this.stickers.length > 0) {
-      const lastSticker = this.stickers.pop();
-      lastSticker!.remove();
-      return;
-    }
-    if (this.drawingPath) {
-      this.drawingPath.remove();
-      this.drawingPath = null;
-      this.isDrawing = false;
-    }
   }
 
   clearAndResetDrawing(): void {
@@ -800,6 +883,10 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     localStorage.removeItem('drawingTitle');
     this.drawingTitle = '';
     this.initializeLayers();
+
+    this.stateHistory = [];
+    this.currentStateIndex = -1;
+    localStorage.removeItem('drawingStateHistory');
 
     this.toastr.success('Neues Plakat bereit!');
   }
