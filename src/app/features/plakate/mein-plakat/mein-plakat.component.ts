@@ -195,8 +195,11 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.hasPostCardAccess = true;
     }
 
-    // Proceed with the rest of the initialization
-    this.backgroundLayer = new this.paperScope.Layer();
+    if (typeof paper === 'undefined' || !paper.Layer) {
+      console.warn('Paper.js is not ready, delaying initialization.');
+      setTimeout(() => this.ngOnInit(), 100); // Retry after a delay
+      return;
+    }
 
     this.drawingLayer = new this.paperScope.Layer();
     this.frameLayer = new this.paperScope.Layer();
@@ -224,6 +227,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.initializePaperCanvas();
 
     this.initializeDrawing(); // Ensure this is called here
+    this.backgroundLayer = new this.paperScope.Layer();
+
   }
   initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
@@ -360,6 +365,12 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.isDialogOpen = false;
   }
   setBackground(color: string): void {
+    if (!this.isCanvasReady) {
+      console.warn('Canvas not ready yet, delaying background setting.');
+      setTimeout(() => this.setBackground(color), 500); // Try again after 100ms
+      return;
+    }
+
     const backgroundColor = this.mapColorNameToHex(color); // Optionally map color names to hex codes
 
     // Save the background color in localStorage
