@@ -277,7 +277,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     console.log('Total History Length: ', this.stateHistory.length);
   }
 
-
   // Modified redo method
   redo(): void {
     console.log('Redo triggered.');
@@ -456,7 +455,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
     if (!this.isCanvasReady) {
-      console.warn("Canvas not ready yet, delaying sticker addition.");
+      console.warn('Canvas not ready yet, delaying sticker addition.');
       setTimeout(() => this.addStickerToCanvas(stickerUrl, isUploaded), 100);
       return;
     }
@@ -499,7 +498,20 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
           <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/>
         </svg>
       `),
-      position: sticker.bounds.bottomRight.add([2.2, 0]), // Position the resize handle
+      position: sticker.bounds.bottomRight.add([3, 0]), // Position the resize handle
+      opacity: 0, // Make it invisible initially
+    });
+
+    // Add delete SVG icon as the delete handle
+    const deleteHandle = new paper.Raster({
+      source:
+        'data:image/svg+xml;base64,' +
+        this.svgToBase64(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+        </svg>
+      `),
+      position: sticker.bounds.topLeft.add([0, 0]), // Position the delete handle
       opacity: 0, // Make it invisible initially
     });
 
@@ -518,6 +530,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     });
 
     group.addChild(resizeHandle);
+    group.addChild(deleteHandle);
     group.addChild(rotationHandle);
 
     // Enable dragging, resizing, and rotation for the group
@@ -528,9 +541,19 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     group.onDoubleClick = () => {
       handlesVisible = !handlesVisible; // Toggle visibility
       resizeHandle.opacity = handlesVisible ? 1 : 0;
+      deleteHandle.opacity = handlesVisible ? 1 : 0;
       rotationHandle.opacity = handlesVisible ? 1 : 0;
     };
+    deleteHandle.onClick = () => {
+      group.remove(); // Remove the group (sticker + handles) from the canvas
+      const index = this.stickers.indexOf(sticker);
+      if (index > -1) {
+        this.stickers.splice(index, 1); // Remove the sticker from the stickers array
+      }
+      this.saveState(); // Save the state after deletion
+    };
   }
+
   enableStickerInteraction(
     group: paper.Group,
     resizeHandle: paper.Raster,

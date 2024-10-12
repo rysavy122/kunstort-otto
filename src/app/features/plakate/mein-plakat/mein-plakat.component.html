@@ -10,12 +10,25 @@
       </p>
       <span style="color: blueviolet; font-size: 2rem">oder</span>
     </div>
-    <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
+    <button class="page-plakate__button" style="min-width: 218px; margin: 10px; background-color: royalblue"
       (click)="addImageSticker()">
-      Sticker hochladen
+      <svg style="margin-bottom:-4px; margin-right: 6px; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
+        width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+        <path fill-rule="evenodd"
+          d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+      </svg>
+      Sticker hinzufügen
     </button>
     <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue">
-      <a href="https://ottoblob.blob.core.windows.net/sticker/otto-sticker-collection.zip">Sticker herunterladen</a>
+      <a href="https://ottoblob.blob.core.windows.net/sticker/otto-sticker-collection.zip">
+        <svg style="margin-bottom: -4px; font-weight: bold; margin-right:14px;" xmlns="http://www.w3.org/2000/svg"
+          width="20" height="20" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+          <path
+            d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+          <path
+            d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
+        </svg>
+        Sticker herunterladen</a>
     </button>
     <br />
     <div class="sticker-container" cdkDropList>
@@ -26,7 +39,6 @@
         </div>
       </div>
     </div>
-
     <div class="pagination-controls">
       <button (click)="previousPage()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
@@ -47,7 +59,6 @@
     <br />
     <br />
   </div>
-
   <div id="otto-plakat">
     <input [(ngModel)]="drawingTitle" type="text" placeholder="Dein Titel ..." id="drawingTitle" />
     <div id="canvas" class="canvas-wrapper" cdkDropList #canvasStickersList="cdkDropList"
@@ -59,7 +70,6 @@
       <canvas id="drawingCanvas" #drawingCanvas class="custom-cursor"></canvas>
     </div>
   </div>
-
   <div id="controlls">
     <h2>Einstellungen</h2>
     <div id="stroke">
@@ -84,27 +94,70 @@
       </p>
       <br />
       <input style="width: fit-content; float: left" placeholder="Farbe" type="color" id="stroke-color"
-        [(ngModel)]="strokeHexColor" (ngModelChange)="updateStrokeColor($event)" />
+        [(ngModel)]="strokeHexColor" (ngModelChange)="updateStrokeColor($event)" /><br /><br /><br /><br /><br /><br />
+      <p style="
+      color: black;
+      text-align: start;
+      font-size: 2rem;
+      margin-bottom: 0px;
+    ">
+        Radiergummi:
+      </p>
+      <br>
+      <svg style="margin-bottom:-4px; margin-left: 16px; color: black; float: left; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
+        width="24" height="24" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+        <path
+          d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
+      </svg>
     </div>
     <div style="float: left; margin-top: 55px; margin-left: -40px" id="buttons">
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="openDialog()">
+        <svg style="margin-bottom:-4px; margin-right: 6px; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
+          width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+        </svg>
         {{ isPostcard ? "Neue Postkarte" : "Neues Plakat" }}
       </button>
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="saveDrawing()">
+        <svg style="margin-bottom:-4px; margin-right: 6px; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
+          width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path
+            d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1z" />
+        </svg>
         {{ isPostcard ? "Postkarte speichern" : "Plakat speichern" }}</button><br />
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="undo()">
+        <svg style="margin-bottom:-4px; margin-right: 6px; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
+          width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+          <path
+            d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+        </svg>
         Schritt zurück
       </button>
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="redo()">
+        <svg style="margin-bottom:-4px; margin-right: 6px; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
+          width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+          <path
+            d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+        </svg>
         Schritt vorwärts
       </button>
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="exportCanvasAsImage()">
-        {{ isPostcard ? "Postkarte exportieren" : "Plakat exportieren" }}
+        <svg style="margin-bottom: -4px; font-weight: bold; margin-right:14px;" xmlns="http://www.w3.org/2000/svg"
+          width="20" height="20" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+          <path
+            d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+          <path
+            d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
+        </svg>
+        {{ isPostcard ? "Postkarte herunterladen" : "Plakat herunterladen" }}
       </button>
       <div id="postcard">
         <h2>Nur Für Institute:</h2>
@@ -114,13 +167,17 @@
         margin: 30px 10px 20vh 10px;
         background-color: royalblue;
       " (click)="switchFormat()">
+              <svg style="margin-bottom: -4px; font-weight: bold; margin-right:14px;" xmlns="http://www.w3.org/2000/svg"
+              width="20" height="20" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+              <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+              <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+            </svg>
           {{ isPostcard ? "Wechsel zu Plakat" : "Wechsel zu Postkarte" }}
         </button>
       </div>
     </div>
   </div>
 </div>
-
 <div class="wrapper" style="display: flex; flex-direction: column; margin-top: 25vh;">
   <h1>Hallo Institut. Forme dein Logo um.</h1>
   <p style="color:black; font-size: large;">Lade dein Logo im svg Format hoch, der Algorithmus generiert ein komplett
@@ -152,15 +209,7 @@
       background-color: royalblue;" (click)="revertToOriginal()">Original Wiederherstellen</button>
     <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue;"
       (click)="downloadLogoAsPNG()">Logo herunterladen</button>
-
   </div>
-
-  <!--   <ul>
-    <li *ngFor="let path of svgPaths; let i = index">
-      Path {{ i + 1 }}: <code>{{ path }}</code>
-    </li>
-  </ul> -->
-
   <div class="plakat-editing-wrapper">
     <canvas></canvas>
   </div>
