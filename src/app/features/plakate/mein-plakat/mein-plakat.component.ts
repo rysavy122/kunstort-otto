@@ -27,6 +27,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   @ViewChildren('draggableElement') draggableElements!: QueryList<ElementRef>;
 
   public drawingTitle: string = '';
+  isCanvasReady: boolean = false;
   lastDropPoint: paper.Point = new paper.Point(0, 0);
   svgPaths: string[] = [];
   stickers: paper.Raster[] = [];
@@ -222,38 +223,17 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
     this.paperScope.setup(this.drawingCanvas.nativeElement);
-    this.initializeLayers();
+    this.initializeLayers(); // Ensure layers are initialized
 
     const savedDrawing = localStorage.getItem('userDrawing');
     if (savedDrawing) {
       this.paperScope.project.importJSON(savedDrawing);
     }
 
-    this.paperScope.view.onMouseDown = (event: paper.MouseEvent) => {
-      this.startDrawing(event);
-    };
-    this.paperScope.view.onMouseDrag = (event: paper.MouseEvent) => {
-      this.draw(event);
-    };
-
-    if (this.currentStateIndex > 0) {
-      this.paperScope.project.importJSON(this.stateHistory[this.currentStateIndex]);
-    }
-
-    // Add a delay before saving the state initially
-    setTimeout(() => {
-      this.saveState();
-    }, 100);
-
-    this.paperScope.view.onMouseUp = () => {
-      this.stopDrawing();
-
-      // Add a delay before saving the state after drawing
-      setTimeout(() => {
-        this.saveState();
-      }, 100);
-    };
+    // Mark the canvas as ready once everything is set up
+    this.isCanvasReady = true;
   }
+
   private saveState(): void {
     if (this.isUndoRedoAction) {
       console.log('Undo/redo action in progress, not saving state.');
@@ -475,6 +455,12 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
+    if (!this.isCanvasReady) {
+      console.warn("Canvas not ready yet, delaying sticker addition.");
+      setTimeout(() => this.addStickerToCanvas(stickerUrl, isUploaded), 100);
+      return;
+    }
+
     this.paperScope.activate();
     this.saveState();
 
@@ -486,29 +472,23 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     });
 
     sticker.onLoad = () => {
-      // Once the sticker is loaded, scale it
       const scaleFactor = isUploaded ? 150 : 100;
-
-      // Now apply the scaling
       sticker.scale(
         scaleFactor / sticker.bounds.width,
         scaleFactor / sticker.bounds.height
       );
 
-      // After scaling, make the sticker visible
       requestAnimationFrame(() => {
         sticker.visible = true;
       });
 
-      // Create a group for sticker, resize handle, and rotation handle
       const group = new this.paperScope.Group([sticker]);
-
-      // Add resize and rotation handlers
       this.addResizeAndRotationHandles(group, sticker);
     };
 
     this.stickers.push(sticker);
   }
+
   addResizeAndRotationHandles(group: paper.Group, sticker: paper.Raster): void {
     // Add resize SVG icon (bi-arrows-angle-expand) as the resize handle
     const resizeHandle = new paper.Raster({
@@ -519,7 +499,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
           <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/>
         </svg>
       `),
-      position: sticker.bounds.bottomRight.add([0, 0]), // Position the resize handle
+      position: sticker.bounds.bottomRight.add([2.2, 0]), // Position the resize handle
       opacity: 0, // Make it invisible initially
     });
 
@@ -533,7 +513,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
       </svg>
       `),
-      position: sticker.bounds.topRight.add([1, -1]), // Position the rotation handle
+      position: sticker.bounds.topRight.add([3, 0]), // Position the rotation handle
       opacity: 0, // Make it invisible initially
     });
 
