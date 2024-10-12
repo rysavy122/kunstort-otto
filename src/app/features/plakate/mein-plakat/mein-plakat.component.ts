@@ -125,6 +125,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   private isDrawing: boolean = false;
   private isDraggingSticker: boolean = false; // Add this to your component
   private isUndoRedoAction: boolean = false; // Add this flag
+  private isActionInProgress = false; // Add this flag to control undo/redo
+
 
   stateHistory: string[] = [];
   currentStateIndex: number = 0;
@@ -143,6 +145,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   };
 
   strokeSize = 2;
+  eraserSize = 2;
   strokeColor = new paper.Color(0, 0, 0);
   public strokeHexColor: string = '#000000'; // Default to black
 
@@ -218,7 +221,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.initializePaperCanvas(); // Call the new initialization method
+    this.initializePaperCanvas();
+
+    this.initializeDrawing(); // Ensure this is called here
   }
   initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
@@ -229,9 +234,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     if (savedDrawing) {
       this.paperScope.project.importJSON(savedDrawing);
     }
-
     // Mark the canvas as ready once everything is set up
     this.isCanvasReady = true;
+
   }
 
   private saveState(): void {
@@ -266,22 +271,29 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     console.log('Total History Length: ', this.stateHistory.length);
   }
   undo(): void {
+    if (this.isActionInProgress) return; // Prevent multiple concurrent actions
+
+    this.isActionInProgress = true; // Set the flag to block further actions
     console.log('Undo triggered.');
+
     if (this.currentStateIndex > 0) {
-      this.isUndoRedoAction = true; // Set the flag before loading the state
+      this.isUndoRedoAction = true;
       this.currentStateIndex--;
-      this.loadState();
-      this.isUndoRedoAction = false; // Reset the flag after loading
+      this.loadState().then(() => {
+        this.isUndoRedoAction = false;
+        this.isActionInProgress = false; // Allow new actions after completion
+      });
+    } else {
+      this.isActionInProgress = false; // If no action, reset the flag
     }
-    console.log('After undo, currentStateIndex: ', this.currentStateIndex);
-    console.log('Total History Length: ', this.stateHistory.length);
   }
 
   // Modified redo method
   redo(): void {
     console.log('Redo triggered.');
-    if (this.currentStateIndex < this.stateHistory.length - 1) {
+    if (this.currentStateIndex <= this.stateHistory.length - 1) {
       this.isUndoRedoAction = true; // Set the flag before loading the state
+      console.log("HIER");
       this.currentStateIndex++;
       this.loadState();
       this.isUndoRedoAction = false; // Reset the flag after loading
@@ -289,17 +301,20 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     console.log('After redo, currentStateIndex: ', this.currentStateIndex);
     console.log('Total History Length: ', this.stateHistory.length);
   }
-  private loadState(): void {
+  private async loadState(): Promise<void> {
     console.log('Loading state at index: ', this.currentStateIndex);
-    if (
-      this.currentStateIndex >= 0 &&
-      this.currentStateIndex < this.stateHistory.length
-    ) {
-      this.paperScope.project.clear();
-      this.paperScope.project.importJSON(
-        this.stateHistory[this.currentStateIndex]
-      );
-      this.paperScope.view.update();
+
+    if (this.currentStateIndex >= 0 && this.currentStateIndex < this.stateHistory.length) {
+      this.paperScope.project.clear(); // Clear the project
+
+      // Wait for the project to finish importing the saved state
+      await new Promise<void>((resolve) => {
+        this.paperScope.project.importJSON(this.stateHistory[this.currentStateIndex]);
+        this.paperScope.view.update(); // Ensure view is updated
+        resolve(); // Resolve the promise when done
+      });
+
+      console.log('State loaded.');
     } else {
       console.warn('Invalid state index:', this.currentStateIndex);
     }
@@ -334,6 +349,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       }
 
       this.initializePaperCanvas(); // Initialize the canvas again after clearing it
+      this.initializeDrawing(); // Ensure this is called here
 
       // Save the selected colors in localStorage
       localStorage.setItem('selectedFrameColor', selectedColor);
@@ -680,46 +696,53 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.paperScope.view.update();
   }
   enableDrawing(): void {
-    if (this.drawingPath) {
-      this.drawingPath.remove();
+    if (!this.isCanvasReady) {
+      console.log('Canvas is not ready yet.');
+      return;
     }
 
-    this.drawingPath = new this.paperScope.Path({
-      strokeColor: 'black',
-      strokeWidth: 2,
-    });
+    console.log('Canvas is ready, enabling drawing.');
 
-    this.paperScope.view.onMouseDrag = (event: paper.MouseEvent) => {
-      if (this.drawingPath) {
-        this.drawingPath.add(event.point);
-      }
-    };
+    this.paperScope.view.onMouseDown = this.startDrawing.bind(this);
+    this.paperScope.view.onMouseDrag = this.draw.bind(this);
+    this.paperScope.view.onMouseUp = this.stopDrawing.bind(this);
   }
 
   startDrawing(event: paper.MouseEvent): void {
     if (this.isDraggingSticker) {
+      console.log('Dragging sticker, not drawing.');
       return;
     }
 
     this.isDrawing = true;
 
     if (this.isInsideDrawingArea(event.point)) {
+      console.log('Started drawing at:', event.point);
       this.drawingPath = new this.paperScope.Path({
-        strokeColor: this.strokeColor, // Use the updated paper.Color object
+        strokeColor: this.strokeColor,
         strokeWidth: this.strokeSize,
       });
-
       this.drawingPath.add(event.point);
+
+      // Don't save state immediately when starting a drawing
+    } else {
+      console.log('Mouse down outside of drawing area');
     }
   }
+
+
   draw(event: paper.MouseEvent): void {
     if (this.isDraggingSticker || !this.isDrawing || !this.drawingPath) {
+      console.log('Not drawing. isDraggingSticker:', this.isDraggingSticker, 'isDrawing:', this.isDrawing, 'drawingPath:', !!this.drawingPath);
       return;
     }
 
     if (this.isInsideDrawingArea(event.point)) {
+      console.log('Drawing at:', event.point);
       this.drawingPath.add(event.point);
       this.paperScope.view.requestUpdate();
+    } else {
+      console.log('Mouse drag outside of drawing area');
     }
   }
   switchFormat() {
@@ -798,7 +821,11 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   stopDrawing(): void {
+    console.log('Mouse up, stopping drawing.');
     this.isDrawing = false;
+
+    // Save state after drawing is completed
+    this.saveState();
   }
 
   isInsideDrawingArea(point: paper.Point): boolean {
@@ -916,6 +943,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   initializeDrawing(): void {
+    console.log('initializeDrawing called');
     this.enableDrawing();
   }
 
@@ -1112,3 +1140,4 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     };
   }
 }
+
