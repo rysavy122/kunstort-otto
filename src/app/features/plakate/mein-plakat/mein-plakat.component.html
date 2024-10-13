@@ -182,9 +182,9 @@
         </svg>
         {{ isPostcard ? "Postkarte herunterladen" : "Plakat herunterladen" }}
       </button>
-      <div id="postcard">
+      <div *ngIf="hasPostCardAccess" id="postcard">
         <h2>Nur für Institute:</h2>
-        <button *ngIf="!hasPostCardAccess" class="page-plakate__button" style="
+        <button *ngIf="hasPostCardAccess" class="page-plakate__button" style="
         min-width: 180px;
         margin: 10px;
         margin: 0px 10px 20vh 10px;
