@@ -122,7 +122,7 @@
           color: black;
           text-align: start;
           font-size: 2rem;
-          margin-bottom: 0px;">
+          margin-bottom: -10px;">
             Radiergummi:
           </p>
           <label class="switch">
@@ -203,7 +203,7 @@
     </div>
   </div>
 </div>
-<div class="wrapper" style="display: flex; flex-direction: column; margin-top: 25vh;">
+<div class="wrapper" *ngIf="hasPostCardAccess" style="display: flex; flex-direction: column; margin-top: 25vh;">
   <h1>Hallo Institut. Forme dein Logo um.</h1>
   <p style="color:black; font-size: large;">Lade dein Logo im svg Format hoch, der Algorithmus generiert ein komplett
     neues Kunstwerk, welches dann als Bild Datei herunterladen werden kann.</p>

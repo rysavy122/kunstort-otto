@@ -397,6 +397,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
     }
     this.isDialogOpen = false;
+    this.isEraserActive = false;
   }
   setBackground(color: string): void {
     if (!this.isCanvasReady) {
