@@ -71,20 +71,40 @@
     </div>
   </div>
   <div id="controlls">
-    <h2>Einstellungen</h2>
-    <div id="stroke">
-      <p style="
+    <h2 style="margin-left:-40px;">Einstellungen</h2>
+    <div id="stroke" style="display: flex; flex-direction: row; justify-content: space-around;">
+      <div class="row1">
+        <div class="brush-size">
+          <p style="
           color: black;
           text-align: start;
           font-size: 2rem;
           margin-bottom: -20px;
         ">
-        Pinsel Grösse:
-      </p>
-      <br />
-      <input type="number" id="strokeSize" [(ngModel)]="strokeSize"
-        style="width: 100px; color: royalblue; float: left" /><br /><br /><br /><br /><br /><br />
-      <p style="
+            Pinsel Grösse:
+          </p>
+          <br />
+          <input type="number" id="strokeSize" [(ngModel)]="strokeSize"
+            style="width: 100px; color: royalblue; float: left;margin-bottom: 14px;" />
+        </div>
+
+        <div class="eraser-size">
+          <p style="
+          color: black;
+          text-align: start;
+          font-size: 2rem;
+          margin-bottom: -20px;
+        ">
+          Radiergummi Grösse:
+        </p>
+        <br />
+        <input type="number" id="strokeSize" [(ngModel)]="eraserSize"
+          style="width: 100px; color: royalblue; float: left;" />
+        </div>
+      </div>
+      <div class="row2">
+        <div class="brush-color">
+          <p style="
           color: black;
           text-align: start;
           font-size: 2rem;
@@ -93,24 +113,28 @@
         Pinsel Farbe:
       </p>
       <br />
-      <input style="width: fit-content; float: left" placeholder="Farbe" type="color" id="stroke-color"
-        [(ngModel)]="strokeHexColor" (ngModelChange)="updateStrokeColor($event)" /><br /><br /><br /><br /><br /><br />
-      <p style="
-      color: black;
-      text-align: start;
-      font-size: 2rem;
-      margin-bottom: 0px;
-    ">
-        Radiergummi:
-      </p>
-      <br>
-      <svg style="margin-bottom:-4px; margin-left: 16px; color: black; float: left; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
-        width="24" height="24" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-        <path
-          d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
-      </svg>
+      <input style="width: fit-content; float: left; margin-bottom: 25px;" placeholder="Farbe" type="color" id="stroke-color"
+        [(ngModel)]="strokeHexColor" (ngModelChange)="updateStrokeColor($event)" />
+        </div>
+
+        <div class="eraser">
+          <p style="
+          color: black;
+          text-align: start;
+          font-size: 2rem;
+          margin-bottom: 0px;">
+            Radiergummi:
+          </p>
+          <br>
+          <svg style="margin-bottom:-4px; margin-left: 16px; color: black; float: left; font-weight:bold;"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-lg"
+            viewBox="0 0 16 16">
+            <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z"/>
+          </svg>
+        </div>
+      </div>
     </div>
-    <div style="float: left; margin-top: 55px; margin-left: -40px" id="buttons">
+    <div style=" margin-top: 55px; margin-left: -40px" id="buttons">
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="openDialog()">
         <svg style="margin-bottom:-4px; margin-right: 6px; font-weight:bold;" xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +171,7 @@
             d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
         </svg>
         Schritt vorwärts
-      </button>
+      </button><br/>
       <button class="page-plakate__button" style="min-width: 180px; margin: 10px; background-color: royalblue"
         (click)="exportCanvasAsImage()">
         <svg style="margin-bottom: -4px; font-weight: bold; margin-right:14px;" xmlns="http://www.w3.org/2000/svg"
@@ -160,18 +184,20 @@
         {{ isPostcard ? "Postkarte herunterladen" : "Plakat herunterladen" }}
       </button>
       <div id="postcard">
-        <h2>Nur Für Institute:</h2>
+        <h2>Nur für Institute:</h2>
         <button *ngIf="!hasPostCardAccess" class="page-plakate__button" style="
         min-width: 180px;
         margin: 10px;
-        margin: 30px 10px 20vh 10px;
+        margin: 0px 10px 20vh 10px;
         background-color: royalblue;
       " (click)="switchFormat()">
-              <svg style="margin-bottom: -4px; font-weight: bold; margin-right:14px;" xmlns="http://www.w3.org/2000/svg"
-              width="20" height="20" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-              <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
-              <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
-            </svg>
+          <svg style="margin-bottom: -4px; font-weight: bold; margin-right:14px;" xmlns="http://www.w3.org/2000/svg"
+            width="20" height="20" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+            <path
+              d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+            <path fill-rule="evenodd"
+              d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+          </svg>
           {{ isPostcard ? "Wechsel zu Plakat" : "Wechsel zu Postkarte" }}
         </button>
       </div>
@@ -216,3 +242,4 @@
 </div>
 
 <app-new-poster-dialog [isOpen]="isDialogOpen" (close)="handleDialogClose($event)"></app-new-poster-dialog>
+

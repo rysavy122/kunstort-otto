@@ -129,6 +129,9 @@
     background-color: white;
     border:none;
   }
+  #stroke{
+    margin-left: -40px;
+  }
   #stroke-color::-webkit-color-swatch-wrapper {
     padding: 0;
     border: none;
@@ -212,9 +215,13 @@
     height: 700px;
     width: 25%;
   }
+  #sticker h2, #controlls h2{
+    margin-bottom:30px;
+  }
   .sticker-container{
     display: flex;
-    margin-left: 2vw;
+    margin: auto;
+    margin-top: 10px;
   }
   #otto-plakat{
     width: 50%;
@@ -230,32 +237,27 @@
   }
   @media screen and (min-width: 2400px), screen and (min-height: 1000px) {
     #otto-plakat{
-      width: 73.3%;
-      margin: 15px;
-      margin-left:-1%;
       margin-top: 20vh;
     }
     #controlls{
-      width: 33%;
       margin-top: 15vh;
     }
     #sticker{
       height: 700px;
-      width: 33%;
       margin-top: 15vh;
       margin-left:2vw;
     }
-    #drawingCanvas{
-       height: 667px;
-       width:1000px;
-    }
     #drawingTitle{
       width: 567px;
-      margin-left: -340px;
     }
     .sticker-container{
-      margin-left: 80px;
+      margin: auto;
+      margin-top:50px;
     }
+    .wrapper{
+
+    }
+
 }
   .example-list {
     width: 300px;

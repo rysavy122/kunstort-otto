@@ -150,9 +150,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   strokeColor = new paper.Color(0, 0, 0);
   public strokeHexColor: string = '#000000'; // Default to black
 
-  imagesPerPage = 9;
+  imagesPerPage = 6;
   currentPage = 1;
-  totalPages: number = 3;
+  totalPages: number = 4;
 
   drawingColor: string = 'black';
   private backgroundLayer!: paper.Layer;
@@ -196,23 +196,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       this.hasPostCardAccess = true;
     }
 
-    if (typeof paper === 'undefined' || !paper.Layer) {
-      console.warn('Paper.js is not ready, delaying initialization.');
-      setTimeout(() => this.ngOnInit(), 100); // Retry after a delay
-      return;
-    }
-
-    this.drawingLayer = new this.paperScope.Layer();
-    this.frameLayer = new this.paperScope.Layer();
-
-    const initialSource = this.isPostcard
-      ? this.postCardSource
-      : this.posterSource;
-    const borderImage = new this.paperScope.Raster({
-      source: initialSource,
-      position: this.paperScope.view.center,
-    });
-
     const savedTitle = localStorage.getItem('drawingTitle');
     if (savedTitle) {
       this.drawingTitle = savedTitle;
@@ -234,7 +217,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.saveState();  // Call saveState after the delay
       console.log('Initial state saved after delay');
-    }, 500); // Adjust the delay time (in milliseconds) as needed, e.g., 500ms
+    }, 100); // Adjust the delay time (in milliseconds) as needed, e.g., 500ms
   }
   initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
@@ -373,7 +356,19 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       localStorage.setItem('selectedFrameColor', selectedColor);
       localStorage.setItem('selectedBackgroundColor', selectedBackgroundColor);
 
+      const savedHistory = localStorage.getItem('drawingStateHistory');
+      if (savedHistory) {
+        this.stateHistory = JSON.parse(savedHistory);
+        this.currentStateIndex = this.stateHistory.length - 1;
+      }
+
       this.clearCanvas(); // Reset the canvas and apply the new frame
+
+      setTimeout(() => {
+        this.saveState();  // Call saveState after the delay
+        console.log('Initial state saved after delay');
+      }, 100); // Adjust the delay time (in milliseconds) as needed, e.g., 500ms
+
     }
     this.isDialogOpen = false;
   }
