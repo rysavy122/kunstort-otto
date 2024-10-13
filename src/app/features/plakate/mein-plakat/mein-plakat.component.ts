@@ -17,6 +17,7 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { Plakat } from 'src/app/core/models/plakat.model';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-mein-plakat',
@@ -225,10 +226,15 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initializePaperCanvas();
-
     this.initializeDrawing(); // Ensure this is called here
+
     this.backgroundLayer = new this.paperScope.Layer();
 
+    // Adding a delay before saving the state
+    setTimeout(() => {
+      this.saveState();  // Call saveState after the delay
+      console.log('Initial state saved after delay');
+    }, 500); // Adjust the delay time (in milliseconds) as needed, e.g., 500ms
   }
   initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
@@ -242,6 +248,13 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     // Mark the canvas as ready once everything is set up
     this.isCanvasReady = true;
 
+  }
+
+  isBackgroundBlack(): boolean {
+    return (
+      this.strokeHexColor === '#000000' ||
+      this.mapColorNameToHex(this.strokeHexColor) === '#000000'
+    );
   }
 
   private saveState(): void {
@@ -516,12 +529,16 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   addResizeAndRotationHandles(group: paper.Group, sticker: paper.Raster): void {
+    // Get the selected background color from localStorage, default to white background (black handlers)
+    const savedBackgroundColor = localStorage.getItem('selectedBackgroundColor') || 'Weiß';
+    const handlerColor = savedBackgroundColor === 'Schwarz' ? 'FFFFFF' : '000000'; // White handlers for black background, black handlers otherwise
+
     // Add resize SVG icon (bi-arrows-angle-expand) as the resize handle
     const resizeHandle = new paper.Raster({
       source:
         'data:image/svg+xml;base64,' +
         this.svgToBase64(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#${handlerColor}" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
           <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/>
         </svg>
       `),
@@ -534,7 +551,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       source:
         'data:image/svg+xml;base64,' +
         this.svgToBase64(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#${handlerColor}" class="bi bi-x-lg" viewBox="0 0 16 16">
           <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
         </svg>
       `),
@@ -547,7 +564,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       source:
         'data:image/svg+xml;base64,' +
         this.svgToBase64(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#${handlerColor}" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
       </svg>

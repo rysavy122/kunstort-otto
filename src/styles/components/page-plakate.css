@@ -7,7 +7,6 @@
   margin-right: 1.6rem;
   font-style: normal;
   padding: 0.8rem 0;
-  border-radius: 0.8rem;
   text-align: center;
   user-select: none;
   border: 0;
@@ -23,6 +22,8 @@
   line-height: 2rem;
   margin: auto;
   margin-left: -10px;
+  margin-top:20px;
+  color: #00FFFF;
   }
 
   #svg-container {
@@ -169,6 +170,7 @@
     margin-top: 95px;
     margin-bottom: 20px;
     word-wrap: break-word;
+    color: aqua;
   }
 
   .bubble p {
@@ -200,7 +202,7 @@
     border: none;
     color: black;
     width: 567px;
-    margin-left: 35%;
+    margin: auto;
   }
   #drawingCanvas{
     height: 567px;
