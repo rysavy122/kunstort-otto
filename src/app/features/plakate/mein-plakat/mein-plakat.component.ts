@@ -372,7 +372,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         this.strokeHexColor = '#000000'; // Update the hex color for the template
       }
 
-      this.initializePaperCanvas(); // Initialize the canvas again after clearing it
+      //this.initializePaperCanvas(); // Initialize the canvas again after clearing it
       this.initializeDrawing(); // Ensure this is called here
 
       // Save the selected colors in localStorage
@@ -394,7 +394,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         this.saveState();  // Call saveState after the delay
         console.log('Initial state saved after delay');
       }, 100); // Adjust the delay time (in milliseconds) as needed, e.g., 500ms
-
+    } else {
+      this.initializeDrawing();
     }
     this.isDialogOpen = false;
     this.isEraserActive = false;
