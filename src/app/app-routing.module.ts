@@ -70,7 +70,6 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
-      preloadingStrategy: PreloadAllModules, // Preload all modules to avoid delays in chunk loading
     }),
   ],  exports: [RouterModule],
 })
