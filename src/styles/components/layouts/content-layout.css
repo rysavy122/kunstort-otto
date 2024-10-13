@@ -97,7 +97,7 @@ textarea:focus{
   font-size: 1.3rem;
   line-height: 1.2rem;
 }
-.comment-button, .upload-button, label{
+.comment-button, .upload-button{
   background-color: var(--otto-primary);
   border-radius: 0.8rem;
   font-family: var(--font-secondary);
@@ -115,13 +115,35 @@ textarea:focus{
   font-size: 1.6rem;
   line-height: 1.4rem;
 }
+
 .upload-button{
   padding: 1.4rem 1.6rem;
 
 }
-.comment-button:hover, .upload-button:hover, label:hover{
+.comment-button:hover, .upload-button:hover{
   background-color: var(--otto-secondary);
   color: white;
+}
+label{
+  border-radius: 0.8rem;
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  color: var(--white);
+  margin-top: 25px;
+  border-left: none;
+  border-top:none;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease-out, color 0.3s ease-out;
+  min-width: 10rem;
+  padding: 1.6rem 1.6rem;
+  font-size: 1.6rem;
+  line-height: 1.4rem;
+}
+label:hover{
+  color: white;
+  background-color: white;
 }
 #button-div{
   width:fit-content;

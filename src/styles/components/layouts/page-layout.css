@@ -59,7 +59,6 @@ label {
   width: 20px;
   height: 20px;
   margin: 0 5px;
-  background: #999;
   border-radius: 50%;
   transition: background 0.3s ease;
 }

@@ -134,6 +134,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   maxHistoryStates: number = 50;
 
   isDialogOpen: boolean = false;
+  isEraserActive: boolean = false;
 
   isPostcard: boolean = false;
   isPoster: boolean = true;
@@ -156,6 +157,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
   drawingColor: string = 'black';
   private backgroundLayer!: paper.Layer;
+  private stickerLayer!: paper.Layer;
   private drawingLayer!: paper.Layer;
   private frameLayer!: paper.Layer;
   public logoFileName: string = '';
@@ -213,24 +215,44 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
     this.backgroundLayer = new this.paperScope.Layer();
 
-    // Adding a delay before saving the state
-    setTimeout(() => {
-      this.saveState();  // Call saveState after the delay
-      console.log('Initial state saved after delay');
-    }, 100); // Adjust the delay time (in milliseconds) as needed, e.g., 500ms
+    // Check if there is already a saved drawing
+    if (this.isPoster) {
+      const savedDrawing = localStorage.getItem('posterDrawing');
+      if (savedDrawing) {
+        this.paperScope.project.importJSON(savedDrawing);
+      }
+    } else {
+      const savedDrawing = localStorage.getItem('postcardDrawing');
+      if (savedDrawing) {
+        this.paperScope.project.importJSON(savedDrawing);
+      }
+
+    if (!savedDrawing) {
+      // Only save initial state if there is no saved drawing
+      setTimeout(() => {
+        this.saveState();  // Call saveState after the delay if no saved drawing
+        console.log('Initial state saved after delay');
+      }, 100); // Adjust the delay time as needed
+    }
   }
+  this.isCanvasReady = true;
+}
   initializePaperCanvas(): void {
     this.paperScope = new paper.PaperScope();
     this.paperScope.setup(this.drawingCanvas.nativeElement);
     this.initializeLayers(); // Ensure layers are initialized
 
+    // Check for saved drawing
     const savedDrawing = localStorage.getItem('userDrawing');
     if (savedDrawing) {
       this.paperScope.project.importJSON(savedDrawing);
+      console.log('Loaded saved drawing from localStorage');
+    } else {
+      console.log('No saved drawing, initializing new canvas');
     }
+
     // Mark the canvas as ready once everything is set up
     this.isCanvasReady = true;
-
   }
 
   isBackgroundBlack(): boolean {
@@ -294,7 +316,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     console.log('Redo triggered.');
     if (this.currentStateIndex <= this.stateHistory.length - 1) {
       this.isUndoRedoAction = true; // Set the flag before loading the state
-      console.log("HIER");
       this.currentStateIndex++;
       this.loadState();
       this.isUndoRedoAction = false; // Reset the flag after loading
@@ -316,10 +337,12 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       });
 
       console.log('State loaded.');
+
     } else {
       console.warn('Invalid state index:', this.currentStateIndex);
     }
   }
+
   handleDialogClose(event: {
     success: boolean;
     color: string;
@@ -363,6 +386,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       }
 
       this.clearCanvas(); // Reset the canvas and apply the new frame
+
+        localStorage.removeItem('posterDrawing');
+        localStorage.removeItem('postcardDrawing');
 
       setTimeout(() => {
         this.saveState();  // Call saveState after the delay
@@ -487,41 +513,53 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       }
     }
   }
-
-  addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
-    if (!this.isCanvasReady) {
-      console.warn('Canvas not ready yet, delaying sticker addition.');
-      setTimeout(() => this.addStickerToCanvas(stickerUrl, isUploaded), 100);
-      return;
+  toggleEraser(): void {
+    if (this.isEraserActive) {
+      // Set the stroke color to the background color (simulate eraser)
+      const backgroundColor = localStorage.getItem('selectedBackgroundColor') || 'white';
+      this.strokeColor = new paper.Color(this.mapColorNameToHex(backgroundColor));
+    } else {
+      // Set the stroke color back to the brush color
+      this.strokeColor = new paper.Color(this.strokeHexColor);
     }
+  }
 
-    this.paperScope.activate();
-    this.saveState();
+addStickerToCanvas(stickerUrl: string, isUploaded: boolean = false) {
+  if (!this.isCanvasReady) {
+    console.warn('Canvas not ready yet, delaying sticker addition.');
+    setTimeout(() => this.addStickerToCanvas(stickerUrl, isUploaded), 100);
+    return;
+  }
 
-    // Add the sticker to the canvas but make it invisible initially
-    const sticker = new paper.Raster({
-      source: stickerUrl,
-      position: this.lastDropPoint,
-      visible: false, // Hide the sticker initially
+  this.paperScope.activate();
+
+  // Add the sticker to the canvas but make it invisible initially
+  const sticker = new paper.Raster({
+    source: stickerUrl,
+    position: this.lastDropPoint,
+    visible: false, // Hide the sticker initially
+  });
+
+  sticker.onLoad = () => {
+    const scaleFactor = isUploaded ? 150 : 100;
+    sticker.scale(
+      scaleFactor / sticker.bounds.width,
+      scaleFactor / sticker.bounds.height
+    );
+
+    requestAnimationFrame(() => {
+      sticker.visible = true;
     });
 
-    sticker.onLoad = () => {
-      const scaleFactor = isUploaded ? 150 : 100;
-      sticker.scale(
-        scaleFactor / sticker.bounds.width,
-        scaleFactor / sticker.bounds.height
-      );
+    const group = new this.paperScope.Group([sticker]);
+    this.addResizeAndRotationHandles(group, sticker);
 
-      requestAnimationFrame(() => {
-        sticker.visible = true;
-      });
+    // **Force state save after the sticker is added**
+    this.saveState();
+  };
 
-      const group = new this.paperScope.Group([sticker]);
-      this.addResizeAndRotationHandles(group, sticker);
-    };
-
-    this.stickers.push(sticker);
-  }
+  this.stickers.push(sticker);
+}
 
   addResizeAndRotationHandles(group: paper.Group, sticker: paper.Raster): void {
     // Get the selected background color from localStorage, default to white background (black handlers)
@@ -731,27 +769,31 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.paperScope.view.onMouseUp = this.stopDrawing.bind(this);
   }
 
-  startDrawing(event: paper.MouseEvent): void {
-    if (this.isDraggingSticker) {
-      console.log('Dragging sticker, not drawing.');
-      return;
-    }
-
-    this.isDrawing = true;
-
-    if (this.isInsideDrawingArea(event.point)) {
-      console.log('Started drawing at:', event.point);
-      this.drawingPath = new this.paperScope.Path({
-        strokeColor: this.strokeColor,
-        strokeWidth: this.strokeSize,
-      });
-      this.drawingPath.add(event.point);
-
-      // Don't save state immediately when starting a drawing
-    } else {
-      console.log('Mouse down outside of drawing area');
-    }
+startDrawing(event: paper.MouseEvent): void {
+  if (this.isDraggingSticker) {
+    console.log('Dragging sticker, not drawing.');
+    return;
   }
+
+  this.isDrawing = true;
+
+  if (this.isInsideDrawingArea(event.point)) {
+    console.log('Started drawing at:', event.point);
+
+    // Set the stroke color based on whether the eraser is active
+    const strokeColor = this.isEraserActive
+      ? new paper.Color(this.mapColorNameToHex(localStorage.getItem('selectedBackgroundColor') || 'white'))  // Eraser color (background)
+      : this.strokeColor;  // Brush color
+
+    this.drawingPath = new this.paperScope.Path({
+      strokeColor: strokeColor,
+      strokeWidth: this.isEraserActive ? this.eraserSize : this.strokeSize,  // Set eraser size if active
+    });
+    this.drawingPath.add(event.point);
+  } else {
+    console.log('Mouse down outside of drawing area');
+  }
+}
 
 
   draw(event: paper.MouseEvent): void {
@@ -770,6 +812,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
   switchFormat() {
     // Save the current drawing before switching formats
+    const drawingJSON = this.paperScope.project.exportJSON(); // Export the drawing as JSON
+
     if (this.isPoster) {
       const drawingJSON = this.paperScope.project.exportJSON(); // Export the drawing as JSON
       localStorage.setItem('posterDrawing', drawingJSON); // Save it only for the poster
@@ -787,13 +831,12 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
     // Remove the frame and resize the canvas for the new format
     this.frameLayer.removeChildren();
+    this.paperScope.project.clear(); // Only clear the project, not the localStorage
+
 
     // Set the new size for the selected format (postcard or poster)
     const newSource = this.isPostcard ? this.postCardSource : this.posterSource;
 
-    // Update the canvas size for the new format
-
-    // Set the background to fill the entire canvas
     const savedBackgroundColor =
       localStorage.getItem('selectedBackgroundColor') || 'white';
     this.setBackground(savedBackgroundColor); // Ensure the background fills the entire canvas
@@ -806,8 +849,8 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
 
     newFrame.onLoad = () => {
      // newFrame.size = new this.paperScope.Size(newSize.width, newSize.height);
-      // this.frameLayer.addChild(newFrame);
-      // this.paperScope.view.update();
+       this.frameLayer.addChild(newFrame);
+       this.paperScope.view.update();
 
 
       // Restore the drawing based on the format
@@ -817,7 +860,6 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         this.restorePosterDrawing(); // Load the saved poster drawing
       }
     };
-    this.initializeLayers();
   }
 
   restorePosterDrawing(): void {
@@ -946,23 +988,25 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
   }
 
   clearCanvas(): void {
-    if (this.drawingPath) {
-      this.drawingPath.remove();
-      this.drawingPath = null;
-    }
+    this.paperScope.project.clear(); // Clear the drawing from the canvas
+    this.initializeLayers(); // Reinitialize the layers for a new canvas
 
-    this.paperScope.project.clear();
-    localStorage.removeItem('userDrawing');
-    localStorage.removeItem('drawingTitle');
-    this.drawingTitle = '';
-    this.initializeLayers();
+    // Do not remove drawings from localStorage when switching formats
+    // unless you want to completely clear the project:
+    // localStorage.removeItem('posterDrawing');
+    // localStorage.removeItem('postcardDrawing');
+    localStorage.removeItem('drawingTitle'); // Clear title if needed
 
+    // Reset state history as this is a completely new drawing
     this.stateHistory = [];
     this.currentStateIndex = -1;
     localStorage.removeItem('drawingStateHistory');
 
     this.toastr.success('Neues Plakat bereit!');
-  }
+}
+
+  // Other methods related to drawing, stickers, and state management remain the same.
+
 
   initializeDrawing(): void {
     console.log('initializeDrawing called');
