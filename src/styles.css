@@ -4,7 +4,4 @@ img {
   image-rendering: -webkit-optimize-contrast; /* For Safari */
   image-rendering: pixelated; /* Fallback for pixelated scaling */
 }
-/* Example cursor styling */
-body.black-canvas-cursor {
-  cursor: url('/assets/cursors/white-cursor.png'), auto;
-}
+

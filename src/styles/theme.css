@@ -3,13 +3,13 @@
 /* Theme */
 @font-face {
   font-family: "Besom-Handwritten";
-  src: url("../assets/fonts/Besom/Besom-extended.otf") format("opentype");
+  src: url("/assets/fonts/Besom/Besom-extended.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "Besom";
-  src: url("../assets/fonts/Besom/Besom-free-font.otf") format("opentype");
+  src: url("/assets/fonts/Besom/Besom-free-font.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
