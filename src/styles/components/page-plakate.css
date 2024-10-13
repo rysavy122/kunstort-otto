@@ -254,8 +254,8 @@
       margin: auto;
       margin-top:50px;
     }
-    .wrapper{
-
+    .wrapper {
+      height:100vh;
     }
 
 }

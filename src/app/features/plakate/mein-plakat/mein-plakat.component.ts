@@ -780,6 +780,7 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
       localStorage.setItem('drawingTitle', this.drawingTitle); // Save title (optional)
     }
 
+
     // Toggle between postcard and poster formats
     this.isPostcard = !this.isPostcard;
     this.isPoster = !this.isPoster;
@@ -788,14 +789,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     this.frameLayer.removeChildren();
 
     // Set the new size for the selected format (postcard or poster)
-    const newSize = this.isPostcard ? this.postcardSize : this.posterSize;
     const newSource = this.isPostcard ? this.postCardSource : this.posterSource;
 
     // Update the canvas size for the new format
-    this.paperScope.view.viewSize = new this.paperScope.Size(
-      newSize.width,
-      newSize.height
-    );
 
     // Set the background to fill the entire canvas
     const savedBackgroundColor =
@@ -809,9 +805,10 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
     });
 
     newFrame.onLoad = () => {
-      newFrame.size = new this.paperScope.Size(newSize.width, newSize.height);
-      this.frameLayer.addChild(newFrame);
-      this.paperScope.view.update();
+     // newFrame.size = new this.paperScope.Size(newSize.width, newSize.height);
+      // this.frameLayer.addChild(newFrame);
+      // this.paperScope.view.update();
+
 
       // Restore the drawing based on the format
       if (this.isPostcard) {
@@ -820,7 +817,9 @@ export class MeinPlakatComponent implements OnInit, AfterViewInit {
         this.restorePosterDrawing(); // Load the saved poster drawing
       }
     };
+    this.initializeLayers();
   }
+
   restorePosterDrawing(): void {
     const savedPosterDrawing = localStorage.getItem('posterDrawing'); // Use 'posterDrawing' key
     if (savedPosterDrawing) {
