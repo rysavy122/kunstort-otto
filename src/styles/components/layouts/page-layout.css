@@ -1,0 +1,69 @@
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  color: black;
+  overflow-x: hidden;
+}
+@media only screen and (min-height: 1000px){
+  .page-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height:120%;
+    color: black;
+    overflow-x: hidden;
+  }}
+
+.page-layout__content {
+  flex: 1;
+  flex-basis: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 8rem;
+  margin-bottom: 20vh;
+  max-width: 120rem;
+  width: 100%;
+  margin-top: 18.4rem;
+}
+
+@media only screen and (max-width: 640px) {
+  .page-layout__content {
+    margin-top: 12.4rem;
+  }
+  input {
+    width: 90%;
+  }
+}
+
+
+
+
+.controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+label {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  margin: 0 5px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+input[type="radio"]:checked + label {
+  background: #333;
+}
+

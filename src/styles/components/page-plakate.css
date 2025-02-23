@@ -1,0 +1,376 @@
+.page-plakate__button {
+  min-width: 8.4rem;
+  border: 0.1rem solid var(--black);
+  background-color: var(--otto-primary);
+  width: fit-content;
+  font-size: 1.6rem;
+  margin-right: 1.6rem;
+  font-style: normal;
+  padding: 0.8rem 0;
+  text-align: center;
+  user-select: none;
+  border: 0;
+  border-radius: 0.8rem;
+  font-family: var(--font-secondary);
+  font-weight: 600;
+  color: var(--white);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease-out, color 0.3s ease-out;
+  min-width: 10rem;
+  padding: 1.6rem 1.6rem;
+  line-height: 2rem;
+  margin: auto;
+  margin-left: -10px;
+  margin-top:20px;
+  color: #00FFFF;
+  }
+
+  #svg-container {
+    border: 2px solid royalblue;
+    position: relative;
+    overflow: hidden;
+    margin: auto;
+    margin-top: 20px;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom: 10vh;
+  }
+
+  .file-upload-container {
+    text-align: center;
+  }
+
+  .file-upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    background-color: var(--otto-primary);
+    border: none;
+    border-radius: 5px;
+    width:fit-content;
+    height:fit-content;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .file-upload-btn:hover {
+    background-color: var(--otto-secondary);
+
+  }
+  .wrapper{
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  @media only screen and (max-width: 600px){
+    .wrapper{
+      margin-top: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+
+  .canvas-wrapper{
+    margin: auto;
+    margin-bottom: 50px;
+    color: black;
+  }
+  .canvas-wrapper input{
+    width: 100px;
+  }
+/*   .custom-cursor {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brush-fill" viewBox="0 0 16 16"><path d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.1 6.1 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.1 8.1 0 0 1-3.078.132 4 4 0 0 1-.562-.135 1.4 1.4 0 0 1-.466-.247.7.7 0 0 1-.204-.288.62.62 0 0 1 .004-.443c.095-.245.316-.38.461-.452.394-.197.625-.453.867-.826.095-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.201-.925 1.746-.896q.19.012.348.048c.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.176-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04"/></svg>'), auto;
+  } */
+  canvas{
+    margin: auto;
+  }
+  h3{
+    margin-left: 25px;
+  }
+  button{
+    margin:15px;
+    padding:5px;
+    cursor: pointer;
+  }
+
+  .sticker-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    border:2px solid royalblue;
+    background-color: rgb(129, 155, 236);
+    border-radius: 8px;
+    margin: auto;
+    padding:15px;
+    color: black;
+    height:fit-content;
+    width:fit-content;
+    margin-top: 50px;
+  }
+  .sticker img {
+    width: 100px; /* Adjust as needed */
+    height: 100px; /* Adjust as needed */
+    object-fit: cover;
+    margin: 5px;
+  }
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    color: black;
+  }
+  .pagination-controls button {
+    margin: 0 10px;
+    background-color: white;
+    border:none;
+  }
+  #stroke{
+    margin-left: -40px;
+  }
+  #stroke-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border: none;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border:1px solid royalblue;
+    border-radius: 50%;
+  }
+
+  #stroke-color::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+
+  }
+  #stroke-color{
+    background-color: white;
+
+  }
+  #controlls input{
+    border: none;
+  }
+
+  .bubble {
+    width: 380px;
+    height: 520px;
+    background-color: #ff0055;
+    clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
+    clip-path: polygon( 77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20% );
+    position: absolute;
+    right: 5vw;
+    top:50vh;
+  }
+
+  .bubble h3 {
+    margin: 35px;
+    margin-top: 95px;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+    color: aqua;
+  }
+
+  .bubble p {
+    color: white;
+    margin: 35px;
+    margin-right:10px;
+    margin-top: -10px;
+    font-size: 1.4rem;
+    width: 250px;
+    position: absolute;
+    left:0px;
+    height: fit-content;
+    padding:10px;
+    line-height: 1.8rem;
+  }
+
+  .bubble::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: #ff0055;
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    clip-path: polygon(0 0, 100% 0%, 50% 100%);
+    transform: translateY(100%);
+  }
+  #drawingTitle{
+    border: none;
+    color: black;
+    width: 567px;
+    margin: auto;
+  }
+  #drawingCanvas{
+    height: 567px;
+     width:800px;
+  }
+  #sticker{
+    height: 700px;
+    width: 25%;
+  }
+  #sticker h2, #controlls h2{
+    margin-bottom:30px;
+  }
+  .sticker-container{
+    display: flex;
+    margin: auto;
+    margin-top: 10px;
+  }
+  #otto-plakat{
+    width: 50%;
+    margin: 15px;
+    margin-left:-1%; margin-top: 1vh;
+  }
+  #controlls{
+    width: 25%;
+  }
+  #qr img{
+    height:200px;
+    width:200px;
+  }
+  @media screen and (min-width: 2400px), screen and (min-height: 1000px) {
+    #otto-plakat{
+      margin-top: 20vh;
+    }
+    #controlls{
+      margin-top: 15vh;
+    }
+    #sticker{
+      height: 700px;
+      margin-top: 15vh;
+      margin-left:2vw;
+    }
+    #drawingTitle{
+      width: 567px;
+    }
+    .sticker-container{
+      margin: auto;
+      margin-top:50px;
+    }
+    .wrapper {
+      height:100vh;
+    }
+
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  width:60px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+  .example-list {
+    width: 300px;
+    margin: auto;
+    margin-left: 0.5vw;
+    display: flex;
+    max-height: fit-content;
+    flex-wrap: wrap;
+
+  }
+
+
+  .cdk-drag-preview {
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+                width:100px;
+  }
+
+  .cdk-drag-placeholder {
+    opacity: 0;
+  }
+
+  .cdk-drag-animating {
+    transition: transform 2ms cubic-bezier(0, 0, 0, 0);
+  }
+
+  .example-box:last-child {
+    border: none;
+  }
+
+  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    transition: transform 2ms cubic-bezier(0, 0, 0, 0);
+  }
+
+  .sticker-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  @media only screen and (min-height: 1000px){
+    .bubble {
+      width: 380px;
+      height: 520px;
+      background-color: #ff0055;
+      clip-path: polygon( 16.40% 0.00%, 84.80% 4.00%, 100% 5.40%, 97.20% 80.40%, 30.60% 79.60%, 10.00% 100%, 17.40% 76.20%, 20.00% 66.20% );
+      clip-path: polygon( 77.00% 13.20%, 90.00% 0.00%, 86.20% 28.80%, 86.20% 100%, 0.00% 93.80%, 5.00% 13.20% );
+      position: absolute;
+      right: 5vw;
+      top:40vh;
+    }
+  }
+
+

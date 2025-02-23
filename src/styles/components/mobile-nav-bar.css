@@ -1,0 +1,148 @@
+.mobile-nav-bar__container {
+  position: fixed;
+  display: none;
+
+  justify-content: center;
+  flex-shrink: 0;
+  width: 100%;
+  height:100px;
+  margin-bottom: 400px;
+  z-index: 300;
+
+}
+
+.mobile-nav-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  /* responsive */
+
+  height: 6.4rem;
+  max-width: 1200px;
+
+  padding: 0.8rem 1.6rem;
+  margin: 0;
+
+
+}
+
+.mobile-nav-bar__brand {
+  align-items: center;
+  height: 100%;
+  position: absolute;
+  top:0.6rem;
+  left:3.6rem;
+}
+
+.mobile-nav-bar__link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+}
+
+.mobile-nav-bar__logo {
+  height: 2.4rem;
+}
+
+.mobile-nav-bar__menu {
+  width: 100%;
+  height: calc(10% - 6.4rem);
+  position: fixed;
+  right: 0;
+  top: 6.4rem;
+  z-index: 300;
+
+}
+
+.mobile-nav-bar__toggle {
+  margin-left: 2.4rem;
+  font-size: 3.6rem;
+  cursor: pointer;
+  color: var(--otto-primary);
+}
+
+.mobile-nav-bar__tabs {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
+
+}
+
+.mobile-nav-bar__tab {
+  display: flex;
+  flex-direction: row;
+  font-weight: 500;
+  font-size: 2rem;
+  line-height: 16px;
+  float: right;
+
+  padding: 3.2rem 2.4rem;
+  color: var(--white);
+  width: 260px;
+  background-color: var(--otto-primary);
+
+}
+
+.mobile-nav-bar__tab:last-child {
+  margin-right: 0;
+}
+
+.mobile-nav-bar__tab--active {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--otto-primary);
+
+  /* responsive */
+
+  text-decoration-thickness: 4px;
+  text-underline-offset: 8px;
+}
+
+.mobile-nav-bar__tab:hover {
+  color: var(--white);
+  color:rgb(200, 199, 199);
+}
+
+.mobile-nav-bar__icon {
+  display: none;
+}
+
+.mobile-nav-bar__buttons {
+  display: flex;
+  float: right;
+
+  justify-content: center;
+  background-color: var(--otto-primary);
+  width: 260px;
+
+}
+
+  .mobile-nav-bar__tab:hover {
+    color: var(--white);
+    color:rgb(200, 199, 199);
+
+  }
+
+  .mobile-nav-bar__tab--active:hover {
+    color: var(--white);
+    color:rgb(200, 199, 199);
+
+  }
+
+
+  .mobile-nav-bar__container {
+    display: flex;
+    justify-content: right;
+
+  }
+
+  .mobile-nav-bar__menu--closed {
+    display: none;
+  }
+

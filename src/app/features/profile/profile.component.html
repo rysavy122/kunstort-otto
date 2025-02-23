@@ -1,0 +1,208 @@
+<app-page-layout>
+  <div class="content-layout">
+    <h1 id="page-title" class="content__title">
+      Profil
+    </h1>
+    <div class="content__body">
+      <div id="page1" style="height: 90vh">
+        <p id="page-description">
+          <ng-container *ngIf="user$ | async as user">
+            <div class="profile-grid">
+              <div class="profile__header">
+                <img
+                [src]="avatarUrl"
+                alt="Profile"
+                  class="profile__avatar"
+                  style="margin-top: 50px;"
+                />
+                <div class="profile__headline">
+                  <h2 class="profile__title">Hallo, {{ user['username'] }}</h2>
+                  <h3 class="profile__role">Angemeldet als: {{this.role}}</h3>
+                  <span class="profile__description">Email: {{ user.email }}</span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="role" style="margin-top:5vh;">
+              <h2 class="profile__title">Hallo, {{ user['username'] }}</h2>
+              <h2>Hallo, {{ user['username'] ?  user['username'] : user['name']}}</h2>
+
+              <div *ngIf="role === 'Künstler'">
+                <!-- Content specific to Künstler role -->
+                <p>Willkommen auf deinem Künstler Profil. Als Künstler kannst du </p>
+              </div>
+
+              <div *ngIf="role === 'Gast'">
+                <!-- Content specific to Gast role -->
+                <p>Willkomen auf deinem Gast Profil, als Gast kannst du die Seite besuchen und Plakate erstellen, sowie am Polylog teilnehmen.</p>
+              </div>
+
+              <div *ngIf="role === 'Institution'">
+                <h2 class="profile__title">Hallo</h2>
+                <!-- Content specific to Institution role -->
+                <p>Willkommen auf deinem Institutions Profil. Als Institution kannst du neben den Plakaten auch noch Postkarten erstellen und dein Logo auf kreative Weise umgestalten.</p>
+                <br/>
+                <a
+                class="button button--secondary"
+                routerLink="/plakate/mein-plakat"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="border:1px solid black;"
+              >
+                Klicke hier und werde kreativ →
+              </a>
+              </div>
+
+              <div *ngIf="role === 'Team'">
+                <!-- Content specific to Team role -->
+                <p>Willkommen auf deinem Otto Team Profil.Als Team Mitglied kannst du neue Forschungsfragen einstellen, den Polylog konfigurieren und Benutzerrechte konfigurieren.</p>
+              </div>
+            </div>
+
+          </ng-container>
+          <br />
+
+        </p>
+        <form #frageForm="ngForm" *ngIf="isAdmin">
+          <input
+            id="input-forschungsfrage"
+            style="margin-bottom: 50px; width: 350px"
+            type="text"
+            [(ngModel)]="forschungsfrage"
+            name="forschungsfrage"
+            required
+            placeholder="Neue Forschungsfrage..."
+            #forschungsfrageInput="ngModel"
+          /><br />
+          <input
+            style="display: block; margin-bottom: 0px; border: none"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            #fileInput
+          />
+
+          <br />
+
+          <button
+            (click)="openConfirmDialog()"
+            [disabled]="!frageForm.valid"
+            class="submit-button"
+          >
+            Neue Forschungsfrage stellen
+          </button>
+
+          <button (click)="openFreezeDialog()" class="submit-button">
+            {{ VKb2xiYiQ2 ? "Polylog auftauen" : "Polylog einfrieren" }}
+          </button>
+          <br />
+          <h3>
+            Polylog Status: <span>{{ VKb2xiYiQ2 ? "Inaktiv" : "Aktiv" }}</span>
+          </h3>
+        </form>
+      </div>
+      <div class="forschungsfragen" *ngIf="isAdmin">
+        <h1>Übersicht Forschungsfragen</h1>
+      <p>
+        Hier ist eine Übersicht von allen bereits gestellten Forschungsfragen,
+        die in der Datenbank gespeichert sind.
+      </p>
+      <svg
+        (click)="toggleForschungsfragen()"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        class="bi bi-chevron-down"
+        viewBox="0 0 16 16"
+        [class.rotated]="isExpanded"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+        />
+      </svg>
+      <div *ngIf="isExpanded">
+        <div *ngIf="forschungsfragen.length">
+          <ul>
+            <li *ngFor="let frage of paginatedForschungsfragen">
+              {{ frage.title }}
+              <p>
+                Logo:
+                <span *ngIf="!frage.imagePath">Kein Logo ausgewählt.</span>
+                <img
+                  *ngIf="frage.imagePath"
+                  style="height: 50px"
+                  [src]="frage.imagePath"
+                  alt="Uploaded Image"
+                />
+              </p>
+            </li>
+          </ul>
+        </div>
+        <!-- Pagination Controls -->
+        <div class="pagination-controls">
+          <button
+            class="controlls-button"
+            (click)="changePage(currentPage - 1)"
+          >
+            <span> </span>
+            <svg
+              color="black"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-chevron-left"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
+              />
+            </svg>
+          </button>
+          <span>
+            <span style="font-size: 1.5rem"
+              >{{ currentPage }} / {{ totalPages }}</span
+            >
+          </span>
+          <button
+            class="controlls-button"
+            (click)="changePage(currentPage + 1)"
+          >
+            <svg
+              color="black"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-chevron-right"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <app-confirm-dialog
+    #confirmDialog
+    [isOpen]="isDialogOpen"
+    (close)="closeDialog($event)"
+    (onSuccessfulUpload)="clearFileInput()"
+  ></app-confirm-dialog>
+  <app-confirm-freeze-dialog
+    #confirmFreezeDialog
+    [isOpen]="isFreezeDialogOpen"
+    (close)="closeDialog($event)"
+  ></app-confirm-freeze-dialog>
+</app-page-layout>
